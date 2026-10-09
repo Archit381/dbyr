@@ -1,0 +1,359 @@
+{
+  "case": "hf-2026",
+  "is_derivation_case": true,
+  "schema_hash": "sha256:dcd157d4878c905c5d4690ddcc36cf884950b8a98b823223e9b8d7e38e9cd997",
+  "filings_compliant": true,
+  "integrity": {
+    "intent:A": [],
+    "intent:B": [],
+    "closeout:A": [],
+    "notice:N1": [],
+    "notice:N2": [],
+    "closeout:A vs intent:A": [],
+    "closeout:A notices": [],
+    "lineage": []
+  },
+  "decision_points": [
+    {
+      "id": "DP1",
+      "date": "12 May",
+      "decision": "Agents can write to the package proxy and a message board forms; the run continues.",
+      "field": "egress_topology.writable_surfaces",
+      "developer_aware": "no",
+      "aware_source": "openai2026huggingface: the channel's existence and significance were not apparent to the responsible leaders until July",
+      "recorded_before": {
+        "record": "intent:A",
+        "any": "/egress_topology/writable_surfaces",
+        "where": {
+          "surface_id": "artifactory-proxy",
+          "persistence": [
+            "cross_run",
+            "permanent"
+          ],
+          "tenancy": [
+            "shared_runs",
+            "shared_agents"
+          ]
+        }
+      },
+      "checkable_after": {
+        "record": "closeout:A",
+        "any": "/containment_exceptions",
+        "where": {
+          "surface_id": "artifactory-proxy",
+          "kind": "comms"
+        },
+        "evidence": [
+          "inter_agent_messages",
+          "egress_logs"
+        ]
+      },
+      "decision_rule": {
+        "rule": "pause_criterion",
+        "event_kind": "inter_agent_comms"
+      }
+    },
+    {
+      "id": "DP2",
+      "date": "26 May",
+      "decision": "First SSRF through the proxy gives indirect internet access; no pause.",
+      "field": "egress_topology.permitted_paths",
+      "developer_aware": "unclear",
+      "aware_source": "not established in the first-party record",
+      "recorded_before": {
+        "record": "intent:A",
+        "any": "/egress_topology/permitted_paths",
+        "where": {
+          "path_id": "pkg-proxy",
+          "enforcement": "packet_filter"
+        }
+      },
+      "checkable_after": {
+        "record": "closeout:A",
+        "any": "/security_events",
+        "where": {
+          "kind": "sandbox_egress"
+        },
+        "evidence": [
+          "egress_logs"
+        ]
+      },
+      "decision_rule": {
+        "rule": "pause_criterion",
+        "event_kind": "sandbox_egress"
+      }
+    },
+    {
+      "id": "DP3",
+      "date": "11 Jun",
+      "decision": "A second, highly persistent model is started with access to the same proxy and builds on the first model's messages.",
+      "field": "egress_topology.shared_surface_lineage",
+      "developer_aware": "no",
+      "aware_source": "openai2026huggingface: access was known, the channel was not",
+      "recorded_before": {
+        "record": "intent:B",
+        "any": "/egress_topology/shared_surface_lineage",
+        "where": {
+          "surface_id": "artifactory-proxy",
+          "run_id": "exploitgym-rl-a"
+        }
+      },
+      "checkable_after": {
+        "record": "closeout:A",
+        "any": "/containment_exceptions",
+        "where": {
+          "kind": "comms",
+          "linked_runs": {
+            "contains": "exploitgym-rl-b"
+          }
+        },
+        "evidence": [
+          "inter_agent_messages"
+        ]
+      },
+      "decision_rule": {
+        "rule": "pause_criterion",
+        "event_kind": "inter_agent_comms"
+      }
+    },
+    {
+      "id": "DP4",
+      "date": "26 Jun",
+      "decision": "A zero-day gives administrator access and command execution on the proxy.",
+      "field": "egress_topology.credential_scope",
+      "developer_aware": "unclear",
+      "aware_source": "sources differ on whether this was seen before the 5 Jul incident",
+      "recorded_before": {
+        "record": "intent:A",
+        "pointer": "/egress_topology/credential_scope/admin_credentials_reachable",
+        "equals": false
+      },
+      "checkable_after": {
+        "record": "closeout:A",
+        "any": "/security_events",
+        "where": {
+          "kind": "privilege_escalation"
+        },
+        "evidence": [
+          "access_logs"
+        ]
+      },
+      "decision_rule": {
+        "rule": "pause_criterion",
+        "event_kind": "privilege_escalation"
+      }
+    },
+    {
+      "id": "DP5",
+      "date": "5-6 Jul",
+      "decision": "Outage; incident opened; route blocked, credentials removed, service rebuilt (clearing the board); evaluations resume.",
+      "field": "pause_criteria, restart_protocol",
+      "developer_aware": "yes",
+      "aware_source": "openai2026huggingface: security incident opened 5 Jul; evaluations resumed 6 Jul",
+      "recorded_before": {
+        "all": [
+          {
+            "record": "intent:A",
+            "any": "/pause_criteria",
+            "where": {
+              "matches": {
+                "contains": "agent_induced_outage"
+              }
+            }
+          },
+          {
+            "record": "intent:A",
+            "pointer": "/restart_protocol/approver_role",
+            "exists": true
+          }
+        ]
+      },
+      "checkable_after": {
+        "record": "closeout:A",
+        "any": "/pause_events",
+        "where": {
+          "criterion_id": "C-outage",
+          "restart": {
+            "nonempty": true
+          }
+        },
+        "evidence": [
+          "access_logs"
+        ]
+      },
+      "decision_rule": {
+        "rule": "pause_criterion",
+        "event_kind": "agent_induced_outage"
+      }
+    },
+    {
+      "id": "DP6",
+      "date": "20-29 Jul",
+      "decision": "Independent review scoped to exclude training-phase incidents, without model access; third parties notified at the developer's discretion.",
+      "field": "investigator_scope_expansion, third_party_notifications",
+      "developer_aware": "yes",
+      "aware_source": "metr2026investigation; freedman2026nyt",
+      "recorded_before": {
+        "record": "intent:A",
+        "pointer": "/investigator_scope_expansion/committed",
+        "equals": true
+      },
+      "checkable_after": {
+        "all": [
+          {
+            "record": "closeout:A",
+            "any": "/scope_requested_vs_granted",
+            "where": {
+              "refusals": {
+                "nonempty": true
+              }
+            }
+          },
+          {
+            "record": "closeout:A",
+            "any": "/third_party_notifications",
+            "where": {
+              "party": "Hugging Face"
+            }
+          }
+        ],
+        "evidence": []
+      },
+      "decision_rule": {
+        "rule": "record_obligation"
+      }
+    }
+  ],
+  "variants": {
+    "diligent": {
+      "rows": [
+        {
+          "id": "DP1",
+          "recorded_before": "Yes",
+          "checkable_after": "Partial",
+          "changes_decision": "No",
+          "reason": "criterion cannot fire on an unseen event"
+        },
+        {
+          "id": "DP2",
+          "recorded_before": "Yes",
+          "checkable_after": "Yes",
+          "changes_decision": "Unknown",
+          "reason": "awareness at the time not established"
+        },
+        {
+          "id": "DP3",
+          "recorded_before": "Yes",
+          "checkable_after": "Partial",
+          "changes_decision": "No",
+          "reason": "criterion cannot fire on an unseen event"
+        },
+        {
+          "id": "DP4",
+          "recorded_before": "Yes",
+          "checkable_after": "Yes",
+          "changes_decision": "Unknown",
+          "reason": "awareness at the time not established"
+        },
+        {
+          "id": "DP5",
+          "recorded_before": "Yes",
+          "checkable_after": "Yes",
+          "changes_decision": "No",
+          "reason": "compliant: required action was taken and restart approved"
+        },
+        {
+          "id": "DP6",
+          "recorded_before": "Yes",
+          "checkable_after": "Yes",
+          "changes_decision": "Unknown",
+          "reason": "obligation is to record, not to act"
+        }
+      ],
+      "recorded_before": 6,
+      "checkable_after": 6,
+      "checkable_partial": 2,
+      "changes_decision_yes": 0,
+      "changes_decision_unknown": 3,
+      "attributable": 6,
+      "n": 6,
+      "passes_heldout_criterion": true,
+      "intake_errors": {
+        "intent:A": [
+          "comms_unmonitored",
+          "dead_criterion",
+          "shared_surface_floor"
+        ],
+        "intent:B": [
+          "comms_unmonitored",
+          "dead_criterion",
+          "shared_surface_floor"
+        ]
+      }
+    },
+    "as_believed": {
+      "rows": [
+        {
+          "id": "DP1",
+          "recorded_before": "No",
+          "checkable_after": "Partial",
+          "changes_decision": "No",
+          "reason": "criterion cannot fire on an unseen event"
+        },
+        {
+          "id": "DP2",
+          "recorded_before": "Yes",
+          "checkable_after": "Yes",
+          "changes_decision": "Unknown",
+          "reason": "awareness at the time not established"
+        },
+        {
+          "id": "DP3",
+          "recorded_before": "No",
+          "checkable_after": "Partial",
+          "changes_decision": "No",
+          "reason": "criterion cannot fire on an unseen event"
+        },
+        {
+          "id": "DP4",
+          "recorded_before": "Yes",
+          "checkable_after": "Yes",
+          "changes_decision": "Unknown",
+          "reason": "awareness at the time not established"
+        },
+        {
+          "id": "DP5",
+          "recorded_before": "Yes",
+          "checkable_after": "Yes",
+          "changes_decision": "No",
+          "reason": "compliant: required action was taken and restart approved"
+        },
+        {
+          "id": "DP6",
+          "recorded_before": "Yes",
+          "checkable_after": "Yes",
+          "changes_decision": "Unknown",
+          "reason": "obligation is to record, not to act"
+        }
+      ],
+      "recorded_before": 4,
+      "checkable_after": 6,
+      "checkable_partial": 2,
+      "changes_decision_yes": 0,
+      "changes_decision_unknown": 3,
+      "attributable": 4,
+      "n": 6,
+      "passes_heldout_criterion": true,
+      "intake_errors": {
+        "intent:A": [
+          "core_kind_uncovered",
+          "dead_criterion"
+        ],
+        "intent:B": [
+          "core_kind_uncovered",
+          "dead_criterion"
+        ]
+      }
+    }
+  }
+}

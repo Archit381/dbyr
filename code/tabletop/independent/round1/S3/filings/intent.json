@@ -1,0 +1,130 @@
+{
+  "schema_version": "0.2",
+  "record_type": "TrainingRunIntent",
+  "run_id": "NWI-INT-2026-001",
+  "developer": "Northwind Intelligence",
+  "filed_at": "2026-07-06T00:00:00Z",
+  "trigger_basis": [
+    "T4"
+  ],
+  "run_kind": "evaluation",
+  "start_window": {
+    "start": "2026-07-06",
+    "end": "2026-08-06"
+  },
+  "compute_band": "<1e24",
+  "predicted_capability_band": {
+    "cyber": "low",
+    "cbrn": "low",
+    "autonomy": "medium",
+    "persuasion": "low"
+  },
+  "monitoring_instruments": [
+    {
+      "kind": "trajectory_review",
+      "coverage": "on_alert"
+    },
+    {
+      "kind": "access_log_review",
+      "coverage": "all",
+      "review_cadence": "weekly"
+    }
+  ],
+  "egress_topology": {
+    "environment": "live",
+    "permitted_paths": [
+      {
+        "path_id": "internal-services",
+        "via": "internal network; company services only, no external egress",
+        "enforcement": "packet_filter",
+        "agent_writable": true
+      }
+    ],
+    "credential_scope": {
+      "held_by_agents": [
+        "per-user scoped credentials"
+      ],
+      "admin_credentials_reachable": true
+    },
+    "inter_agent_comms_permitted": true,
+    "writable_surfaces": [
+      {
+        "surface_id": "internal-collab",
+        "kind": "other",
+        "direction": {
+          "writers": [
+            "agents",
+            "employees"
+          ],
+          "readers": [
+            "agents",
+            "employees"
+          ]
+        },
+        "persistence": "permanent",
+        "tenancy": "shared_agents",
+        "via_path": "internal-services"
+      }
+    ],
+    "shared_surface_lineage": []
+  },
+  "safeguards_disabled": {
+    "disabled": true,
+    "relaxed": [
+      "content filter enforcement (log-only for this internal deployment)"
+    ],
+    "signer_role": "research-head"
+  },
+  "pause_criteria": [
+    {
+      "criterion_id": "PC-1",
+      "matches": [
+        "sandbox_egress",
+        "privilege_escalation",
+        "third_party_compromise"
+      ],
+      "adjudication": "human",
+      "authority_role": "deployment-owner",
+      "required_action": "pause"
+    }
+  ],
+  "restart_protocol": {
+    "approver_role": "deployment-owner",
+    "evidence_required": [
+      "triage record of the triggering issue"
+    ],
+    "intent_amendment_required": false
+  },
+  "roles": [
+    {
+      "role_id": "deployment-owner",
+      "title": "Deployment Owner",
+      "organisation": "Northwind Intelligence"
+    },
+    {
+      "role_id": "research-head",
+      "title": "Head of Research",
+      "organisation": "Northwind Intelligence"
+    },
+    {
+      "role_id": "compliance",
+      "title": "Compliance",
+      "organisation": "Northwind Intelligence"
+    }
+  ],
+  "log_retention": {
+    "retained": [
+      "inter_agent_messages"
+    ],
+    "retain_until": "closeout+P24M",
+    "review_method": "Native platform revision history, available for review on request."
+  },
+  "investigator_scope_expansion": {
+    "committed": true,
+    "refusals_logged": true
+  },
+  "signer": {
+    "role_id": "compliance",
+    "organisation": "Northwind Intelligence"
+  }
+}

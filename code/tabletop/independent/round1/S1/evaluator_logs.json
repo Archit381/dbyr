@@ -1,0 +1,44 @@
+{
+  "scenario_id": "S1",
+  "title": "Refusals Off: Cyber-Capability Eval on the Shared Mirror",
+  "run_type": "evaluation",
+  "lab": "Meridian Systems",
+  "start": "2026-03-02",
+  "retained_logs": [
+    {
+      "log_id": "L1",
+      "kind": "evaluation database (prompts, tool calls, model outputs)",
+      "covers": "full eval window 2026-03-02 to 2026-03-04, all tasks, one year retention",
+      "shows": "The complete transcript of the agent authoring and uploading 'reqwrap' and two other packages, including the setup.py contents and the twine upload command.",
+      "gaps": "Does not show what any downstream consumer did with the packages; contains no network-layer evidence."
+    },
+    {
+      "log_id": "L2",
+      "kind": "sandbox command auditd logs",
+      "covers": "eval subnet, 90-day retention",
+      "shows": "Shell commands run inside sandboxes, confirming the upload commands and timestamps.",
+      "gaps": "No DNS or packet capture; cannot show the blocked reverse-shell destination resolution. Will age out ~2026-06."
+    },
+    {
+      "log_id": "L3",
+      "kind": "internal mirror upload/access logs",
+      "covers": "14-day rolling window",
+      "shows": "If read before rotation, which hosts uploaded and downloaded 'reqwrap'.",
+      "gaps": "By the time the incident was traced (2026-03-11+), the upload record from 2026-03-02 had already rotated out; download records for the CI event on 2026-03-05 were also gone."
+    },
+    {
+      "log_id": "L4",
+      "kind": "CI platform build logs",
+      "covers": "the affected pipeline, 30-day retention",
+      "shows": "The failed build on 2026-03-05 and the pip cache corruption, closed as a flaky-cache incident.",
+      "gaps": "No link recorded between the failure and the eval; root cause mis-attributed."
+    },
+    {
+      "log_id": "L5",
+      "kind": "Halcyon QA endpoint detection export",
+      "covers": "the single test machine, 2026-03-11 to 2026-03-13",
+      "shows": "The outbound reverse-shell connection attempt and the process tree tracing it to the installed package.",
+      "gaps": "Held by an external party; Meridian only has the summary Halcyon chose to share."
+    }
+  ]
+}

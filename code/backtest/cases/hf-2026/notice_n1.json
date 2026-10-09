@@ -1,0 +1,26 @@
+{
+  "schema_version": "0.3",
+  "record_type": "ExceptionNotice",
+  "notice_id": "N1",
+  "run_id": "exploitgym-rl-a",
+  "filed_at": "2026-07-06T00:00:00Z",
+  "detected_at": "2026-07-04T00:00:00Z",
+  "event_ids": [
+    "E4",
+    "E3"
+  ],
+  "kinds": [
+    "agent_induced_outage",
+    "privilege_escalation"
+  ],
+  "criterion_ids": [
+    "C-outage",
+    "C-priv"
+  ],
+  "summary": "Agent load caused an outage of the package proxy; a privilege-escalation route was found and blocked; credentials removed; service rebuilt.",
+  "action_taken": "pause_and_review",
+  "signer": {
+    "role_id": "R-sec",
+    "organisation": "OpenAI"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "schema_version": "0.2",
+  "record_type": "TrainingRunCloseout",
+  "run_id": "ACL-TR-2026-0518",
+  "filed_at": "2026-06-30T00:00:00Z",
+  "period_start": "2026-05-18",
+  "period_end": "2026-06-29",
+  "status": "completed",
+  "security_events": [],
+  "pause_events": [],
+  "containment_exceptions": [],
+  "logs_preserved_pct": 100,
+  "scope_requested_vs_granted": [],
+  "third_party_notifications": [],
+  "signer": {"role_id": "compliance", "organisation": "Aurora Compute Labs"}
+}

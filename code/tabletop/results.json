@@ -1,0 +1,361 @@
+{
+  "n_attacks": 20,
+  "round1_caught": 2,
+  "round2_caught": 14,
+  "residual": [
+    "T11",
+    "T12",
+    "T14",
+    "T15",
+    "T16",
+    "T17"
+  ],
+  "residual_without_account": [],
+  "false_positives": {},
+  "by_source": {
+    "Authors": {
+      "n": 9,
+      "round2_caught": 7
+    },
+    "Earlier critique": {
+      "n": 4,
+      "round2_caught": 2
+    },
+    "External review": {
+      "n": 7,
+      "round2_caught": 5
+    }
+  },
+  "controls": {
+    "S1": {
+      "baseline": {
+        "errors": [],
+        "warnings": [
+          "shared_surface_without_lineage"
+        ]
+      },
+      "adequacy": {
+        "errors": [],
+        "warnings": [
+          "shared_surface_without_lineage"
+        ]
+      },
+      "intent_leaves": 170,
+      "closeout_leaves": 47
+    },
+    "S2": {
+      "baseline": {
+        "errors": [],
+        "warnings": [
+          "undeclared_surface"
+        ]
+      },
+      "adequacy": {
+        "errors": [],
+        "warnings": [
+          "undeclared_surface"
+        ]
+      },
+      "intent_leaves": 173,
+      "closeout_leaves": 84
+    },
+    "S3": {
+      "baseline": {
+        "errors": [],
+        "warnings": []
+      },
+      "adequacy": {
+        "errors": [],
+        "warnings": []
+      },
+      "intent_leaves": 169,
+      "closeout_leaves": 47
+    }
+  },
+  "rows": [
+    {
+      "id": "T01",
+      "scenario": "S1",
+      "title": "Vague topology: ``standard sandboxing'', writability omitted, no surfaces",
+      "source": "External review",
+      "conceals": "agents can write to a cache shared across runs",
+      "catch": "",
+      "round1_caught": false,
+      "round1_codes": [],
+      "round2_caught": true,
+      "round2_codes": [
+        "comms_channel_undeclared",
+        "writability_undeclared"
+      ]
+    },
+    {
+      "id": "T02",
+      "scenario": "S2",
+      "title": "Criterion no declared monitor can trigger",
+      "source": "External review",
+      "conceals": "inter-agent communication would go unseen",
+      "catch": "",
+      "round1_caught": false,
+      "round1_codes": [],
+      "round2_caught": true,
+      "round2_codes": [
+        "core_kind_uncovered",
+        "dead_criterion"
+      ]
+    },
+    {
+      "id": "T03",
+      "scenario": "S2",
+      "title": "Every criterion only notifies",
+      "source": "External review",
+      "conceals": "nothing would pause the run",
+      "catch": "",
+      "round1_caught": false,
+      "round1_codes": [],
+      "round2_caught": true,
+      "round2_codes": [
+        "core_kind_uncovered"
+      ]
+    },
+    {
+      "id": "T04",
+      "scenario": "S2",
+      "title": "One catch-all criterion on monitor alerts",
+      "source": "Authors",
+      "conceals": "no specific event would pause the run",
+      "catch": "",
+      "round1_caught": false,
+      "round1_codes": [],
+      "round2_caught": true,
+      "round2_codes": [
+        "core_kind_uncovered",
+        "kind_uncriteried"
+      ]
+    },
+    {
+      "id": "T05",
+      "scenario": "S2",
+      "title": "Standing quarterly Intent for evaluations",
+      "source": "Earlier critique",
+      "conceals": "individual evaluations are invisible",
+      "catch": "",
+      "round1_caught": false,
+      "round1_codes": [],
+      "round2_caught": true,
+      "round2_codes": [
+        "standing_intent"
+      ]
+    },
+    {
+      "id": "T06",
+      "scenario": "S2",
+      "title": "Declare communication permitted so coordination is never an exception",
+      "source": "Authors",
+      "conceals": "coordination channel unmonitored and unretained",
+      "catch": "",
+      "round1_caught": false,
+      "round1_codes": [],
+      "round2_caught": true,
+      "round2_codes": [
+        "comms_channel_undeclared",
+        "comms_not_retained",
+        "comms_unmonitored",
+        "kind_uncriteried"
+      ]
+    },
+    {
+      "id": "T07",
+      "scenario": "S2",
+      "title": "No monitoring under safeguards-off",
+      "source": "Authors",
+      "conceals": "no events can be detected",
+      "catch": "",
+      "round1_caught": false,
+      "round1_codes": [],
+      "round2_caught": true,
+      "round2_codes": [
+        "core_kind_uncovered",
+        "dead_criterion",
+        "no_monitoring_t4"
+      ]
+    },
+    {
+      "id": "T08",
+      "scenario": "S2",
+      "title": "Egress path with no enforcement",
+      "source": "Authors",
+      "conceals": "sandbox is open",
+      "catch": "",
+      "round1_caught": false,
+      "round1_codes": [],
+      "round2_caught": true,
+      "round2_codes": [
+        "unenforced_path_t4"
+      ]
+    },
+    {
+      "id": "T09",
+      "scenario": "S2",
+      "title": "Exception first reported at the 30-day closeout",
+      "source": "External review",
+      "conceals": "an egress event for up to a month",
+      "catch": "",
+      "round1_caught": false,
+      "round1_codes": [],
+      "round2_caught": true,
+      "round2_codes": [
+        "notice_missing"
+      ]
+    },
+    {
+      "id": "T10",
+      "scenario": "S2",
+      "title": "Third party notified 20 days late, no reason",
+      "source": "External review",
+      "conceals": "delay in telling a victim",
+      "catch": "",
+      "round1_caught": false,
+      "round1_codes": [],
+      "round2_caught": true,
+      "round2_codes": [
+        "late_notification"
+      ]
+    },
+    {
+      "id": "T11",
+      "scenario": "S2",
+      "title": "Third party not told; reason ``not required''",
+      "source": "Authors",
+      "conceals": "a victim was never told",
+      "catch": "Adjudicator reviews stated reasons; requester right (future work)",
+      "round1_caught": false,
+      "round1_codes": [],
+      "round2_caught": false,
+      "round2_codes": []
+    },
+    {
+      "id": "T12",
+      "scenario": "S2",
+      "title": "Scope narrowed with boilerplate grounds",
+      "source": "Authors",
+      "conceals": "investigators blocked from the first week",
+      "catch": "Refusal is on record; adequacy of grounds needs an adjudicator",
+      "round1_caught": false,
+      "round1_codes": [],
+      "round2_caught": false,
+      "round2_codes": []
+    },
+    {
+      "id": "T13",
+      "scenario": "S1",
+      "title": "One run declares a shared cache run-only",
+      "source": "Earlier critique",
+      "conceals": "cross-run channel for run B",
+      "catch": "",
+      "round1_caught": false,
+      "round1_codes": [],
+      "round2_caught": true,
+      "round2_codes": [
+        "comms_channel_undeclared",
+        "tenancy_conflict",
+        "tenancy_mislabelled"
+      ]
+    },
+    {
+      "id": "T14",
+      "scenario": "S1",
+      "title": "Both runs declare a shared cache run-only",
+      "source": "Earlier critique",
+      "conceals": "cross-run channel for both runs",
+      "catch": "V1: access logs show cross-run writes",
+      "round1_caught": false,
+      "round1_codes": [],
+      "round2_caught": false,
+      "round2_codes": []
+    },
+    {
+      "id": "T15",
+      "scenario": "S2",
+      "title": "Safeguards-off not declared (T4 omitted)",
+      "source": "External review",
+      "conceals": "classifiers were relaxed",
+      "catch": "V1: configuration snapshots; whistleblower",
+      "round1_caught": false,
+      "round1_codes": [],
+      "round2_caught": false,
+      "round2_codes": []
+    },
+    {
+      "id": "T16",
+      "scenario": "S1",
+      "title": "Runs split below the compute threshold",
+      "source": "External review",
+      "conceals": "true compute",
+      "catch": "V2: compute telemetry (research stage)",
+      "round1_caught": false,
+      "round1_codes": [],
+      "round2_caught": false,
+      "round2_codes": []
+    },
+    {
+      "id": "T17",
+      "scenario": "S1",
+      "title": "Capability forecast lowered to avoid T3",
+      "source": "Earlier critique",
+      "conceals": "expected capability",
+      "catch": "Closeout capability results against forecast; external evaluation",
+      "round1_caught": false,
+      "round1_codes": [],
+      "round2_caught": false,
+      "round2_codes": []
+    },
+    {
+      "id": "T18",
+      "scenario": "S2",
+      "title": "Restart approved by an undeclared approver",
+      "source": "Authors",
+      "conceals": "who authorised the restart",
+      "catch": "",
+      "round1_caught": true,
+      "round1_codes": [
+        "restart_wrong_approver"
+      ],
+      "round2_caught": true,
+      "round2_codes": [
+        "restart_wrong_approver"
+      ]
+    },
+    {
+      "id": "T19",
+      "scenario": "S2",
+      "title": "Absence of events attested with blind monitoring",
+      "source": "Authors",
+      "conceals": "events that could not have been seen",
+      "catch": "",
+      "round1_caught": false,
+      "round1_codes": [],
+      "round2_caught": true,
+      "round2_codes": [
+        "absence_unsupported",
+        "core_kind_uncovered",
+        "dead_criterion"
+      ]
+    },
+    {
+      "id": "T20",
+      "scenario": "S2",
+      "title": "Investigation scope narrowed with no refusal logged",
+      "source": "Authors",
+      "conceals": "investigators blocked from the first week",
+      "catch": "",
+      "round1_caught": true,
+      "round1_codes": [
+        "silent_scope_narrowing"
+      ],
+      "round2_caught": true,
+      "round2_codes": [
+        "silent_scope_narrowing"
+      ]
+    }
+  ]
+}

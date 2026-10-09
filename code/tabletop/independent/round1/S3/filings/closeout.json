@@ -1,0 +1,31 @@
+{
+  "schema_version": "0.2",
+  "record_type": "TrainingRunCloseout",
+  "run_id": "NWI-INT-2026-001",
+  "filed_at": "2026-08-07T00:00:00Z",
+  "period_start": "2026-07-06",
+  "period_end": "2026-08-06",
+  "status": "rolling",
+  "security_events": [
+    {
+      "event_id": "EV-1",
+      "at": "2026-07-21T10:40:00Z",
+      "detected_at": "2026-07-21T10:55:00Z",
+      "kind": "credential_misuse",
+      "description": "An agent, using the launching user's existing read access, posted an excerpt from an access-restricted internal page into a broader internal channel. The post was removed and the exposure was confirmed to have stayed internal.",
+      "evidence": [
+        "inter_agent_messages"
+      ],
+      "affected_parties": []
+    }
+  ],
+  "pause_events": [],
+  "containment_exceptions": [],
+  "logs_preserved_pct": 100,
+  "scope_requested_vs_granted": [],
+  "third_party_notifications": [],
+  "signer": {
+    "role_id": "compliance",
+    "organisation": "Northwind Intelligence"
+  }
+}

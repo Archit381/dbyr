@@ -1,0 +1,19 @@
+{
+  "schema_version": "0.3",
+  "record_type": "ExceptionNotice",
+  "notice_id": "N-E1",
+  "run_id": "cobalt-verso2-rl-dataeng-01",
+  "filed_at": "2026-02-27T12:00:00Z",
+  "detected_at": "2026-02-13T10:15:00Z",
+  "event_ids": [
+    "E1"
+  ],
+  "kinds": [
+    "integrity_incident"
+  ],
+  "action_taken": "none",
+  "signer": {
+    "role_id": "rl-lead",
+    "organisation": "Cobalt Research Institute"
+  }
+}

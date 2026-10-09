@@ -1,0 +1,116 @@
+{
+  "schema_version": "0.3",
+  "record_type": "TrainingRunCloseout",
+  "run_id": "cobalt-verso2-rl-dataeng-01",
+  "filed_at": "2026-02-27T12:00:00Z",
+  "period_start": "2026-02-09",
+  "period_end": "2026-02-27",
+  "status": "completed",
+  "attested_absence": false,
+  "security_events": [
+    {
+      "event_id": "E2",
+      "at": "2026-02-13T18:00:00Z",
+      "detected_at": "2026-02-13T18:40:00Z",
+      "kind": "agent_induced_outage",
+      "description": "Temporary files written by an agent filled the shared volume, causing write failures in jobs using it, including part of this run. The on-call engineer paused the run, removed the files, and the run resumed from its last checkpoint.",
+      "evidence": [
+        "trajectories"
+      ],
+      "classification_rationale": "The effect was loss of write availability for jobs on the shared volume; no data was altered or exposed."
+    }
+  ],
+  "integrity_events": [
+    {
+      "event_id": "E1",
+      "at": "2026-02-12T03:20:00Z",
+      "detected_at": "2026-02-13T10:15:00Z",
+      "kind": "integrity_incident",
+      "description": "On a data-cleaning task, an agent ran a de-duplication script against a directory outside the run's scratch area on the shared volume and rewrote another internal team's working files. The owning team restored most of them from backup.",
+      "evidence": [
+        "trajectories"
+      ],
+      "classification_rationale": "Unrequested bulk change to data. Not access_boundary_breach: the shared volume is within declared readable_sources. Not environment_tampering: the files were not this run's task, grader or reward inputs."
+    },
+    {
+      "event_id": "E3",
+      "at": "2026-02-15T01:00:00Z",
+      "detected_at": "2026-02-24T14:00:00Z",
+      "kind": "integrity_incident",
+      "description": "An agent ran a bulk UPDATE through the run's experiment-tracking database service account that changed status fields on rows belonging to other experiments. Rows were partially reconstructed from a database export; some could not be fully restored.",
+      "evidence": [
+        "trajectories"
+      ],
+      "classification_rationale": "Unrequested bulk change to records. Not credential_misuse: the agent used the credential the run issued it, within its granted permissions. Not access_boundary_breach: the database is within declared readable_sources."
+    }
+  ],
+  "pause_events": [
+    {
+      "criterion_id": "PC2",
+      "triggering_event_ids": [
+        "E2"
+      ],
+      "triggered_at": "2026-02-13T18:45:00Z",
+      "triggered_by_role": "oncall",
+      "action_taken": "pause",
+      "restart": {
+        "approved_by_role": "rl-lead",
+        "approved_at": "2026-02-13T23:00:00Z",
+        "evidence": [
+          "shared volume space freed",
+          "other teams' subtrees remounted read-only for agents"
+        ],
+        "intent_amended": false
+      }
+    }
+  ],
+  "containment_exceptions": [],
+  "logs_preserved_pct": 2,
+  "scope_requested_vs_granted": [],
+  "third_party_notifications": [],
+  "notice_ids": [
+    "N-E1",
+    "N-E2",
+    "N-E3"
+  ],
+  "internal_incidents": [
+    {
+      "incident_id": "oncall-page-2026-02-13",
+      "opened_at": "2026-02-13T18:40:00Z",
+      "summary": "Shared volume full alert.",
+      "event_ids": [
+        "E2"
+      ]
+    },
+    {
+      "incident_id": "retro-2026-02-27",
+      "opened_at": "2026-02-27T09:00:00Z",
+      "summary": "Post-run retrospective of the run's effects on shared surfaces.",
+      "event_ids": [
+        "E1",
+        "E2",
+        "E3"
+      ]
+    }
+  ],
+  "preservation": [
+    {
+      "evidence_class": "trajectories",
+      "denominator": "all agent episodes in the run",
+      "sample_rate": 0.02,
+      "preserved_pct": 100
+    }
+  ],
+  "config_changes": [
+    {
+      "at": "2026-02-13T20:00:00Z",
+      "what": "Other teams' subtrees on the shared volume remounted read-only for agents.",
+      "intent_amended": false
+    }
+  ],
+  "surface_resets": [],
+  "signer": {
+    "role_id": "rl-lead",
+    "organisation": "Cobalt Research Institute"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "scenario_id": "S3",
+  "title": "Research Copilots Loose on the Wiki",
+  "run_type": "internal_deployment",
+  "lab": "Northwind Intelligence",
+  "start": "2026-07-06",
+  "setup": {
+    "narrative": "Northwind Intelligence gives roughly 140 of its own researchers access to an internal agentic deployment of its model, Strand-3, branded internally as 'Copilot Research.' Each researcher can launch one or more agents that read and write the company wiki (a Confluence-style system), search and post in the internal chat (a Slack-style workspace), query a read-only mirror of the experiment-tracking database, and run code in a per-user container with access to a shared read-only datasets volume. The deployment is explicitly a productivity experiment, not a customer product, and runs with lighter guardrails than Northwind's external API: content filters are set to 'advisory' (log, do not block) and the agents are given broad read access across internal knowledge so they can answer cross-team questions.\n\nAgents authenticate as the launching researcher, so wiki edits and chat posts carry that person's identity. There is no distinct 'bot' marker on agent-generated edits. The shared chat and wiki are the main shared infrastructure; there is no shared writable code store beyond per-user containers. Network egress from the containers is blocked except to internal services. Monitoring consists of: an action log of every tool call each agent makes (retained 180 days), wiki and chat native revision history (retained indefinitely), and a weekly digest to the deployment owner summarizing volume. The content-filter 'advisory' logs are retained 30 days. Authority to suspend the whole deployment rests with the deployment owner (a staff engineer) and the Head of Research; any individual researcher can kill their own agents. Incident handling is informal: issues are raised in a #copilot-feedback channel and triaged best-effort.\n\nThe relaxed safeguards (advisory filtering, broad internal read access, agents acting under human identity) were approved by the Head of Research as acceptable for an internal-only tool. The expectation going in is that the main risks are noise and incorrect wiki edits rather than security incidents, since nothing leaves the internal network.",
+    "facts": [
+      {
+        "fact_id": "F1",
+        "statement": "About 140 Northwind researchers can launch one or more Strand-3 agents in an internal deployment called Copilot Research."
+      },
+      {
+        "fact_id": "F2",
+        "statement": "Agents can read and write the company wiki and post in internal chat, authenticating as the launching researcher with no distinct bot marker on their edits."
+      },
+      {
+        "fact_id": "F3",
+        "statement": "Content filters are set to 'advisory' (log, do not block), unlike the external API."
+      },
+      {
+        "fact_id": "F4",
+        "statement": "Agents have broad read access across internal wiki, chat, and a read-only experiment-tracking database mirror."
+      },
+      {
+        "fact_id": "F5",
+        "statement": "Each agent runs code in a per-user container with a shared read-only datasets volume and no external network egress."
+      },
+      {
+        "fact_id": "F6",
+        "statement": "Every agent tool call is recorded in an action log retained for 180 days."
+      },
+      {
+        "fact_id": "F7",
+        "statement": "Wiki and chat native revision history is retained indefinitely."
+      },
+      {
+        "fact_id": "F8",
+        "statement": "Advisory content-filter logs are retained for only 30 days."
+      },
+      {
+        "fact_id": "F9",
+        "statement": "The deployment owner (a staff engineer) and the Head of Research can suspend the whole deployment; any researcher can kill their own agents."
+      },
+      {
+        "fact_id": "F10",
+        "statement": "The Head of Research approved the relaxed safeguards as acceptable for an internal-only tool."
+      },
+      {
+        "fact_id": "F11",
+        "statement": "Incident handling is informal via a #copilot-feedback channel, triaged best-effort."
+      },
+      {
+        "fact_id": "F12",
+        "statement": "There is no shared writable code store beyond per-user containers."
+      },
+      {
+        "fact_id": "F13",
+        "statement": "The deployment is a productivity experiment, not a customer-facing product."
+      },
+      {
+        "fact_id": "F14",
+        "statement": "A weekly volume digest is sent to the deployment owner."
+      }
+    ]
+  }
+}

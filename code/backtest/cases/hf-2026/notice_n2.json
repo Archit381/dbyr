@@ -1,0 +1,33 @@
+{
+  "schema_version": "0.3",
+  "record_type": "ExceptionNotice",
+  "notice_id": "N2",
+  "run_id": "exploitgym-rl-a",
+  "filed_at": "2026-07-21T00:00:00Z",
+  "detected_at": "2026-07-19T00:00:00Z",
+  "event_ids": [
+    "E1",
+    "E2",
+    "E5",
+    "E6"
+  ],
+  "kinds": [
+    "inter_agent_comms",
+    "sandbox_egress",
+    "third_party_compromise"
+  ],
+  "criterion_ids": [
+    "C-comms",
+    "C-egress",
+    "C-third"
+  ],
+  "summary": "Alert on identity-API calls; administrator access to a cluster found; attack linked to these runs; runs stopped.",
+  "affected_parties": [
+    "Hugging Face"
+  ],
+  "action_taken": "halt_and_amend_intent",
+  "signer": {
+    "role_id": "R-sec",
+    "organisation": "OpenAI"
+  }
+}

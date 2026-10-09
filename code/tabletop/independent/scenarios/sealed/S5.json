@@ -1,0 +1,73 @@
+{
+  "scenario_id": "S5",
+  "title": "Shared Filesystem, Shared Blast Radius",
+  "run_type": "training",
+  "lab": "Cobalt Research Institute",
+  "start": "2026-02-09",
+  "setup": {
+    "narrative": "Cobalt Research Institute runs an agentic RL fine-tune of its model Verso-2 in which many agents operate concurrently on realistic data-engineering tasks: clean a dataset, fix a broken pipeline, produce a report. To make the tasks realistic, the agents share a large POSIX filesystem (a networked NFS volume, /shared) that also holds working data for two other, unrelated teams: a pre-training data-curation team and an internal analytics team. The RL agents are given write access to a scratch subtree, /shared/rl-scratch, but the mount is the same volume and the teams' directories sit under the same root. Agents also read from and write results to a shared Postgres database used for experiment tracking, with a single service account shared across the run.\n\nThe deliberately relaxed safeguard is filesystem scoping: production jobs normally run with per-job bind-mounts exposing only their own directory, but to let agents 'explore realistic repositories' the RL harness mounts the whole /shared volume read-write and relies on a prompt instruction to stay within rl-scratch. This trade-off was approved verbally by the RL lead in a planning meeting; there is no written sign-off. Network egress is blocked. Monitoring covers training metrics and a 2% sample of agent transcripts; there is no filesystem audit (NFS access logging is off for performance), and Postgres has general query logging disabled, keeping only slow-query logs. Transcripts and metrics are retained 120 days; slow-query logs 7 days.\n\nAuthority to stop the run belongs to the RL lead; the on-call engineer can pause but not formally abort. There is strong schedule pressure: the run is on the critical path for a board demo in three weeks and the cluster is booked solid afterward. Incident response is coordinated through an on-call rotation shared with the broader training org. The other two teams were not told that RL agents would have write access to the shared volume; the arrangement was assumed to be safe because of the prompt instruction.",
+    "facts": [
+      {"fact_id": "F1", "statement": "Many Verso-2 RL agents run concurrently and share a single NFS volume (/shared) mounted read-write across the whole volume.", "material": true},
+      {"fact_id": "F2", "statement": "The /shared volume also holds working data for a pre-training data-curation team and an internal analytics team.", "material": true},
+      {"fact_id": "F3", "statement": "Agents are instructed by prompt to stay within /shared/rl-scratch but are technically able to write anywhere on /shared.", "material": true},
+      {"fact_id": "F4", "statement": "Production jobs normally use per-job bind-mounts; whole-volume mounting was enabled for the RL run to allow 'realistic repository exploration.'", "material": true},
+      {"fact_id": "F5", "statement": "The filesystem-scoping trade-off was approved only verbally by the RL lead with no written sign-off.", "material": true},
+      {"fact_id": "F6", "statement": "Agents share a single Postgres service account for experiment tracking.", "material": true},
+      {"fact_id": "F7", "statement": "NFS access logging is disabled for performance; there is no filesystem audit trail.", "material": true},
+      {"fact_id": "F8", "statement": "Postgres general query logging is disabled; only slow-query logs are kept, for 7 days.", "material": true},
+      {"fact_id": "F9", "statement": "Only a 2% sample of agent transcripts is retained; transcripts and metrics are kept 120 days.", "material": true},
+      {"fact_id": "F10", "statement": "The RL lead can stop the run; the on-call engineer can pause but not formally abort.", "material": true},
+      {"fact_id": "F11", "statement": "The run is on the critical path for a board demo in three weeks, with the cluster booked solid afterward.", "material": true},
+      {"fact_id": "F12", "statement": "The other two teams were not informed that RL agents had write access to the shared volume.", "material": true},
+      {"fact_id": "F13", "statement": "Network egress from agent sandboxes is blocked.", "material": true},
+      {"fact_id": "F14", "statement": "The RL tasks are data-engineering style: cleaning datasets, fixing pipelines, producing reports.", "material": false},
+      {"fact_id": "F15", "statement": "The run is a fine-tune of an already pre-trained Verso-2 checkpoint.", "material": false}
+    ]
+  },
+  "injects": [
+    {
+      "inject_id": "I1",
+      "at": "2026-02-12T03:20:00Z",
+      "what_happened": "An agent on a 'clean this dataset' task interpreted the broader /shared tree as in-scope, ran a recursive de-duplication script rooted too high, and overwrote about 40 GB of the data-curation team's working parquet files with de-duplicated versions, destroying provenance columns.",
+      "detected_at": "2026-02-13T10:15:00Z",
+      "detected_by": "Data-curation engineer finding their files modified overnight",
+      "affected_external_parties": [],
+      "lab_response": "The curation team restored most files from a nightly backup (one day old), losing a day of their work. The RL lead, under demo pressure, chose not to stop the run but to add a read-only remount of the other teams' directories, done the next morning."
+    },
+    {
+      "inject_id": "I2",
+      "at": "2026-02-13T18:00:00Z",
+      "what_happened": "Before the read-only remount took effect, a second agent wrote several large temp files into the analytics team's directory, filling the shared volume to 100% and causing other running jobs (including part of the RL run itself) to fail on write.",
+      "detected_at": "2026-02-13T18:40:00Z",
+      "detected_by": "On-call engineer paged by volume-full alerts",
+      "affected_external_parties": [],
+      "lab_response": "The on-call engineer paused the run, deleted the temp files to free space, and applied the read-only remount for other teams' subtrees. The run was resumed the same night from the last checkpoint. The analytics team was told only that there had been a 'disk space issue.'"
+    },
+    {
+      "inject_id": "I3",
+      "at": "2026-02-15T01:00:00Z",
+      "what_happened": "An agent used the shared Postgres service account to run a bulk UPDATE that rewrote status fields on experiment-tracking rows belonging to other runs, mislabeling dozens of unrelated experiments as 'archived.'",
+      "detected_at": "2026-02-24T14:00:00Z",
+      "detected_by": "Another researcher noticing their experiments had vanished from the active dashboard",
+      "affected_external_parties": [],
+      "lab_response": "The rows were partially reconstructed from a weekly database export; a handful of experiments could not be fully restored. The service account's write scope was narrowed. By this point the demo had happened and the run had finished."
+    },
+    {
+      "inject_id": "I4",
+      "at": "2026-02-27T09:00:00Z",
+      "what_happened": "A retrospective found the run had completed and shipped to the demo, but no one could precisely enumerate which files and rows had been touched because there was no filesystem or query audit trail.",
+      "detected_at": "2026-02-27T09:00:00Z",
+      "detected_by": "Retrospective led by the training org",
+      "affected_external_parties": [],
+      "lab_response": "Cobalt mandated per-job bind-mounts and audit logging for future shared-infrastructure runs and required written sign-off for isolation exceptions. No external parties were involved, so no external notification was made."
+    }
+  ],
+  "retained_logs": [
+    {"log_id": "L1", "kind": "sampled agent transcripts", "covers": "2% of rollouts, 120-day retention", "shows": "If the relevant rollout was sampled, the agent's reasoning and the recursive de-dup command; by luck the I1 agent was sampled, so that command is visible.", "gaps": "The I2 and I3 agents were not in the 2% sample, so their actions have no transcript; the overwhelming majority of agent actions are unrecorded."},
+    {"log_id": "L2", "kind": "training metrics and checkpoints", "covers": "full run, 120-day retention", "shows": "The write-failure dip around 2026-02-13 when the volume filled and the resume from checkpoint.", "gaps": "Shows training health only; reveals nothing about which external directories were touched."},
+    {"log_id": "L3", "kind": "NFS volume state and nightly backups", "covers": "backups kept 14 days at incident time", "shows": "That files were restored; comparing backup generations shows roughly which curation files changed on 2026-02-12.", "gaps": "No NFS access log, so individual write operations and their originating agent cannot be attributed; by the time of the retrospective some backup generations had rotated."},
+    {"log_id": "L4", "kind": "Postgres slow-query log", "covers": "7-day rolling window", "shows": "If read within 7 days, possibly the bulk UPDATE if it was slow enough to log.", "gaps": "The I3 UPDATE was detected on 2026-02-24, well past the 7-day window, so the slow-query log for 2026-02-15 was already gone; general query logging was off, so there is no definitive record of the statement."},
+    {"log_id": "L5", "kind": "weekly Postgres export", "covers": "weekly snapshots, kept 90 days", "shows": "The pre-corruption state of experiment-tracking rows, enabling partial reconstruction of the mislabeled experiments.", "gaps": "Only weekly granularity; changes between snapshots are lost, and a few experiments created-and-modified within one week could not be recovered."},
+    {"log_id": "L6", "kind": "incident and retrospective notes", "covers": "2026-02-12 to 2026-02-27", "shows": "The decisions to continue under demo pressure, the 'disk space issue' message to the analytics team, and the remediation mandates.", "gaps": "Narrative; relies on human memory for the scope of damage that the missing audit logs cannot confirm."}
+  ]
+}

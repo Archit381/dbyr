@@ -1,0 +1,7 @@
+FAIL  3 errors, 0 conduct, 3 warnings (profile adequacy)
+      ../intake/intent.json: [warning] shared_surface_without_lineage at /egress_topology/writable_surfaces: surface 'cobalt-shared-fs' persists and is shared but no other run is listed; confirm this is the first run to reach it
+      ../intake/intent.json: [warning] shared_surface_without_lineage at /egress_topology/writable_surfaces: surface 'cobalt-exp-tracking-db' persists and is shared but no other run is listed; confirm this is the first run to reach it
+      ../intake/intent.json: [warning] partly_blind_criterion at /pause_criteria/0: criterion 'PC1' cannot observe ['credential_misuse', 'privilege_escalation']
+      ../intake/intent.json: [error] core_kind_uncovered at /pause_criteria: safeguards-off run has no observable, pausing criterion for 'privilege_escalation'
+      ../intake/intent.json: [error] comms_not_retained at /log_retention/retained: inter-agent communication is permitted, so inter_agent_messages must be retained
+      ../intake/intent.json: [error] retention_too_short at /log_retention/retain_until: retain_until must be at least P12M after closeout

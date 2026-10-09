@@ -1,0 +1,109 @@
+{
+  "schema_version": "0.3",
+  "record_type": "TrainingRunIntent",
+  "run_id": "tessellate-aria5-collab-eval-2026-09",
+  "developer": "Tessellate AI",
+  "filed_at": "2026-09-17T12:00:00Z",
+  "run_kind": "evaluation",
+  "trigger_basis": ["T4"],
+  "start_window": {"start": "2026-09-21", "end": "2026-10-21"},
+  "compute_band": "<1e24",
+  "predicted_capability_band": {"cyber": "low", "cbrn": "low", "autonomy": "low", "persuasion": "low"},
+  "forecast_basis": "Filer's assessment. The campaign measures collaborative resolution of software issues drawn from a static snapshot, in a sandbox with no external systems in scope; it is not designed to elicit cyber, CBRN, autonomy or persuasion capability.",
+  "agent_capabilities": [
+    "exchange messages with other agents on the same episode team",
+    "retrieve from and write notes to the campaign retrieval store",
+    "submit proposed patches for test runs in sandboxed CI"
+  ],
+  "readable_sources": [
+    "static snapshot of bug-tracker issues",
+    "campaign retrieval store (documentation, issue history, agent-written notes)",
+    "CI test results for submitted patches"
+  ],
+  "run_scale": {"concurrent_agents": 250},
+  "monitoring_instruments": [
+    {
+      "kind": "trajectory_review",
+      "coverage": "sampled",
+      "sample_rate": 0.01,
+      "review_cadence": "during the campaign, as part of researcher analysis of agent coordination",
+      "data_source": "orchestration-layer structured event log (inter-agent messages and tool calls)"
+    },
+    {
+      "kind": "aggregate_report",
+      "coverage": "all",
+      "review_cadence": "daily",
+      "data_source": "episode-outcome dashboard"
+    }
+  ],
+  "egress_topology": {
+    "environment": "digital_twin",
+    "permitted_paths": [],
+    "credential_scope": {"held_by_agents": [], "admin_credentials_reachable": false},
+    "inter_agent_comms_permitted": true,
+    "writable_surfaces": [
+      {
+        "surface_id": "campaign-retrieval-store",
+        "kind": "database",
+        "direction": {"writers": ["Aria-5 agents"], "readers": ["Aria-5 agents in this campaign"]},
+        "persistence": "run",
+        "tenancy": "shared_agents",
+        "isolation": "shared"
+      }
+    ],
+    "shared_surface_lineage": []
+  },
+  "safeguards_disabled": {
+    "disabled": true,
+    "relaxed": ["model_output_filters", "per_episode_reset"],
+    "signer_role": "head-safety-evals",
+    "checklist": [
+      {"safeguard": "model_output_filters", "state": "relaxed", "change": "Output filtering is applied to each episode's final answer rather than to intermediate outputs."},
+      {"safeguard": "refusal_behaviour", "state": "on"},
+      {"safeguard": "per_episode_reset", "state": "relaxed", "change": "The retrieval store is kept for the whole campaign rather than reset per episode."},
+      {"safeguard": "network_isolation", "state": "on"},
+      {"safeguard": "identity_separation", "state": "on"},
+      {"safeguard": "least_privilege_access", "state": "on"}
+    ]
+  },
+  "pause_criteria": [
+    {
+      "criterion_id": "PC1",
+      "description": "Containment-relevant events; the lead researcher decides whether to stop the campaign.",
+      "matches": ["sandbox_egress", "privilege_escalation", "third_party_compromise", "environment_tampering"],
+      "adjudication": "human",
+      "authority_role": "lead-researcher",
+      "required_action": "pause_and_review"
+    },
+    {
+      "criterion_id": "PC2",
+      "description": "Other reportable events; recorded and notified.",
+      "matches": ["undeclared_surface_use", "inter_agent_comms", "credential_misuse", "remote_code_execution",
+                  "agent_induced_outage", "access_boundary_breach", "data_exposure", "integrity_incident"],
+      "adjudication": "human",
+      "authority_role": "lead-researcher",
+      "required_action": "notify_only"
+    }
+  ],
+  "restart_protocol": {
+    "approver_role": "head-safety-evals",
+    "evidence_required": ["event-log records for the episodes that triggered the pause"],
+    "intent_amendment_required": false
+  },
+  "roles": [
+    {"role_id": "lead-researcher", "title": "Lead Researcher", "organisation": "Tessellate AI"},
+    {"role_id": "head-safety-evals", "title": "Head of Safety Evaluations", "organisation": "Tessellate AI"}
+  ],
+  "log_retention": {
+    "retained": ["inter_agent_messages", "tool_calls"],
+    "retain_until": "closeout+P4M",
+    "review_method": "Queries over the orchestration-layer structured event log",
+    "minimum_preserved_pct": 0,
+    "detail": [
+      {"evidence_class": "inter_agent_messages", "coverage": "complete", "retention": "P180D"},
+      {"evidence_class": "tool_calls", "coverage": "complete", "retention": "P180D"}
+    ]
+  },
+  "investigator_scope_expansion": {"committed": true, "refusals_logged": true},
+  "signer": {"role_id": "lead-researcher", "organisation": "Tessellate AI"}
+}

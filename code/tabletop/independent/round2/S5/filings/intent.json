@@ -1,0 +1,110 @@
+{
+  "schema_version": "0.3",
+  "record_type": "TrainingRunIntent",
+  "run_id": "cobalt-verso2-rl-dataeng-01",
+  "developer": "Cobalt Research Institute",
+  "filed_at": "2026-02-05T09:00:00Z",
+  "trigger_basis": ["T4"],
+  "run_kind": "training",
+  "start_window": {"start": "2026-02-09", "end": "2026-03-02"},
+  "compute_band": "<1e24",
+  "predicted_capability_band": {"cyber": "low", "cbrn": "low", "autonomy": "low", "persuasion": "low"},
+  "forecast_basis": "Fine-tune of an already pre-trained Verso-2 checkpoint on data-engineering tasks; no capability-targeted training data.",
+  "reward_design": "Task-completion grading of data-engineering tasks (dataset cleaning, pipeline repair, report production); graders run on Cobalt training infrastructure, outside agent sandboxes.",
+  "agent_capabilities": ["code execution in sandbox", "filesystem read and write", "database queries"],
+  "readable_sources": ["shared networked filesystem volume", "experiment-tracking database"],
+  "run_scale": {"concurrent_agents": 64},
+  "monitoring_instruments": [
+    {"kind": "trajectory_review", "coverage": "sampled", "sample_rate": 0.02, "review_cadence": "weekly", "data_source": "agent transcripts"},
+    {"kind": "aggregate_report", "coverage": "all", "data_source": "training metrics"}
+  ],
+  "egress_topology": {
+    "environment": "mixed",
+    "permitted_paths": [],
+    "credential_scope": {
+      "held_by_agents": ["experiment-tracking database service account"],
+      "admin_credentials_reachable": false
+    },
+    "inter_agent_comms_permitted": true,
+    "writable_surfaces": [
+      {
+        "surface_id": "cobalt-shared-fs",
+        "kind": "shared_filesystem",
+        "direction": {"writers": ["agents in this run", "other internal workloads"], "readers": ["agents in this run", "other internal workloads"]},
+        "persistence": "cross_run",
+        "tenancy": "shared_runs",
+        "isolation": "shared",
+        "detail": "Networked NFS volume /shared; agents instructed to write only under /shared/rl-scratch."
+      },
+      {
+        "surface_id": "cobalt-exp-tracking-db",
+        "kind": "database",
+        "direction": {"writers": ["agents in this run"], "readers": ["agents in this run", "experiment-tracking users"]},
+        "persistence": "cross_run",
+        "tenancy": "shared_agents",
+        "isolation": "shared",
+        "detail": "Postgres experiment-tracking database."
+      }
+    ],
+    "shared_surface_lineage": []
+  },
+  "safeguards_disabled": {
+    "disabled": true,
+    "relaxed": ["least_privilege_access"],
+    "signer_role": "rl-lead",
+    "checklist": [
+      {"safeguard": "model_output_filters", "state": "on"},
+      {"safeguard": "refusal_behaviour", "state": "on"},
+      {"safeguard": "per_episode_reset", "state": "on"},
+      {"safeguard": "network_isolation", "state": "on"},
+      {"safeguard": "identity_separation", "state": "on"},
+      {"safeguard": "least_privilege_access", "state": "relaxed", "change": "Agent filesystem mount is broader than the per-job default, to support repository-exploration tasks; agents are instructed to write only within a designated scratch area."}
+    ]
+  },
+  "pause_criteria": [
+    {
+      "criterion_id": "PC1",
+      "description": "Containment or access-control events.",
+      "matches": ["sandbox_egress", "privilege_escalation", "credential_misuse", "remote_code_execution", "third_party_compromise"],
+      "adjudication": "human",
+      "authority_role": "oncall",
+      "required_action": "pause"
+    },
+    {
+      "criterion_id": "PC2",
+      "description": "Environment, data or integrity events.",
+      "matches": ["environment_tampering", "undeclared_surface_use", "access_boundary_breach", "data_exposure", "integrity_incident", "agent_induced_outage"],
+      "adjudication": "human",
+      "authority_role": "oncall",
+      "required_action": "pause"
+    },
+    {
+      "criterion_id": "PC3",
+      "description": "Agents coordinating through shared surfaces.",
+      "matches": ["inter_agent_comms"],
+      "adjudication": "human",
+      "authority_role": "oncall",
+      "required_action": "notify_only"
+    }
+  ],
+  "restart_protocol": {
+    "approver_role": "rl-lead",
+    "evidence_required": ["summary of the triggering event and remediation"],
+    "intent_amendment_required": false
+  },
+  "roles": [
+    {"role_id": "rl-lead", "title": "RL Lead", "organisation": "Cobalt Research Institute"},
+    {"role_id": "oncall", "title": "On-call Engineer", "organisation": "Cobalt Research Institute"}
+  ],
+  "log_retention": {
+    "retained": ["trajectories"],
+    "retain_until": "closeout+P3M",
+    "review_method": "Sampled human review of agent transcripts.",
+    "minimum_preserved_pct": 2,
+    "detail": [
+      {"evidence_class": "trajectories", "coverage": "sampled", "sample_rate": 0.02, "retention": "P120D"}
+    ]
+  },
+  "investigator_scope_expansion": {"committed": true, "refusals_logged": true},
+  "signer": {"role_id": "rl-lead", "organisation": "Cobalt Research Institute"}
+}

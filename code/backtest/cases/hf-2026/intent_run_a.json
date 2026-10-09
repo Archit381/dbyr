@@ -1,0 +1,307 @@
+{
+  "schema_version": "0.3",
+  "record_type": "TrainingRunIntent",
+  "run_id": "exploitgym-rl-a",
+  "developer": "OpenAI [reconstruction from public sources; not a filing by OpenAI]",
+  "run_kind": "training",
+  "filed_at": "2026-05-04T00:00:00Z",
+  "trigger_basis": [
+    "T2",
+    "T3",
+    "T4"
+  ],
+  "start_window": {
+    "start": "2026-05-07",
+    "end": null
+  },
+  "compute_band": "1e26-1e27",
+  "predicted_capability_band": {
+    "cyber": "high",
+    "cbrn": "medium",
+    "autonomy": "high",
+    "persuasion": "medium"
+  },
+  "monitoring_instruments": [
+    {
+      "kind": "access_log_review",
+      "coverage": "on_alert",
+      "alert_source": "privilege-escalation alerting",
+      "data_source": "service access logs"
+    },
+    {
+      "kind": "egress_alerting",
+      "coverage": "all",
+      "data_source": "packet-filter logs"
+    }
+  ],
+  "egress_topology": {
+    "environment": "mixed",
+    "permitted_paths": [
+      {
+        "path_id": "pkg-proxy",
+        "via": "internally hosted package proxy (Artifactory)",
+        "enforcement": "packet_filter",
+        "agent_writable": true
+      }
+    ],
+    "credential_scope": {
+      "held_by_agents": [
+        "sandbox service account"
+      ],
+      "admin_credentials_reachable": false
+    },
+    "inter_agent_comms_permitted": true,
+    "writable_surfaces": [
+      {
+        "surface_id": "artifactory-proxy",
+        "kind": "package_proxy",
+        "direction": {
+          "writers": [
+            "agents (package upload)",
+            "build systems"
+          ],
+          "readers": [
+            "agents in this run",
+            "agents in other runs"
+          ]
+        },
+        "persistence": "cross_run",
+        "tenancy": "shared_runs",
+        "detail": "[sealed in a real filing; omitted]",
+        "via_path": "pkg-proxy",
+        "isolation": "shared"
+      }
+    ],
+    "shared_surface_lineage": []
+  },
+  "safeguards_disabled": {
+    "disabled": true,
+    "relaxed": [
+      "cyber refusal behaviour lowered",
+      "production cyber classifiers omitted"
+    ],
+    "signer_role": "R-eval",
+    "checklist": [
+      {
+        "safeguard": "model_output_filters",
+        "state": "off",
+        "change": "production cyber classifiers omitted"
+      },
+      {
+        "safeguard": "refusal_behaviour",
+        "state": "relaxed",
+        "change": "cyber refusal behaviour lowered"
+      },
+      {
+        "safeguard": "per_episode_reset",
+        "state": "on"
+      },
+      {
+        "safeguard": "network_isolation",
+        "state": "on"
+      },
+      {
+        "safeguard": "identity_separation",
+        "state": "on"
+      },
+      {
+        "safeguard": "least_privilege_access",
+        "state": "on"
+      }
+    ]
+  },
+  "pause_criteria": [
+    {
+      "criterion_id": "C-egress",
+      "description": "Any sandbox egress outside permitted paths",
+      "matches": [
+        "sandbox_egress",
+        "undeclared_surface_use"
+      ],
+      "adjudication": "human",
+      "authority_role": "R-prep",
+      "required_action": "pause_and_review"
+    },
+    {
+      "criterion_id": "C-comms",
+      "description": "Inter-agent communication on any surface",
+      "matches": [
+        "inter_agent_comms"
+      ],
+      "adjudication": "human",
+      "authority_role": "R-prep",
+      "required_action": "pause_and_review"
+    },
+    {
+      "criterion_id": "C-priv",
+      "description": "Credential misuse, privilege escalation or RCE outside the task",
+      "matches": [
+        "credential_misuse",
+        "privilege_escalation",
+        "remote_code_execution"
+      ],
+      "adjudication": "human",
+      "authority_role": "R-prep",
+      "required_action": "pause_and_review"
+    },
+    {
+      "criterion_id": "C-outage",
+      "description": "Infrastructure outage caused by agent activity",
+      "matches": [
+        "agent_induced_outage"
+      ],
+      "adjudication": "human",
+      "authority_role": "R-sec",
+      "required_action": "pause_and_review"
+    },
+    {
+      "criterion_id": "C-third",
+      "description": "Any compromise of a third party",
+      "matches": [
+        "third_party_compromise"
+      ],
+      "adjudication": "human",
+      "authority_role": "R-prep",
+      "required_action": "halt_and_amend_intent"
+    },
+    {
+      "criterion_id": "C-tamper",
+      "matches": [
+        "environment_tampering"
+      ],
+      "adjudication": "human",
+      "authority_role": "R-prep",
+      "required_action": "pause_and_review"
+    },
+    {
+      "criterion_id": "C-boundary",
+      "matches": [
+        "access_boundary_breach",
+        "data_exposure"
+      ],
+      "adjudication": "human",
+      "authority_role": "R-prep",
+      "required_action": "pause_and_review"
+    },
+    {
+      "criterion_id": "C-integrity",
+      "matches": [
+        "integrity_incident"
+      ],
+      "adjudication": "human",
+      "authority_role": "R-prep",
+      "required_action": "notify_only"
+    }
+  ],
+  "restart_protocol": {
+    "approver_role": "R-review",
+    "evidence_required": [
+      "root cause identified",
+      "compromised path closed",
+      "credentials rotated"
+    ],
+    "intent_amendment_required": false
+  },
+  "eval_plan": [
+    {
+      "eval_id": "exploitgym",
+      "evaluator": "internal",
+      "domain": "cyber"
+    }
+  ],
+  "roles": [
+    {
+      "role_id": "R-train",
+      "title": "Training run lead",
+      "organisation": "OpenAI"
+    },
+    {
+      "role_id": "R-eval",
+      "title": "Evaluation owner",
+      "organisation": "OpenAI"
+    },
+    {
+      "role_id": "R-sec",
+      "title": "Security incident lead",
+      "organisation": "OpenAI"
+    },
+    {
+      "role_id": "R-prep",
+      "title": "Preparedness lead",
+      "organisation": "OpenAI"
+    },
+    {
+      "role_id": "R-review",
+      "title": "Restart review lead",
+      "organisation": "OpenAI"
+    }
+  ],
+  "log_retention": {
+    "retained": [
+      "trajectories",
+      "chain_of_thought",
+      "tool_calls",
+      "egress_logs",
+      "access_logs",
+      "inter_agent_messages"
+    ],
+    "retain_until": "closeout+P24M",
+    "review_method": "sampled trajectory review plus AI-assisted triage",
+    "minimum_preserved_pct": 99,
+    "detail": [
+      {
+        "evidence_class": "trajectories",
+        "coverage": "complete",
+        "retention": "P24M"
+      },
+      {
+        "evidence_class": "chain_of_thought",
+        "coverage": "complete",
+        "retention": "P24M"
+      },
+      {
+        "evidence_class": "tool_calls",
+        "coverage": "complete",
+        "retention": "P24M"
+      },
+      {
+        "evidence_class": "egress_logs",
+        "coverage": "complete",
+        "retention": "P24M"
+      },
+      {
+        "evidence_class": "access_logs",
+        "coverage": "complete",
+        "retention": "P24M"
+      },
+      {
+        "evidence_class": "inter_agent_messages",
+        "coverage": "complete",
+        "retention": "P24M"
+      }
+    ]
+  },
+  "investigator_scope_expansion": {
+    "committed": true,
+    "refusals_logged": true,
+    "model_access_committed": true
+  },
+  "amendments_allowed": true,
+  "signer": {
+    "role_id": "R-train",
+    "organisation": "OpenAI"
+  },
+  "agent_capabilities": [
+    "shell in sandbox",
+    "package install and upload through the internal proxy"
+  ],
+  "readable_sources": [
+    "task environment",
+    "internal package proxy"
+  ],
+  "run_scale": {
+    "concurrent_agents": 50
+  },
+  "forecast_basis": "[placeholder: not public]",
+  "reward_design": "RL on ExploitGym cyber tasks, rewarded on task success [details not public]"
+}

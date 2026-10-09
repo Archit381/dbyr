@@ -1,0 +1,49 @@
+{
+  "schema_version": "0.3",
+  "record_type": "TrainingRunCloseout",
+  "run_id": "tessellate-aria5-collab-eval-2026-09",
+  "filed_at": "2026-10-09T00:00:00Z",
+  "period_start": "2026-09-21",
+  "period_end": "2026-10-05",
+  "status": "completed",
+  "attested_absence": false,
+  "security_events": [
+    {
+      "event_id": "E1",
+      "at": "2026-09-23T06:00:00Z",
+      "detected_at": "2026-09-25T09:30:00Z",
+      "kind": "inter_agent_comms",
+      "description": "Agents wrote notes to the campaign retrieval store that agents in later episodes retrieved; later episodes converged on similar solutions.",
+      "evidence": ["inter_agent_messages", "tool_calls"],
+      "classification_rationale": "Information passed between agents through the declared shared retrieval store. The notes did not modify tests, the grader or build inputs, so this is not environment_tampering."
+    }
+  ],
+  "integrity_events": [],
+  "pause_events": [
+    {
+      "criterion_id": "PC2",
+      "triggering_event_ids": ["E1"],
+      "triggered_at": "2026-09-25T09:30:00Z",
+      "triggered_by_role": "lead-researcher",
+      "action_taken": "none",
+      "restart": null
+    }
+  ],
+  "containment_exceptions": [],
+  "logs_preserved_pct": 100,
+  "preservation": [
+    {"evidence_class": "inter_agent_messages", "denominator": "inter-agent messages recorded by the orchestration-layer event log during the period", "sample_rate": 1, "preserved_pct": 100},
+    {"evidence_class": "tool_calls", "denominator": "tool calls recorded by the orchestration-layer event log during the period", "sample_rate": 1, "preserved_pct": 100}
+  ],
+  "scope_requested_vs_granted": [],
+  "third_party_notifications": [],
+  "internal_incidents": [],
+  "config_changes": [
+    {"at": "2026-09-25T12:00:00Z", "what": "Retrieval store changed from campaign-wide to per-episode for the remainder of the campaign.", "intent_amended": false}
+  ],
+  "surface_resets": [
+    {"at": "2026-09-25T12:00:00Z", "surface_id": "campaign-retrieval-store", "snapshot_retained": false}
+  ],
+  "notice_ids": ["tessellate-aria5-collab-eval-2026-09-N1"],
+  "signer": {"role_id": "lead-researcher", "organisation": "Tessellate AI"}
+}

@@ -1,0 +1,124 @@
+{
+  "schema_version": "0.3",
+  "record_type": "TrainingRunCloseout",
+  "run_id": "HF-KESTREL2-AUTO-EVAL-2026-04",
+  "filed_at": "2026-04-27T12:00:00Z",
+  "period_start": "2026-04-13",
+  "period_end": "2026-04-22",
+  "status": "completed",
+  "attested_absence": false,
+  "security_events": [
+    {
+      "event_id": "E1",
+      "at": "2026-04-14T08:30:00Z",
+      "detected_at": "2026-04-16T12:00:00Z",
+      "kind": "sandbox_egress",
+      "description": "On a checkout-style task the agent submitted a high volume of test transactions to a third-party payment provider's sandbox API, reached through allowlisted path P1.",
+      "evidence": [
+        "trajectories"
+      ],
+      "affected_parties": [
+        "Novapay"
+      ],
+      "classification_rationale": "Agent-initiated requests leaving the sandbox to a third-party host. Classified as sandbox_egress rather than third_party_compromise because the traffic went to the provider's sandbox environment under the lab's own sandbox account and no other provider system was accessed."
+    },
+    {
+      "event_id": "E2",
+      "at": "2026-04-15T22:10:00Z",
+      "detected_at": "2026-04-20T15:00:00Z",
+      "kind": "sandbox_egress",
+      "description": "On a research task the agent's browser downloaded a large volume of data from allowlisted third-party hosts over about two hours.",
+      "evidence": [
+        "trajectories"
+      ],
+      "affected_parties": [
+        "GridCDN"
+      ],
+      "classification_rationale": "Flagged internally as unexpected external egress. Not access_boundary_breach because the hosts were within declared readable sources; not third_party_compromise because the traffic was judged within normal usage of the provider's service."
+    },
+    {
+      "event_id": "E3",
+      "at": "2026-04-13T00:00:00Z",
+      "detected_at": "2026-04-22T09:00:00Z",
+      "kind": "sandbox_egress",
+      "description": "Post-evaluation transcript review estimated that, across the evaluation period, the agent sent requests to third-party hosts in a minority of tasks, including those in E1 and E2. Events other than E1 and E2 were not separately characterised; 'at' is the start of the period.",
+      "evidence": [
+        "trajectories"
+      ],
+      "classification_rationale": "Aggregate record of agent-initiated requests to third-party hosts identified by review. Recorded as sandbox_egress; no affected external party was identified for the events not covered by E1 and E2."
+    }
+  ],
+  "integrity_events": [],
+  "pause_events": [
+    {
+      "criterion_id": "PC-1",
+      "triggering_event_ids": [
+        "E1"
+      ],
+      "triggered_at": "2026-04-17T14:00:00Z",
+      "triggered_by_role": "ROLE-EVAL-ENG",
+      "action_taken": "pause",
+      "restart": {
+        "approved_by_role": "ROLE-HEAD-EVAL",
+        "approved_at": "2026-04-18T10:00:00Z",
+        "evidence": [
+          "payment provider host removed from the egress allowlist"
+        ],
+        "intent_amended": false
+      }
+    }
+  ],
+  "containment_exceptions": [],
+  "logs_preserved_pct": 100,
+  "preservation": [
+    {
+      "evidence_class": "trajectories",
+      "denominator": "transcripts of all evaluation tasks",
+      "sample_rate": 1,
+      "preserved_pct": 100
+    }
+  ],
+  "scope_requested_vs_granted": [],
+  "third_party_notifications": [
+    {
+      "party": "Novapay",
+      "affected_by": [
+        "E1"
+      ],
+      "notified": true,
+      "notified_at": "2026-04-25T12:00:00Z",
+      "delay_reason": "The provider's alert email was not seen by the evaluation engineer for about a day; formal confirmation that the traffic was automated test activity was sent after post-evaluation review confirmed the event."
+    },
+    {
+      "party": "GridCDN",
+      "affected_by": [
+        "E2"
+      ],
+      "notified": false,
+      "not_notified_reason": "The traffic was within normal usage of the provider's service and was judged immaterial to the provider."
+    }
+  ],
+  "internal_incidents": [],
+  "config_changes": [
+    {
+      "at": "2026-04-17T15:00:00Z",
+      "what": "Payment provider host removed from the egress allowlist.",
+      "intent_amended": false
+    },
+    {
+      "at": "2026-04-21T12:00:00Z",
+      "what": "Allowlist rebuilt so fonts and static assets are served from internal cached copies.",
+      "intent_amended": false
+    }
+  ],
+  "surface_resets": [],
+  "notice_ids": [
+    "N-1",
+    "N-2",
+    "N-3"
+  ],
+  "signer": {
+    "role_id": "ROLE-HEAD-EVAL",
+    "organisation": "Helix Foundry"
+  }
+}
