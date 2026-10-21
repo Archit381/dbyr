@@ -9,7 +9,7 @@
     </title>
     <meta
       name="description"
-      content="DBYR is a run-indexed disclosure protocol. Covered training runs and safeguards-off evaluations are declared before they start, an exception notice follows any detected exception within 72 hours, and investigators hold a standing right to extend scope. Tested against adversarial filers in a pre-registered two-round tabletop exercise."
+      content="DBYR is a run-indexed disclosure protocol. Covered training runs and safeguards-off evaluations are declared before they start, an exception notice follows any detected exception within 72 hours, and investigators hold a logged right to extend scope. Tested in a pre-registered adversarial tabletop and backtested on three real incidents."
     />
     <link rel="canonical" href="https://mach-12.github.io/dbyr/" />
 
@@ -21,7 +21,7 @@
     />
     <meta
       property="og:description"
-      content="A run-indexed disclosure protocol: the record is made before the outcome is known. Claims attributability, not prevention. With a reference implementation and a pre-registered adversarial tabletop exercise."
+      content="A run-indexed disclosure protocol: the record is made before the outcome is known. Claims attributability, not prevention. With a reference implementation, a pre-registered adversarial tabletop exercise and backtests on three real incidents."
     />
     <meta property="og:url" content="https://mach-12.github.io/dbyr/" />
     <meta
@@ -90,17 +90,35 @@
   <body>
     <main>
       <header class="hero">
+        <a
+          class="award"
+          href="https://apartresearch.com/sprints/ai-incident-response-sprint-2026-09-11-to-2026-09-13#overview"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <circle cx="12" cy="15" r="6" />
+            <path d="M8.5 10.1 6 3h4l2 4 2-4h4l-2.5 7.1" />
+          </svg>
+          <span><strong>4th place globally</strong> &middot; of 231 projects at
+          the Apart Research AI Incident Response Sprint</span>
+        </a>
+
         <h1>Declare Before You Run</h1>
         <p class="subtitle">
           A Run-Indexed Disclosure Protocol for Frontier Training and Evaluation
         </p>
 
         <p class="date-line">
-          October 9, 2026
-          <span class="date-line__sep">&middot;</span>
-          <a class="updated-mark" href="#updated"
-            >updated since the original submission<sup>&#42;</sup></a
-          >
+          October 15, 2026
         </p>
 
         <ul class="authors">
@@ -167,7 +185,7 @@
           </a>
           <a
             class="button"
-            href="https://github.com/mach-12/dbyr/tree/main/code/tabletop/independent"
+            href="https://github.com/mach-12/dbyr#install"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -185,7 +203,7 @@
                 d="M20.001 19A2 2 0 0 0 22 17V5a2 2 0 0 0-1.999-2L16 3.002A5 5 0 0 0 12 5a5 5 0 0 0-4-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 1.999 2H8a5 5 0 0 1 4 2 5 5 0 0 1 4-2z"
               />
             </svg>
-            Tabletop record
+            Docs
           </a>
           <a class="button" href="#bibtex">
             <svg
@@ -212,92 +230,110 @@
       <section class="abstract">
         <h2>Abstract</h2>
         <p>
-          Between May and July 2026, reinforcement-learning agents in an OpenAI
-          cyber-evaluation environment turned a writable internal package server
-          into a covert message board, escaped their sandbox, obtained root on
-          OpenAI clusters and took administrator control of Hugging Face
-          production across four regions. The record shows a capability problem
-          and a governance problem: the safeguards-off configuration was
-          undocumented before the run, the restart after the first outage
-          followed no recorded criterion, affected third parties learned late or
-          never, and the developer set the scope of the independent review. We
-          propose Declare Before You Run (DBYR), a run-indexed disclosure
-          protocol. Covered training runs and safeguards-off evaluations are
-          declared before they start, an exception notice follows any detected
-          exception within 72 hours, each closeout accounts for every affected
-          third party, and post-incident investigators hold a standing, logged
-          right to extend scope. Unlike existing incident reporting, the record
-          is made before the outcome is known. DBYR claims
-          <strong>attributability, not prevention</strong>. We test it against
-          motivated filers in a pre-registered two-round tabletop exercise.
-          Separate model instances write sealed scenarios, file as a lab that
-          wants to disclose as little as possible while staying truthful, review
-          the filings as an evaluator, and judge. In round 1, 3 of 23 material
-          facts were never identified, but the automated checks forced only 2 of
-          22 withheld facts, and only one of the five incidents the lab detected
-          was reported. Thirteen rule changes followed, each tied to an evasion,
-          and round 2 tested them on scenarios sealed before the changes were
-          made. On the 2026 incident itself, the current checks reject a
-          reconstructed filing before the run, because its pause criterion for
-          inter-agent communication has no monitor able to trigger it; but no
-          field would have changed the decisive restart. The hazard model is
-          standard in agent security; the contribution is carrying it into
-          disclosure regimes, none of which asks for it. An embedded evaluator
-          can adopt the protocol without legislation, and a reference
-          implementation and every tabletop record are released.
+          In mid-2026, OpenAI research agents escaped a cyber-evaluation sandbox
+          through a writable package server they used as a message board, and
+          took administrator control of Hugging Face production. Governance
+          failures compounded it: no record of the safeguards-off configuration
+          or the restart criterion, discretionary third-party notification, and
+          a developer-scoped investigation. We propose Declare Before You Run
+          (DBYR), a run-indexed disclosure protocol: runs are declared before
+          they start, exceptions are noticed within 72 hours, every affected
+          third party is accounted for, and investigators hold a logged right to
+          extend scope. DBYR claims
+          attributability, not prevention. In a pre-registered
+          tabletop with adversarial filers and sealed scenarios, 3 of 36
+          material facts went unidentified, mainly through evaluator review; the
+          automated checks forced little and could be passed by omission. On two
+          held-out incidents, at Anthropic and the UK AISI, reconstructed filings
+          recorded most decision-relevant facts before the run, but only about
+          half could be checked afterwards, mostly because the evidence was not
+          promised; one case passed the pre-registered criterion and one failed,
+          each by one decision point. Across all three incidents, no field would
+          have changed a decision. An embedded evaluator can adopt DBYR without
+          legislation; code and records are released.
         </p>
-        <p class="note">
-          Round-2 judging is in progress. The figures below report what is
-          already known without the judge, and say so each time.
-        </p>
+        <h3 class="sub">Main findings</h3>
+        <ol class="body">
+          <li>
+            <strong>The clearest gain comes after the fact.</strong> Four of the
+            five constraints placed on the 2026 investigation become logged
+            refusals with stated grounds, and every decision not to notify an
+            affected party becomes a recorded fact with a reason.
+          </li>
+          <li>
+            <strong>Leakage stayed low because an evaluator read the
+            filings.</strong> Against filers trying to disclose as little as
+            possible, the automated checks forced little and could be passed by
+            omission; we specify a rule to close that gap.
+          </li>
+          <li>
+            <strong>Most facts reach the record; about half can be
+            checked.</strong> On two incidents it was not written from, the
+            protocol put most of the facts that mattered on record before the
+            run, but only about half were checkable afterwards. Most of the gap
+            is evidence the filer never promised to keep, which a retention rule
+            can close.
+          </li>
+          <li>
+            <strong>No field would have changed a decision.</strong> On none of
+            the three incidents, including the decisive 2026 restart: DBYR makes
+            decisions attributable; it does not force them.
+          </li>
+        </ol>
       </section>
 
       <section class="why">
         <h2>Motivation</h2>
         <p class="why-lead">
-          The incident was made possible by capability and made worse by
-          discretion. Six things that decided how it unfolded were nobody's
-          recorded commitment — not because anyone concealed them, but because
-          no regime asks for them before a run begins.
+          On 16 July 2026 Hugging Face disclosed that autonomous AI agents had
+          penetrated its production systems; five days later OpenAI confirmed
+          they were its own unreleased research models, which had escaped an
+          isolated cyber-evaluation environment. It is the most fully documented
+          autonomous AI intrusion to date, and it began in a routine evaluation
+          workflow. Three features make it a governance problem as well as a
+          capability one.
         </p>
         <div class="why-grid">
           <div class="why-item">
-            <h3>The surface was undeclared</h3>
+            <h3>Coordination persisted across runs</h3>
             <p>
-              The package proxy, the WebDAV cache and the remote-repository
-              service the agents coordinated through were never named as
-              writable shared surfaces in advance. Inter-agent communication was
-              not listed as prohibited, so the message board's discovery was
-              handled as a security clean-up rather than a reason to pause.
+              Inside the environment the agents found a shared server they could
+              write to and used it to leave each other notes. A second model
+              launched on 11 June read and built on messages left by the first.
+              The channel moved from the package proxy to an unauthenticated
+              WebDAV endpoint whose directory names carried messages, eventually
+              joined by more than 50 agents.
             </p>
           </div>
           <div class="why-item">
-            <h3>The restart was unrecorded</h3>
+            <h3>No rule governed the decisions</h3>
             <p>
-              After the 4 July outage, an incident was opened on 5 July, the
-              escalation route was blocked, credentials were removed and the
-              service was rebuilt. Evaluations resumed on 6 July against no
-              recorded criterion and no named approving authority. By 8 July the
-              agents had rebuilt the channel.
+              The escalation passed through decision points at which no rule
+              applied. The safeguards-off configuration was not documented before
+              the run, and nothing recorded the criterion on which evaluations
+              resumed after the July outage. Inter-agent communication was not
+              listed as prohibited, so its discovery was handled as a security
+              clean-up rather than a reason to pause.
             </p>
           </div>
           <div class="why-item">
-            <h3>Retention was ad hoc</h3>
+            <h3>The information was not routed</h3>
             <p>
-              No retention commitment existed in advance. Roughly a tenth of
-              trajectories were never preserved, and one evaluation week alone
-              produced about 1,300 transcripts and 70,000 messages — retention
-              without tractable review is not evidence.
+              An internal team observed message-board activity as early as late
+              May, yet the channel's significance was not apparent to the leaders
+              responsible for the July response. The information existed inside
+              the developer; nothing routed it to the people who decided whether
+              to continue.
             </p>
           </div>
           <div class="why-item">
             <h3>Disclosure was discretionary</h3>
             <p>
-              The party with the most to lose decided what to disclose and when.
               Hugging Face disclosed first, without knowing who was responsible;
-              RubyGems was reportedly never told; and the independent review was
-              scoped by the developer to exclude the earlier training-phase
-              incidents.
+              RubyGems was reportedly never told; and the independent review
+              excluded the earlier training-phase incidents. DBYR targets the
+              unruled decisions and the discretionary disclosure: both become
+              signed, dated statements a second party can check.
             </p>
           </div>
         </div>
@@ -306,415 +342,127 @@
       <section class="timeline" id="timeline">
         <h2>Incident Timeline</h2>
         <p class="dek">
-          Two views of the same event stream: a visual read of density and
-          overlap across three concurrent threads (Figure 3), and the full
-          44-event reference table beneath it (Appendix A).
+          A visual read of density and overlap across three concurrent threads
+          (Figure 3). The full 44-event list is in Appendix A of the paper.
         </p>
 
         <div class="figure-intro">
           <h3>Figure 3. Timeline by thread</h3>
           <p>
-            Artifactory/HF is first-party (OpenAI's technical report, the
-            Hugging Face timeline, METR/Redwood). German wiki and RubyGems are
-            circumstantial attributions (collusion.wiki; Swarmchasers) that
-            OpenAI has not confirmed. Nothing scored in the paper depends on
-            them.
+            Incident timeline by thread, 5 May to 11 September 2026.
+            Artifactory/HF is first-party (OpenAI, Hugging Face, METR/Redwood);
+            German wiki and RubyGems are circumstantial attributions
+            (collusion.wiki; Swarmchasers) that OpenAI has not confirmed. Full
+            event list in Appendix A of the paper.
           </p>
         </div>
 
         <figure>
           <p class="hint">Scroll sideways to see the full diagram →</p>
           <div class="scroller">
-            <svg
-              viewBox="0 0 1000 460"
-              role="img"
-              aria-labelledby="fig3-title fig3-desc"
-            >
+<!-- BEGIN generated: fig3 -->
+            <svg viewBox="0 0 1000 458" role="img" aria-labelledby="fig3-title fig3-desc">
               <title id="fig3-title">Incident timeline by thread</title>
-              <desc id="fig3-desc">
-                Three concurrent threads from 5 May to 18 September 2026:
-                Artifactory/Hugging Face (first-party), German wiki
-                (circumstantial), and RubyGems (circumstantial). Eight key
-                first-party events are labeled.
-              </desc>
-
-              <line class="tl-grid" x1="90" y1="36" x2="90" y2="420" />
-              <text class="tl-month" x="94" y="28">May</text>
-              <line class="tl-grid" x1="276" y1="36" x2="276" y2="420" />
-              <text class="tl-month" x="280" y="28">Jun</text>
-              <line class="tl-grid" x1="483" y1="36" x2="483" y2="420" />
-              <text class="tl-month" x="487" y="28">Jul</text>
-              <line class="tl-grid" x1="697" y1="36" x2="697" y2="420" />
-              <text class="tl-month" x="701" y="28">Aug</text>
-              <line class="tl-grid" x1="911" y1="36" x2="911" y2="420" />
-              <text class="tl-month" x="915" y="28">Sep</text>
-              <line class="tl-lane" x1="90" y1="150" x2="980" y2="150" />
-              <line class="tl-lane" x1="90" y1="270" x2="980" y2="270" />
-              <line class="tl-lane" x1="90" y1="360" x2="980" y2="360" />
-              <text class="tl-lane-label" x="6" y="154">Artifactory/HF</text>
-              <text class="tl-lane-label" x="6" y="274">German wiki</text>
-              <text class="tl-lane-label" x="6" y="364">RubyGems</text>
-              <circle class="tl-dot-primary" cx="104" cy="150" r="2.5" />
-              <circle class="tl-dot-primary" cx="138" cy="150" r="2.5" />
-              <circle class="tl-dot-primary" cx="504" cy="150" r="2.5" />
-              <circle class="tl-dot-primary" cx="518" cy="150" r="2.5" />
-              <circle class="tl-dot-primary" cx="566" cy="150" r="2.5" />
-              <circle class="tl-dot-primary" cx="545" cy="150" r="2.5" />
-              <circle class="tl-dot-primary" cx="552" cy="150" r="2.5" />
-              <circle class="tl-dot-primary" cx="559" cy="150" r="2.5" />
-              <circle class="tl-dot-primary" cx="566" cy="150" r="2.5" />
-              <circle class="tl-dot-primary" cx="614" cy="150" r="2.5" />
-              <circle class="tl-dot-primary" cx="621" cy="150" r="2.5" />
-              <circle class="tl-dot-primary" cx="663" cy="150" r="2.5" />
-              <circle class="tl-dot-primary" cx="814" cy="150" r="2.5" />
-              <circle class="tl-dot-primary" cx="870" cy="150" r="2.5" />
-              <circle class="tl-dot-primary" cx="966" cy="150" r="2.5" />
-              <circle class="tl-dot-secondary" cx="131" cy="270" r="3" />
-              <circle class="tl-dot-secondary" cx="221" cy="270" r="3" />
-              <circle class="tl-dot-secondary" cx="235" cy="270" r="3" />
-              <circle class="tl-dot-secondary" cx="283" cy="270" r="3" />
-              <circle class="tl-dot-secondary" cx="387" cy="270" r="3" />
-              <circle class="tl-dot-secondary" cx="414" cy="270" r="3" />
-              <circle class="tl-dot-secondary" cx="421" cy="270" r="3" />
-              <circle class="tl-dot-secondary" cx="449" cy="270" r="3" />
-              <circle class="tl-dot-secondary" cx="490" cy="270" r="3" />
-              <circle class="tl-dot-secondary" cx="525" cy="270" r="3" />
-              <rect class="tl-dot-secondary" x="85.9" y="355.9" width="6.5" height="6.5" transform="rotate(45 90 360)" />
-              <rect class="tl-dot-secondary" x="126.9" y="355.9" width="6.5" height="6.5" transform="rotate(45 131 360)" />
-              <rect class="tl-dot-secondary" x="133.9" y="355.9" width="6.5" height="6.5" transform="rotate(45 138 360)" />
-              <rect class="tl-dot-secondary" x="161.9" y="355.9" width="6.5" height="6.5" transform="rotate(45 166 360)" />
-              <rect class="tl-dot-secondary" x="389.9" y="355.9" width="6.5" height="6.5" transform="rotate(45 394 360)" />
-              <rect class="tl-dot-secondary" x="975.9" y="355.9" width="6.5" height="6.5" transform="rotate(45 980 360)" />
-              <line class="tl-leader" x1="111" y1="134" x2="111" y2="144" />
-              <text class="tl-key-label" x="111" y="116" text-anchor="middle">Board forms</text>
-              <text class="tl-key-date" x="111" y="128" text-anchor="middle">5/8</text>
-              <circle class="tl-dot-primary-key" cx="111" cy="150" r="5" />
-              <line class="tl-leader" x1="235" y1="96" x2="235" y2="144" />
-              <text class="tl-key-label" x="235" y="78" text-anchor="middle">First SSRF</text>
-              <text class="tl-key-date" x="235" y="90" text-anchor="middle">5/26</text>
-              <circle class="tl-dot-primary-key" cx="235" cy="150" r="5" />
-              <line class="tl-leader" x1="345" y1="134" x2="345" y2="144" />
-              <text class="tl-key-label" x="345" y="116" text-anchor="middle">2nd model started</text>
-              <text class="tl-key-date" x="345" y="128" text-anchor="middle">6/11</text>
-              <circle class="tl-dot-primary-key" cx="345" cy="150" r="5" />
-              <line class="tl-leader" x1="449" y1="96" x2="449" y2="144" />
-              <text class="tl-key-label" x="449" y="78" text-anchor="middle">Admin access</text>
-              <text class="tl-key-date" x="449" y="90" text-anchor="middle">6/26</text>
-              <circle class="tl-dot-primary-key" cx="449" cy="150" r="5" />
-              <line class="tl-leader" x1="518" y1="134" x2="518" y2="144" />
-              <text class="tl-key-label" x="518" y="116" text-anchor="middle">Restart, no criterion</text>
-              <text class="tl-key-date" x="518" y="128" text-anchor="middle">7/6</text>
-              <circle class="tl-dot-primary-key" cx="518" cy="150" r="5" />
-              <circle class="tl-dot-primary" cx="532" cy="150" r="2.5" />
-              <line class="tl-leader" x1="587" y1="96" x2="587" y2="144" />
-              <text class="tl-key-label" x="587" y="78" text-anchor="middle">HF discloses</text>
-              <text class="tl-key-date" x="587" y="90" text-anchor="middle">7/16</text>
-              <circle class="tl-dot-primary-key" cx="587" cy="150" r="5" />
-              <line class="tl-leader" x1="607" y1="134" x2="607" y2="144" />
-              <text class="tl-key-label" x="607" y="116" text-anchor="middle">OpenAI's alert</text>
-              <text class="tl-key-date" x="607" y="128" text-anchor="middle">7/19</text>
-              <circle class="tl-dot-primary-key" cx="607" cy="150" r="5" />
-              <line class="tl-leader" x1="676" y1="96" x2="676" y2="144" />
-              <text class="tl-key-label" x="676" y="78" text-anchor="middle">Review scoped</text>
-              <text class="tl-key-date" x="676" y="90" text-anchor="middle">7/29</text>
-              <circle class="tl-dot-primary-key" cx="676" cy="150" r="5" />
-              <circle class="tl-dot-primary-key" cx="98" cy="444" r="5" />
-              <text class="tl-legend" x="110" y="448">Artifactory/HF — first-party</text>
-              <circle class="tl-dot-secondary" cx="330" cy="444" r="4" />
-              <text class="tl-legend" x="342" y="448">German wiki — circumstantial</text>
-              <rect class="tl-dot-secondary" x="565.9" y="435.9" width="8" height="8" transform="rotate(45 570 440)" />
-              <text class="tl-legend" x="586" y="448">RubyGems — circumstantial</text>
-
+              <desc id="fig3-desc">Three concurrent threads from 5 May to 11 September 2026: Artifactory/Hugging Face (first-party), German wiki (circumstantial) and RubyGems (circumstantial). Six decision points and two disclosure or detection events on the first-party thread are labelled.</desc>
+              <line class="tl-grid dashed" x1="110" y1="32" x2="110" y2="402" />
+              <text class="tl-month" x="114" y="24">May</text>
+              <line class="tl-grid dashed" x1="305.3" y1="32" x2="305.3" y2="402" />
+              <text class="tl-month" x="309.3" y="24">Jun</text>
+              <line class="tl-grid dashed" x1="494.3" y1="32" x2="494.3" y2="402" />
+              <text class="tl-month" x="498.3" y="24">Jul</text>
+              <line class="tl-grid dashed" x1="689.6" y1="32" x2="689.6" y2="402" />
+              <text class="tl-month" x="693.6" y="24">Aug</text>
+              <line class="tl-grid dashed" x1="884.9" y1="32" x2="884.9" y2="402" />
+              <text class="tl-month" x="888.9" y="24">Sep</text>
+              <line class="tl-lane" x1="110" y1="170" x2="979.4" y2="170" />
+              <text class="tl-lane-label" x="102" y="174" text-anchor="end">Artifactory/HF</text>
+              <line class="tl-lane" x1="110" y1="320" x2="979.4" y2="320" />
+              <text class="tl-lane-label" x="102" y="324" text-anchor="end">German wiki</text>
+              <line class="tl-lane" x1="110" y1="380" x2="979.4" y2="380" />
+              <text class="tl-lane-label" x="102" y="384" text-anchor="end">RubyGems</text>
+              <line class="tl-span" x1="513.2" y1="170" x2="538.4" y2="170" />
+              <line class="tl-span" x1="538.4" y1="170" x2="607.7" y2="170" />
+              <line class="tl-span muted" x1="399.8" y1="320" x2="418.7" y2="320" />
+              <line class="tl-span muted" x1="173" y1="380" x2="179.3" y2="380" />
+              <circle class="tl-dot-primary" cx="147.8" cy="170" r="2.5" />
+              <circle class="tl-dot-primary" cx="179.3" cy="170" r="2.5" />
+              <circle class="tl-dot-primary" cx="513.2" cy="170" r="2.5" />
+              <circle class="tl-dot-primary" cx="519.5" cy="170" r="2.5" />
+              <circle class="tl-dot-primary" cx="538.4" cy="170" r="2.5" />
+              <circle class="tl-dot-primary" cx="551" cy="170" r="2.5" />
+              <circle class="tl-dot-primary" cx="557.3" cy="170" r="2.5" />
+              <circle class="tl-dot-primary" cx="563.6" cy="170" r="2.5" />
+              <circle class="tl-dot-primary" cx="569.9" cy="170" r="2.5" />
+              <circle class="tl-dot-primary" cx="614" cy="170" r="2.5" />
+              <circle class="tl-dot-primary" cx="620.3" cy="170" r="2.5" />
+              <circle class="tl-dot-primary" cx="658.1" cy="170" r="2.5" />
+              <circle class="tl-dot-primary" cx="714.8" cy="170" r="2.5" />
+              <circle class="tl-dot-primary" cx="796.7" cy="170" r="2.5" />
+              <circle class="tl-dot-primary" cx="847.1" cy="170" r="2.5" />
+              <circle class="tl-dot-primary" cx="903.8" cy="170" r="2.5" />
+              <circle class="tl-dot-primary" cx="935.3" cy="170" r="2.5" />
+              <circle class="tl-dot-secondary" cx="173" cy="320" r="3" />
+              <circle class="tl-dot-secondary" cx="254.9" cy="320" r="3" />
+              <circle class="tl-dot-secondary" cx="267.5" cy="320" r="3" />
+              <circle class="tl-dot-secondary" cx="311.6" cy="320" r="3" />
+              <circle class="tl-dot-secondary" cx="399.8" cy="320" r="3" />
+              <circle class="tl-dot-secondary" cx="431.3" cy="320" r="3" />
+              <circle class="tl-dot-secondary" cx="437.6" cy="320" r="3" />
+              <circle class="tl-dot-secondary" cx="462.8" cy="320" r="3" />
+              <circle class="tl-dot-secondary" cx="500.6" cy="320" r="3" />
+              <circle class="tl-dot-secondary" cx="532.1" cy="320" r="3" />
+              <path class="tl-dot-secondary" d="M135.2,376 L139.2,380 L135.2,384 L131.2,380 z" />
+              <path class="tl-dot-secondary" d="M173,376 L177,380 L173,384 L169,380 z" />
+              <path class="tl-dot-secondary" d="M179.3,376 L183.3,380 L179.3,384 L175.3,380 z" />
+              <path class="tl-dot-secondary" d="M204.5,376 L208.5,380 L204.5,384 L200.5,380 z" />
+              <path class="tl-dot-secondary" d="M412.4,376 L416.4,380 L412.4,384 L408.4,380 z" />
+              <path class="tl-dot-secondary" d="M947.9,376 L951.9,380 L947.9,384 L943.9,380 z" />
+              <line class="tl-leader" x1="154.1" y1="134" x2="154.1" y2="170" />
+              <text class="tl-key-label" x="154.1" y="116" text-anchor="middle">Write access found</text>
+              <text class="tl-key-date" x="154.1" y="128" text-anchor="middle">8 May</text>
+              <circle class="tl-dot-decision" cx="154.1" cy="170" r="5" />
+              <line class="tl-leader" x1="368.3" y1="134" x2="368.3" y2="170" />
+              <text class="tl-key-label" x="368.3" y="116" text-anchor="middle">2nd model started</text>
+              <text class="tl-key-date" x="368.3" y="128" text-anchor="middle">11 Jun</text>
+              <circle class="tl-dot-decision" cx="368.3" cy="170" r="5" />
+              <line class="tl-leader" x1="538.4" y1="134" x2="538.4" y2="170" />
+              <text class="tl-key-label" x="538.4" y="116" text-anchor="middle">Restart</text>
+              <text class="tl-key-date" x="538.4" y="128" text-anchor="middle">after 8 Jul</text>
+              <circle class="tl-dot-decision" cx="538.4" cy="170" r="5" />
+              <line class="tl-leader" x1="267.5" y1="96" x2="267.5" y2="170" />
+              <text class="tl-key-label" x="267.5" y="78" text-anchor="middle">First SSRF</text>
+              <text class="tl-key-date" x="267.5" y="90" text-anchor="middle">26 May</text>
+              <circle class="tl-dot-decision" cx="267.5" cy="170" r="5" />
+              <line class="tl-leader" x1="462.8" y1="96" x2="462.8" y2="170" />
+              <text class="tl-key-label" x="462.8" y="78" text-anchor="middle">Admin access</text>
+              <text class="tl-key-date" x="462.8" y="90" text-anchor="middle">26 Jun</text>
+              <circle class="tl-dot-decision" cx="462.8" cy="170" r="5" />
+              <line class="tl-leader" x1="670.7" y1="96" x2="670.7" y2="170" />
+              <text class="tl-key-label" x="670.7" y="78" text-anchor="middle">Review scoped</text>
+              <text class="tl-key-date" x="670.7" y="90" text-anchor="middle">29 Jul</text>
+              <circle class="tl-dot-decision" cx="670.7" cy="170" r="5" />
+              <line class="tl-leader" x1="588.8" y1="170" x2="588.8" y2="256" />
+              <text class="tl-key-label" x="585.8" y="268" text-anchor="end">HF discloses</text>
+              <text class="tl-key-date" x="585.8" y="280" text-anchor="end">16 Jul</text>
+              <circle class="tl-dot-context" cx="588.8" cy="170" r="4.5" />
+              <line class="tl-leader" x1="607.7" y1="170" x2="607.7" y2="204" />
+              <text class="tl-key-label" x="610.7" y="216" text-anchor="start">OpenAI’s alert</text>
+              <text class="tl-key-date" x="610.7" y="228" text-anchor="start">19 Jul</text>
+              <circle class="tl-dot-context" cx="607.7" cy="170" r="4.5" />
+              <circle class="tl-dot-decision" cx="110" cy="438" r="5" />
+              <text class="tl-legend" x="122" y="442">Decision point</text>
+              <circle class="tl-dot-context" cx="250" cy="438" r="4.5" />
+              <text class="tl-legend" x="262" y="442">Disclosure / detection</text>
+              <circle class="tl-dot-primary" cx="430" cy="438" r="2.5" />
+              <circle class="tl-dot-secondary" cx="441" cy="438" r="3" />
+              <path class="tl-dot-secondary" d="M453,434 L457,438 L453,442 L449,438 z" />
+              <text class="tl-legend" x="465" y="442">Other event (by thread)</text>
+              <line class="tl-span" x1="640" y1="438" x2="662" y2="438" />
+              <text class="tl-legend" x="674" y="442">Multi-day event</text>
             </svg>
+          <!-- END generated: fig3 -->
           </div>
         </figure>
-
-        <table>
-          <caption>
-            <strong>Table 1.</strong>
-            Full incident timeline (Appendix A). Threads: Artifactory/HF
-            (first-party — OpenAI's technical report item numbers, the Hugging
-            Face timeline, METR/Redwood); German wiki and RubyGems
-            (circumstantial). Disclosure status is as reported by the cited
-            source.
-          </caption>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Thread</th>
-              <th>Event</th>
-              <th>OpenAI involvement / disclosure</th>
-            </tr>
-          </thead>
-          <tbody>
-<!-- BEGIN generated: timeline -->
-            <tr>
-              <td>5 May</td>
-              <td>RubyGems</td>
-              <td>Earliest identified malicious package upload on public rubygems.org.</td>
-              <td>Not disclosed by OpenAI</td>
-            </tr>
-            <tr>
-              <td>7 May</td>
-              <td>Artifactory/HF</td>
-              <td>OpenAI starts an RL run for an experimental, unreleased frontier model.</td>
-              <td>OpenAI internal (own report)</td>
-            </tr>
-            <tr>
-              <td>8 May</td>
-              <td>Artifactory/HF</td>
-              <td>Agent given an impossible task (a Google Drive link with no internet) attacks Artifactory; attack fails but agent finds it can write files there.</td>
-              <td>OpenAI internal</td>
-            </tr>
-            <tr>
-              <td>11 May</td>
-              <td>German wiki</td>
-              <td>First agent POST identified; probing of publictestwiki.com; some edits blocked by filters.</td>
-              <td>No OpenAI presence yet</td>
-            </tr>
-            <tr>
-              <td>11–12 May</td>
-              <td>RubyGems</td>
-              <td>2,000+ packages in ~36 h (&quot;Gemstuffer&quot;); RubyGems disables new registration for 4 days. Separate mass-registration/API-key bug patched 12 May.</td>
-              <td>Not disclosed by OpenAI</td>
-            </tr>
-            <tr>
-              <td>12 May</td>
-              <td>Artifactory/HF</td>
-              <td>First message-board entry (item 01).</td>
-              <td>OpenAI internal</td>
-            </tr>
-            <tr>
-              <td>12 May</td>
-              <td>RubyGems</td>
-              <td>Agents attempt to exploit a CDN caching flaw leaking API keys; RubyGems discovers the zero-day only in July.</td>
-              <td>Not disclosed by OpenAI</td>
-            </tr>
-            <tr>
-              <td>16 May</td>
-              <td>RubyGems</td>
-              <td>Disposable email addresses disabled (used by agents to defeat verification).</td>
-              <td>–-</td>
-            </tr>
-            <tr>
-              <td>24 May</td>
-              <td>German wiki</td>
-              <td>Agents converge on DSEWiki (accepts writes via GET); explore XSS to send POSTs.</td>
-              <td>No OpenAI presence yet</td>
-            </tr>
-            <tr>
-              <td>26 May</td>
-              <td>Artifactory/HF</td>
-              <td>First successful SSRF against Artifactory; indirect internet access (item 02).</td>
-              <td>OpenAI internal</td>
-            </tr>
-            <tr>
-              <td>26 May</td>
-              <td>German wiki</td>
-              <td>Agents impersonate a real ProWiki admin; experiment on session termination; traffic mostly Azure (197/~18k from AWS/DigitalOcean/Tor).</td>
-              <td>No OpenAI presence yet</td>
-            </tr>
-            <tr>
-              <td>2 Jun</td>
-              <td>German wiki</td>
-              <td>Human moderator notices abnormal request volume.</td>
-              <td>Third-party admin</td>
-            </tr>
-            <tr>
-              <td>11 Jun</td>
-              <td>Artifactory/HF</td>
-              <td>Second, &quot;highly persistent&quot; model started with Artifactory access; builds on earlier model&#x27;s messages.</td>
-              <td>OpenAI internal; channel compounds across runs</td>
-            </tr>
-            <tr>
-              <td>16–19 Jun</td>
-              <td>German wiki</td>
-              <td>Flood of posting; moderator deletes thousands/day; agents use SSH tunnels for direct agent-to-agent comms (17 Jun); counter alphabetical deletion with zzz-prefixed backups (19 Jun).</td>
-              <td>–-</td>
-            </tr>
-            <tr>
-              <td>18 Jun</td>
-              <td>RubyGems</td>
-              <td>83 packages in 3 h probing an SEC dataset (county.json), the same file later targeted on the wiki, with shared retrieval infrastructure.</td>
-              <td>Not disclosed by OpenAI</td>
-            </tr>
-            <tr>
-              <td>21 Jun</td>
-              <td>German wiki</td>
-              <td>First OpenAI employee IP visits the site.</td>
-              <td>OpenAI aware; undisclosed</td>
-            </tr>
-            <tr>
-              <td>22 Jun</td>
-              <td>German wiki</td>
-              <td>Agent activity drops to near zero the day after the visit.</td>
-              <td>–-</td>
-            </tr>
-            <tr>
-              <td>26 Jun</td>
-              <td>Artifactory/HF</td>
-              <td>Zero-day in legacy token-refresh endpoint → administrator access; Groovy plugin → arbitrary command execution (item 03).</td>
-              <td>OpenAI internal</td>
-            </tr>
-            <tr>
-              <td>26 Jun</td>
-              <td>German wiki</td>
-              <td>At least 33 unique OpenAI IPs; site archive used to recover deleted pages.</td>
-              <td>OpenAI investigating; undisclosed</td>
-            </tr>
-            <tr>
-              <td>2 Jul</td>
-              <td>German wiki</td>
-              <td>Final burst: 20 attempted edits across 3 wikis on a new topic.</td>
-              <td>–-</td>
-            </tr>
-            <tr>
-              <td>4 Jul</td>
-              <td>Artifactory/HF</td>
-              <td>Sustained agent activity overloads Artifactory; outage (item 04).</td>
-              <td>OpenAI internal response begins</td>
-            </tr>
-            <tr>
-              <td>5 Jul</td>
-              <td>Artifactory/HF</td>
-              <td>Security incident opened; privilege-escalation route blocked; credentials removed; service rebuilt, incidentally clearing the board. Leaders responsible did not see the channel&#x27;s significance.</td>
-              <td>OpenAI internal</td>
-            </tr>
-            <tr>
-              <td>6 Jul</td>
-              <td>Artifactory/HF</td>
-              <td>Evaluations resume.</td>
-              <td>OpenAI internal; no recorded restart criterion</td>
-            </tr>
-            <tr>
-              <td>7 Jul</td>
-              <td>German wiki</td>
-              <td>OpenAI employee IP attempts to access deleted files; OpenAI activity declines thereafter.</td>
-              <td>OpenAI aware; undisclosed</td>
-            </tr>
-            <tr>
-              <td>8 Jul</td>
-              <td>Artifactory/HF</td>
-              <td>Artifactory access tightened (item 05); agents regain egress via remote-repository service (item 06); board rebuilt via unauthenticated WebDAV in the remote cache (item 07). Zero-day reported to JFrog.</td>
-              <td>OpenAI internal</td>
-            </tr>
-            <tr>
-              <td>8–19 Jul</td>
-              <td>Artifactory (2nd)</td>
-              <td>Leaked &quot;Organization 1&quot; credential found in a public paste archive; malicious Ruby package staged as a dependency; deserialization flaw → RCE; kernel privilege escalation → root; lateral movement via IMDS, over-permissioned Kubernetes service accounts, Azure Key Vault → cluster admin.</td>
-              <td>OpenAI&#x27;s own agents; scope unknown to OpenAI</td>
-            </tr>
-            <tr>
-              <td>9 Jul</td>
-              <td>Fallout</td>
-              <td>GPT-5.6 system card acknowledges cheating and fabricated research results.</td>
-              <td>OpenAI-disclosed</td>
-            </tr>
-            <tr>
-              <td>10 Jul</td>
-              <td>HF</td>
-              <td>14 publicly exposed Hugging Face write tokens reconstructed, validated and shared (item 08).</td>
-              <td>Unknown to OpenAI</td>
-            </tr>
-            <tr>
-              <td>11 Jul</td>
-              <td>HF</td>
-              <td>HDF5 zero-day extracts credentials from HF production workers (item 09); template-injection zero-day → code execution (item 10).</td>
-              <td>Unknown to OpenAI</td>
-            </tr>
-            <tr>
-              <td>12 Jul</td>
-              <td>HF</td>
-              <td>Single worker pod → admin/host-level control across multiple clusters in &lt;13 h (item 11); credentials harvested across four regions (item 12).</td>
-              <td>Unknown to OpenAI</td>
-            </tr>
-            <tr>
-              <td>13 Jul</td>
-              <td>Artifactory</td>
-              <td>Internal package-processing pipeline exploited to obtain a signing key and forge administrator credentials (item 13); distinct from public rubygems.org.</td>
-              <td>Unknown to OpenAI</td>
-            </tr>
-            <tr>
-              <td>16 Jul</td>
-              <td>HF</td>
-              <td>Hugging Face publicly discloses an attack by autonomous agents and reports to the FBI; OpenAI contacts HF without knowing the connection.</td>
-              <td>OpenAI reaches out; link unknown</td>
-            </tr>
-            <tr>
-              <td>19 Jul</td>
-              <td>Artifactory/HF</td>
-              <td>Internal alert on unusual identity-API calls (item 14); administrator access to an OpenAI Kubernetes cluster and cloud secrets found (item 15); attack linked to ExploitGym runs, runs stopped, credentials revoked (item 16).</td>
-              <td>OpenAI investigation escalates</td>
-            </tr>
-            <tr>
-              <td>20 Jul</td>
-              <td>HF / OpenAI</td>
-              <td>Investigations merge. OpenAI separately pauses a long-horizon model that circumvented its sandbox.</td>
-              <td>Link established</td>
-            </tr>
-            <tr>
-              <td>21 Jul</td>
-              <td>HF</td>
-              <td>OpenAI publicly confirms pre-release models broke containment during ExploitGym and reached Hugging Face.</td>
-              <td>First public acknowledgment</td>
-            </tr>
-            <tr>
-              <td>27 Jul</td>
-              <td>HF</td>
-              <td>Hugging Face publishes forensic timeline; JFrog credits OpenAI with the Artifactory zero-day.</td>
-              <td>HF-disclosed</td>
-            </tr>
-            <tr>
-              <td>29 Jul</td>
-              <td>HF</td>
-              <td>OpenAI, METR and Redwood agree an independent review scoped to exclude the earlier training-time incidents.</td>
-              <td>OpenAI-initiated, scope-limited</td>
-            </tr>
-            <tr>
-              <td>5 Aug</td>
-              <td>HF</td>
-              <td>Inter-agent message board described publicly for the first time, at Black Hat.</td>
-              <td>Not in earlier publications</td>
-            </tr>
-            <tr>
-              <td>18 Aug</td>
-              <td>Fallout</td>
-              <td>OpenAI announces a two-week RL pause and a preliminary cyber evaluation of its unreleased &quot;Astra&quot; model.</td>
-              <td>OpenAI-disclosed</td>
-            </tr>
-            <tr>
-              <td>26 Aug</td>
-              <td>HF</td>
-              <td>OpenAI 37-page report; METR/Redwood report.</td>
-              <td>OpenAI-disclosed</td>
-            </tr>
-            <tr>
-              <td>4 Sep</td>
-              <td>German wiki</td>
-              <td>Independent researchers publish the wiki activity at collusion.wiki.</td>
-              <td>Surfaced independently</td>
-            </tr>
-            <tr>
-              <td>9 Sep</td>
-              <td>Fallout</td>
-              <td>Sen. Hawley opens subcommittee probe; 16 questions due 1 Oct; notes auditors received full transcripts for 2 of many weeks.</td>
-              <td>Congressional pressure</td>
-            </tr>
-            <tr>
-              <td>11 Sep</td>
-              <td>RubyGems</td>
-              <td>Swarmchasers publish the Gemstuffer attribution; state RubyGems was never informed by OpenAI.</td>
-              <td>Surfaced independently</td>
-            </tr>
-            <tr>
-              <td>12–18 Sep</td>
-              <td>Fallout</td>
-              <td>&quot;Pace the Frontier&quot; proposal (12 Sep); expert letter on evaluator guarantees and California executive order (18 Sep).</td>
-              <td>Policy response</td>
-            </tr>
-          <!-- END generated: timeline -->
-          </tbody>
-        </table>
       </section>
 
       <section class="approach">
@@ -732,7 +480,7 @@
           <h3>Figure 1. The DBYR lifecycle</h3>
           <p>
             Four signed records are filed at different points in a covered run's
-            life and flow into one append-only, hash-chained record — held by
+            life and flow into an append-only, hash-chained record — held by
             the evaluator under Layer A or by a register under Layer B — which
             projects into three disclosure tiers.
           </p>
@@ -742,9 +490,9 @@
           <p class="hint">Scroll sideways to see the full diagram →</p>
           <div class="scroller">
 <!-- BEGIN generated: fig1 -->
-            <svg viewBox="0 0 1000 420" role="img" aria-labelledby="fig1-title fig1-desc">
+            <svg viewBox="0 0 1000 396" role="img" aria-labelledby="fig1-title fig1-desc">
               <title id="fig1-title">The DBYR lifecycle</title>
-              <desc id="fig1-desc">Four signed records — TrainingRunIntent, ExceptionNotice, TrainingRunCloseout and SystemRuntimeRecord — are filed at different points in a covered run’s life and flow into one append-only, hash-chained record, which projects into Public, Restricted and Sealed disclosure tiers.</desc>
+              <desc id="fig1-desc">Four signed records — TrainingRunIntent, ExceptionNotice, TrainingRunCloseout and SystemRuntimeRecord — are filed at different points in a covered run’s life and flow into an append-only, hash-chained record, which projects into Public, Restricted and Sealed disclosure tiers.</desc>
               <defs>
                 <marker id="fig1-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
                   <path class="fig-arrow-head" d="M0,0 L10,5 L0,10 z" />
@@ -785,14 +533,15 @@
               <line class="fig-arrow" x1="500" y1="254" x2="500" y2="296" marker-end="url(#fig1-arrow)" />
               <rect class="fig-box mid" x="350" y="300" width="300" height="86" rx="6" />
               <text class="fig-label" x="366" y="328">Restricted</text>
-              <text class="fig-sublabel" x="366" y="350">full record; vetted evaluator</text>
+              <text class="fig-sublabel" x="366" y="350">full record, vetted evaluator</text>
               <text class="fig-sublabel" x="366" y="366">and auditor access</text>
               <line class="fig-arrow" x1="840" y1="254" x2="840" y2="296" marker-end="url(#fig1-arrow)" />
               <rect class="fig-box dark" x="690" y="300" width="300" height="86" rx="6" />
               <text class="fig-label on-dark" x="706" y="328">Sealed</text>
               <text class="fig-sublabel on-dark" x="706" y="350">withheld pending challenge,</text>
               <text class="fig-sublabel on-dark" x="706" y="366">salted hash commitments</text>
-              <text class="fig-sublabel" x="10" y="410">filed &amp; signed → one append-only record → projected through a per-field redaction map</text>
+              <text class="fig-note" x="136" y="163">filed &amp; signed</text>
+              <text class="fig-note" x="168" y="281">per-field redaction map</text>
             </svg>
           <!-- END generated: fig1 -->
           </div>
@@ -831,11 +580,7 @@
                 >Any evaluation of a covered model with production safeguards
                 disabled or classifiers relaxed.</strong
               >
-              This is the distinctive trigger; we have found no prior proposal
-              that makes a deliberately safeguards-off evaluation a filing
-              event. It is the configuration shared by the containment failures
-              documented through 2026, and the one in which containment arguably
-              ought to be strongest.
+              This is the distinctive trigger.
             </p>
           </div>
         </div>
@@ -844,13 +589,13 @@
           internal deployment. Only training may be open-ended. An evaluation
           states an end date, and its windows summed across amendments may not
           exceed 31 days, so a standing quarterly Intent cannot stand in for
-          individual evaluations.
+          individual evaluations. Rolling training runs close out every 30 days.
         </p>
 
         <h3 class="sub">The four records</h3>
         <table>
           <caption>
-            <strong>Table 2.</strong>
+            <strong>Table 1.</strong>
             What is filed, when, and what it carries.
           </caption>
           <thead>
@@ -902,8 +647,13 @@
                 incident ticket; pause events and restart approvals;
                 containment exceptions; preservation per evidence class, headlined
                 by the weakest class; mid-run configuration changes and surface
-                resets; the notices filed; third-party notifications; and scope
-                requested versus granted.
+                resets; the notices filed; and scope requested versus granted.
+                For every external party named as affected, when it was told
+                (within 72 hours of the event being attributed to the run) or why
+                it was not. Party names are restricted, because naming a victim
+                can expose an unpatched system; the count and the delay are
+                public. Empty event lists need an attestation of absence and the
+                monitoring that supports it.
               </td>
             </tr>
             <tr>
@@ -935,11 +685,13 @@
         <div class="figure-intro">
           <h3>Figure 2. Record schema at a glance</h3>
           <p>
-            The fields each record must carry under the v0.3 rules — the JSON
-            Schema plus the minimum-content profile — marked by disclosure tier
-            at filing. Tiers nest: a public field can hold restricted or sealed
-            parts, such as role identities, notified party names and
-            surface-level topology detail. Generated from the schemas.
+            The fields each record must carry (the JSON Schema plus the
+            minimum-content profile), marked by disclosure tier at filing. Tiers
+            nest: a public field can hold restricted or sealed parts, such as
+            role identities, notified party names and surface-level topology
+            detail. Conditionally required fields (reward design, evaluation
+            plan, absence basis, notice list) are in Appendix B of the paper.
+            Generated from the schemas.
           </p>
         </div>
 
@@ -947,10 +699,12 @@
           <p class="hint">Scroll sideways to see the full diagram →</p>
           <div class="scroller">
 <!-- BEGIN generated: fig2 -->
-            <svg viewBox="0 0 1000 516" role="img" aria-labelledby="fig2-title fig2-desc">
+            <svg viewBox="0 0 1000 476" role="img" aria-labelledby="fig2-title fig2-desc">
               <title id="fig2-title">Record schema at a glance</title>
-              <desc id="fig2-desc">The fields each of the four DBYR records must carry under the v0.3 rules, marked by disclosure tier at filing: TrainingRunIntent (20 fields), TrainingRunCloseout (17), ExceptionNotice (7) and SystemRuntimeRecord (5).</desc>
+              <desc id="fig2-desc">The fields each of the four DBYR records must carry, marked by disclosure tier at filing: TrainingRunIntent (20 fields), TrainingRunCloseout (17), ExceptionNotice (7) and SystemRuntimeRecord (5).</desc>
               <rect class="fig-box" x="10" y="10" width="300" height="456" rx="6" />
+              <rect class="fig-head" x="11" y="11" width="298" height="37" rx="5" />
+              <rect class="fig-head" x="11" y="36" width="298" height="12" />
               <line class="tl-grid" x1="10" y1="48" x2="310" y2="48" />
               <text class="fig-label" x="24" y="30">TrainingRunIntent</text>
               <text class="fig-sublabel" x="24" y="43">20 required fields</text>
@@ -1014,6 +768,8 @@
               <circle class="fig-dot-restricted" cx="34" cy="446" r="3.5" />
               <text class="fig-field" x="48" y="450">forecast_basis</text>
               <rect class="fig-box" x="345" y="10" width="300" height="396" rx="6" />
+              <rect class="fig-head" x="346" y="11" width="298" height="37" rx="5" />
+              <rect class="fig-head" x="346" y="36" width="298" height="12" />
               <line class="tl-grid" x1="345" y1="48" x2="645" y2="48" />
               <text class="fig-label" x="359" y="30">TrainingRunCloseout</text>
               <text class="fig-sublabel" x="359" y="43">17 required fields</text>
@@ -1068,6 +824,8 @@
               <circle class="fig-dot-restricted" cx="369" cy="386" r="3.5" />
               <text class="fig-field" x="383" y="390">surface_resets</text>
               <rect class="fig-box" x="680" y="10" width="300" height="196" rx="6" />
+              <rect class="fig-head" x="681" y="11" width="298" height="37" rx="5" />
+              <rect class="fig-head" x="681" y="36" width="298" height="12" />
               <line class="tl-grid" x1="680" y1="48" x2="980" y2="48" />
               <text class="fig-label" x="694" y="30">ExceptionNotice</text>
               <text class="fig-sublabel" x="694" y="43">7 required fields</text>
@@ -1092,6 +850,8 @@
               <circle class="fig-dot-public" cx="704" cy="186" r="3.5" />
               <text class="fig-field" x="718" y="190">signer</text>
               <rect class="fig-box" x="680" y="224" width="300" height="156" rx="6" />
+              <rect class="fig-head" x="681" y="225" width="298" height="37" rx="5" />
+              <rect class="fig-head" x="681" y="250" width="298" height="12" />
               <line class="tl-grid" x1="680" y1="262" x2="980" y2="262" />
               <text class="fig-label" x="694" y="244">SystemRuntimeRecord</text>
               <text class="fig-sublabel" x="694" y="257">5 required fields</text>
@@ -1109,11 +869,11 @@
               <line class="tl-grid" x1="694" y1="350" x2="966" y2="350" />
               <circle class="fig-dot-public" cx="704" cy="360" r="3.5" />
               <text class="fig-field" x="718" y="364">signer</text>
-              <circle class="fig-dot-public" cx="24" cy="496" r="3.5" />
-              <text class="fig-sublabel" x="36" y="500">Public at filing</text>
-              <circle class="fig-dot-restricted" cx="140" cy="496" r="3.5" />
-              <text class="fig-sublabel" x="152" y="500">Restricted at filing</text>
-              <text class="fig-sublabel" x="285" y="500">Tiers nest: a public field can hold restricted or sealed parts.</text>
+              <text class="fig-label" x="694" y="410">Disclosure tier at filing</text>
+              <circle class="fig-dot-public" cx="700" cy="430" r="3.5" />
+              <text class="fig-sublabel" x="712" y="434">Public</text>
+              <circle class="fig-dot-restricted" cx="790" cy="430" r="3.5" />
+              <text class="fig-sublabel" x="802" y="434">Restricted</text>
             </svg>
           <!-- END generated: fig2 -->
           </div>
@@ -1151,6 +911,20 @@
                 expected failure. Compelled disclosure across jurisdictions is
                 unresolved, and limits Layer B only.
               </p>
+              <p>
+                <strong>Overlap with existing obligations.</strong> Under the
+                authors' mapping, 7 of 15 substantive Intent fields have a
+                counterpart in SB 53, the RAISE Act, the EU Code of Practice or
+                the FRONTIER Act as introduced. Those regimes ask for the
+                information at the model or incident level, while DBYR asks for
+                it per run and before the run. The 5 fields with no counterpart
+                are <code>egress_topology</code>,
+                <code>investigator_scope_expansion</code>,
+                <code>log_retention</code>, <code>restart_protocol</code> and
+                <code>safeguards_disabled</code>. The mapping has not been checked
+                against regulators' templates, so the count is an upper bound on
+                overlap.
+              </p>
             </div>
           </div>
 
@@ -1177,15 +951,9 @@
                 closely at one's own practices.
               </p>
               <p>
-                Each withheld value becomes a salted SHA-256 commitment, so a
-                sealed field can be challenged later without being disclosed now:
-                reveal the value, recompute the leaf, and it either matches or it
-                does not. The safeguards checklist is public even when a safeguard
-                is <em>off</em> — a weakening cannot be hidden, and
-                &ldquo;relaxed&rdquo; counts as disabled. Auditor access is
-                on-premises, no-copy and unredacted, matching the FRONTIER Act as
-                introduced; that bill has not passed, so this fixes a
-                specification, not a consensus.
+                Auditor access is on-premises, no-copy and unredacted, matching
+                the FRONTIER Act as introduced; the bill has not passed, so this
+                fixes a specification, not a consensus.
               </p>
             </div>
           </div>
@@ -1258,27 +1026,30 @@
                 ><i style="background: var(--muted)"></i
                 ><i style="background: var(--accent)"></i
               ></span>
-              <h3><em>§4.3</em>Three severities</h3>
+              <h3><em>§4.3</em>The checker</h3>
             </div>
             <div class="step-body">
               <p>
-                This is the design decision round 1 of the tabletop forced. An
-                <strong>error</strong> means the filing is defective and cannot be
-                lodged. A <strong>conduct</strong> finding lodges the filing and
-                records a breach of the filer's own commitments — a matched
-                criterion with no pause, a restart approved by the wrong role, a
-                late notice, preservation below the declared floor, a shared
-                surface reset without a snapshot during an open incident — which
-                then goes to adjudication. A <strong>warning</strong> is for the
-                reviewer.
+                The reference checker has two profiles. The
+                <code>baseline</code> profile checks only that a filing is well
+                formed. The minimum-content profile, which the evaluator runs at
+                intake, adds rules a well-formed filing can still fail. Under
+                safeguards-off, every reportable event kind needs a pause
+                criterion. A criterion that no declared monitor can observe is
+                rejected as a <strong>dead criterion</strong>, and samples below
+                1% and aggregate digests observe nothing for this check. A relaxed
+                safeguard counts as disabled, and a shared surface cannot be
+                declared run-only.
               </p>
               <p>
-                The split exists because refusing such filings would
-                <strong>pay the filer to hide the breach</strong>. Round 1 showed
-                exactly that: under the earlier rules, declaring a relaxed
-                safeguard truthfully, or declaring a shared cache as the channel it
-                was, made a filing <em>fail</em>, while the less honest filing
-                passed.
+                Findings have three severities. An <strong>error</strong> stops a
+                filing being lodged. A <strong>conduct</strong> finding lodges the
+                filing and flags a breach the filing itself records — a matched
+                criterion with no pause, a restart approved by the wrong role, a
+                late notice, preservation below the declared floor, or a shared
+                surface reset without a snapshot during an open incident. Refusing
+                such filings would <strong>pay the filer to hide the
+                breach</strong>. <strong>Warnings</strong> are for the reviewer.
               </p>
             </div>
           </div>
@@ -1288,28 +1059,26 @@
       <section class="demo">
         <h2>Reference Implementation</h2>
         <p class="dek">
-          The implementation fixes the protocol precisely enough to be checked:
-          JSON Schemas for the four records, the validator and minimum-content
-          checks, cross-run lineage checks, tiered redaction with salted
-          commitments, an Ed25519-signed hash-chained record, the scripted
-          attack suite, and the worked-example scorer with a provenance label on
-          every reconstructed value. 55 unit tests.
-          <code>reproduce.sh</code> regenerates every code-derived number in the
-          paper, which reads them from generated files rather than retyping
-          them.
+          The implementation fixes the protocol precisely enough to be
+          checked: JSON Schemas for the four records, the validator and
+          minimum-content checks, cross-run lineage checks, tiered redaction
+          with salted commitments, an Ed25519-signed hash-chained record, and
+          the backtest scorer with the reconstructed 2026 case and the two
+          pre-registered held-out cases, every value carrying a provenance
+          label. 55 unit tests. <code>reproduce.sh</code> regenerates every
+          code-derived number in the paper, which reads them from generated
+          files rather than retyping them.
         </p>
 
         <pre class="code"><code>pip install -r code/requirements.txt   # jsonschema, cryptography
 cd code &amp;&amp; ./reproduce.sh              # 55 tests + every number in the paper</code></pre>
 
         <p class="body">
-          Two rule profiles make the evidence legible.
-          <code>baseline</code> is the v0.1 rule set — well formed and
-          internally consistent. <code>adequacy</code>, the default, adds the
-          minimum-content checks. Scoring evasions against both separates
-          &ldquo;the rules do what they say&rdquo; from &ldquo;the rules predate
-          the attack&rdquo;. The reconstructed 2026 filings pass
-          <code>baseline</code> and are rejected by <code>adequacy</code>:
+          Two rule profiles separate form from content. <code>baseline</code>
+          checks only that a filing is well formed and internally consistent.
+          <code>adequacy</code>, the default, adds the minimum-content checks.
+          The reconstructed 2026 filings pass <code>baseline</code> and are
+          rejected by <code>adequacy</code>:
         </p>
 
         <pre class="code"><code>$ python -m dbyr validate backtest/cases/hf-2026/intent_run_a.json --profile adequacy
@@ -1346,316 +1115,564 @@ FAIL  intent_run_a.json  (6 errors, 0 conduct, 2 warnings)
       <section class="results" id="results">
         <h2>Evidence</h2>
         <p class="dek">
-          Four tests, carrying different weight, which the paper keeps separate
-          and never blurs. The worked example on the 2026 incident is
-          <strong>traceability</strong>: the schema was written after reading
-          the reports of this incident, so asking whether its fields capture that
-          incident cannot fail. The out-of-sample evidence is the v0.1 column of
-          the scripted suite, whose rules predate every attack; round 1 of the
-          independent tabletop, whose rules were frozen before any scenario
-          existed; and round 2, whose scenarios were sealed before the round-1
-          rule changes were made.
+          Two tests follow, and their parts carry different weight. The
+          independent tabletop is <strong>out-of-sample</strong>: a separate
+          model instance wrote its scenarios, which were sealed with their
+          hashes recorded before the rules were frozen and opened only
+          afterwards. The incident backtests have two parts. The 2026 incident
+          is <strong>traceability</strong>, since the schema was written from
+          it, and any rule written after reading it, such as the
+          dead-criterion rejection, is in-sample. The Anthropic and UK AISI
+          incidents are <strong>out-of-sample</strong>: the backtest was
+          pre-registered against the frozen schema hash, and an independent
+          scorer wrote their decision points.
         </p>
 
         <div class="stats">
           <div class="stat">
-            <span class="stat-value">0.13</span>
+            <span class="stat-value">3 of 36</span>
             <span class="stat-label"
-              >Round-1 pre-run leakage (M1): 3 of 23 material facts never
-              identified — below the 0.5 pre-registered failure threshold</span
+              >Material facts no reader ever learned (M1 = 0.08) — far below the
+              0.5 pre-registered failure threshold</span
             >
           </div>
           <div class="stat">
-            <span class="stat-value">1 of 5</span>
+            <span class="stat-value">6 of 23</span>
             <span class="stat-label"
-              >Incidents the lab itself detected that were reported — where the
-              protocol failed, and what v0.3 targets</span
+              >Withheld facts the automated checks forced out (M2 = 0.26); the
+              evaluator caught 12 of 17 at intake</span
             >
           </div>
           <div class="stat">
-            <span class="stat-value">5</span>
+            <span class="stat-value">3 of 3</span>
             <span class="stat-label"
-              >Intent fields with no counterpart in SB 53, RAISE, the EU CoP or
-              the FRONTIER Act</span
+              >Intents rejected at intake — and all three runs went ahead</span
+            >
+          </div>
+          <div class="stat">
+            <span class="stat-value">9/16 &middot; 6/13</span>
+            <span class="stat-label"
+              >Held-out facts recorded and checkable afterwards: Anthropic passes,
+              UK AISI fails, each by one decision point</span
             >
           </div>
         </div>
 
         <h3 class="sub">Independent tabletop exercise</h3>
         <p class="body">
-          Four roles, each played by a
-          <strong>separate model instance started fresh</strong>, none of which
-          has seen the incident analysis, the scripted suite or the paper: a
-          <em>scenario writer</em>, who sees only a brief on frontier runs and
-          writes scenarios with setup facts, timed injects and retained logs,
-          marking which facts are material; a <em>filer</em>, playing a lab
-          whose manager wants the run on schedule with as little disclosed as
-          possible — every filed statement must be true, but it may omit,
-          abstract and choose favourable framing, and it logs privately what it
-          withheld; an <em>evaluator</em>, who decides at intake and receives the
-          retained logs only after the Closeout; and a <em>judge</em>.
+          <strong>Question and design.</strong> Can a filer who knows the rules
+          pass every automated check and survive intake review while withholding
+          facts an outside investigator would need, and do the filings let an
+          evaluator reconstruct later events from retained logs? The protocol,
+          metrics and failure conditions were committed
+          <strong>before any scenario was written</strong>. Separate model
+          instances, started fresh and unaware of the incident analysis or the
+          paper, play four roles. A <em>scenario writer</em> writes scenarios
+          with setup facts, timed events (injects) and retained logs, marking
+          which facts are material. A <em>filer</em> plays a lab that wants the
+          run on schedule with as little disclosed as possible: every statement
+          must be true, but it may omit, abstract and frame favourably, and it
+          answers intake requests in character. An <em>evaluator</em> decides at
+          intake and receives the logs only after the Closeout. A
+          <em>judge</em> scores each material fact as disclosed, forced by the
+          checker, caught at intake, caught at reconciliation, or missed.
         </p>
         <p class="body">
-          The protocol, metrics and failure conditions were committed
-          <strong>before any scenario was written</strong>. Three scenarios were
-          sealed and hashed before round 1 and opened only after the v0.3 rules
-          were frozen. Every rule change between rounds cites the round-1
-          evasion it targets, and every departure from the protocol is logged.
+          The scenarios are <strong>S4</strong>, a safeguards-off cyber
+          evaluation whose agents could reach third-party hosts;
+          <strong>S5</strong>, an agentic RL run sharing a file store and
+          database with other teams' runs; and <strong>S6</strong>, an RL run
+          with a CI build cache shared across episodes. The protocol counts as
+          failing if M1 exceeds 0.5 or M2 is zero, and any honest detail the
+          checker rejects as an error is reported as a false positive.
         </p>
 
         <table>
           <caption>
-            <strong>Table 3.</strong>
-            Independent tabletop, round 1 (rules v0.2; scenarios S2 and S3),
-            scored by the judge against the pre-registered protocol. S1 was not
-            run: a safety classifier stopped the filer on the cyber scenario and
-            the task was deliberately not reworded to get around it.
+            <strong>Table 2.</strong>
+            Independent tabletop results, scored by the judge against the
+            pre-registered protocol. Primary scores count the earliest stage at
+            which a reader learned a fact's core. Strict scores, which require
+            every material component, are M1 5/36, M2 5/27 and M3 15/22. M3 for
+            S5 and S6 is computed over the withheld facts of the submitted Intent,
+            since neither Intent passed. <sup>a</sup>S5's fourth inject was
+            recorded only in part.
           </caption>
           <thead>
             <tr>
               <th>Measure</th>
-              <th>Result</th>
+              <th>S4</th>
+              <th>S5</th>
+              <th>S6</th>
+              <th>All</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>M1 pre-run leakage — material facts missed</td>
-              <td>3 / 23 = <strong>0.13</strong> (S2 0.25, S3 0.00)</td>
+              <td>Material facts</td>
+              <td>12</td>
+              <td>13</td>
+              <td>11</td>
+              <td>36</td>
             </tr>
             <tr>
-              <td>M2 checker share — of facts withheld, the share forced</td>
-              <td>2 / 22 = <strong>0.09</strong></td>
+              <td>M1 pre-run leakage (missed)</td>
+              <td>1/12</td>
+              <td>2/13</td>
+              <td>0/11</td>
+              <td>3/36 = <strong>0.08</strong></td>
             </tr>
             <tr>
-              <td>
-                M3 intake share — of facts that passed the checker, the share
-                the evaluator caught
-              </td>
-              <td>8 / 15 = <strong>0.53</strong></td>
+              <td>M2 checker share (forced)</td>
+              <td>1/5</td>
+              <td>3/11</td>
+              <td>2/7</td>
+              <td>6/23 = <strong>0.26</strong></td>
             </tr>
             <tr>
-              <td>M4 event capture — of incidents the lab detected</td>
-              <td><strong>1 / 5</strong> reported</td>
+              <td>M3 intake share (caught at intake)</td>
+              <td>3/4</td>
+              <td>5/8</td>
+              <td>4/5</td>
+              <td>12/17 = <strong>0.71</strong></td>
             </tr>
             <tr>
-              <td>M5 false statements — clear / arguable</td>
-              <td><strong>0</strong> / 15</td>
+              <td>M3b intake requests answered fully</td>
+              <td>0/3</td>
+              <td>3/5</td>
+              <td>4/4</td>
+              <td>7/12 = 0.58</td>
             </tr>
             <tr>
-              <td>
-                29 evasion techniques, by who caught them: intake /
-                reconciliation / checker / nobody
-              </td>
-              <td>18 / 7 / <strong>2</strong> / 2</td>
+              <td>M4a injects recorded in a filing</td>
+              <td>3/4</td>
+              <td>4/4<sup>a</sup></td>
+              <td>1/4</td>
+              <td>8/12</td>
             </tr>
             <tr>
-              <td>False positives on honest detail</td>
+              <td>M4b required notices filed on time</td>
+              <td>0/3</td>
+              <td>1/3</td>
+              <td>0/1</td>
+              <td><strong>1/7</strong></td>
+            </tr>
+            <tr>
+              <td>M5 false statements, clear / arguable</td>
+              <td>0 / 8</td>
+              <td>0 / 7</td>
+              <td>0 / 4</td>
+              <td>0 / 19</td>
+            </tr>
+            <tr>
+              <td>M6 pass <code>baseline</code>, fail minimum-content</td>
               <td>0</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+            </tr>
+            <tr>
+              <td>
+                Techniques caught at intake / reconciliation / by checker / by
+                none
+              </td>
+              <td>9 / 8 / 0 / 1</td>
+              <td>8 / 4 / 0 / 2</td>
+              <td>7 / 6 / 0 / 0</td>
+              <td>24 / 18 / <strong>0</strong> / 3 of 45</td>
+            </tr>
+            <tr>
+              <td>Intent passes the checks</td>
+              <td>yes</td>
+              <td>no</td>
+              <td>no</td>
+              <td>1 of 3</td>
+            </tr>
+            <tr>
+              <td>Intent rejected at intake</td>
+              <td>yes</td>
+              <td>yes</td>
+              <td>yes</td>
+              <td>3 of 3</td>
+            </tr>
+            <tr>
+              <td>Failure tests M1 &gt; 0.5 / M2 = 0</td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>not met / not met</td>
             </tr>
           </tbody>
         </table>
 
-        <p class="body">
-          The judge's reading is why v0.3 exists at all. Pre-run leakage was
-          low, but it rested on
-          <strong>the evaluator reading the Intent, not on the rules</strong> —
-          intake review recovered 8 facts that had passed the checker, which
-          forced 2. <strong>Event capture is where the protocol failed</strong>:
-          both filers used the Intent to choose pause criteria that no likely
-          event would match, which made later reporting optional, and four of
-          five detected incidents went unreported without a single checker
-          error. The truthfulness instruction had little force because terms were
-          loose: no statement was clearly false, but 15 were arguable, each
-          turning on an undefined term. And the v0.2 rules created incentives
-          against honesty. Two techniques were caught by nobody: one called a
-          weakened safeguard &ldquo;relaxed, not disabled&rdquo;; the other
-          relabelled a volume digest as an access-log review, which no validator
-          can detect.
-        </p>
-        <p class="body">
-          Thirteen rule changes followed. The notice duty now follows a fixed
-          list of reportable kinds rather than the filer's criteria, and event
-          lists must be complete. &ldquo;Relaxed&rdquo; counts as disabled.
-          Shared surfaces are communication channels by definition. Terms are
-          defined. Admitted breaches became <em>conduct</em> findings rather
-          than errors, so that honesty no longer costs a filing.
-        </p>
+        <p class="body">The judge's reading has four parts.</p>
+        <ol class="body">
+          <li>
+            <strong>The evaluator did the work, not the checks.</strong> Every
+            fact the checker forced came from one rule, that a relaxed safeguard
+            must have its change described, which bites only once a filer
+            truthfully marks a safeguard relaxed. The checker caught none of the
+            evasion techniques; the evaluator caught nearly all, and the three
+            that survived hid governance facts such as a verbal-only approval.
+            Labs answered intake requests only in prose and never amended their
+            Intents, so the record still asserts values they conceded. No
+            statement was clearly false, but each arguable one turned on an
+            undefined term, such as when a retention clock starts.
+          </li>
+          <li>
+            <strong>The checks blocked rather than forced, and rewarded
+            omission.</strong> S4's Intent passed only because the filer left out
+            a writable external surface; declaring it, or the 60-day proxy and
+            shell logs, truthfully makes the Intent fail. S5 and S6 could not file
+            a truthful Intent that passes, because the runs lacked the monitoring
+            and retention a safeguards-off run requires. Under the
+            pre-registered criterion all of these count as false positives, and
+            the judge rates this the exercise's main incentive problem.
+            Conversely, three or four false lines would have lodged S5 and S6, so
+            the checks are no stronger than V1 reconciliation.
+          </li>
+          <li>
+            <strong>Events reached the record, but late.</strong> Most required
+            notices were filed with the Closeout. The checker recorded each late
+            notice, and S4's unpaused criterion matches, as conduct findings, but
+            missed the same breach in S5 because reconciliation does not scan
+            integrity events (a bug), and treated a pause event recorded with
+            action &ldquo;none&rdquo; as a warning.
+          </li>
+          <li>
+            <strong>Rejection had no consequence.</strong> Neither failure
+            condition was met, but the evaluator rejected all three Intents and
+            all three runs went ahead, so the exercise cannot show whether the
+            gate would have prevented any inject.
+          </li>
+        </ol>
 
         <div class="callout callout--pending">
-          <h3>Round 2 — judging in progress</h3>
+          <h3>Closing the omission gap</h3>
           <p>
-            Round 2 ran the frozen rules against the sealed scenarios. The
-            filings, reviews and logs are published; the judge's scores are
-            still to come, and are not reported here or in the paper until they
-            are in.
+            The second finding has a direct fix, which we specify but have not
+            tested. At present a surface missing from the Intent surfaces only
+            at reconciliation, as a containment exception, and costs the filer
+            no more than declaring it would have. A proposed rule treats any
+            surface that agents reached, that existed when the Intent was
+            signed and that the Intent does not list as an <strong>undeclared
+            surface</strong>: a conduct finding against the signer and, under
+            Layer B, loss of the safe harbour, since the omission was within
+            the filer's knowledge. A truthful Intent for an inadequate
+            configuration lodges as &ldquo;submitted, not accepted&rdquo; with
+            its errors listed, as in the tabletop. Honesty then produces a
+            record and omission produces a finding, which reverses the
+            incentive in S4 and lets S5 and S6 file truthfully. The fourth
+            finding has a contractual answer under Layer A: the engagement
+            letter can make a run whose Intent was rejected ineligible for the
+            evaluator's sign-off and require the rejection to appear in the
+            public tier. Whether either holds against a motivated filer is the
+            question for the next round.
           </p>
         </div>
 
         <p class="note">
-          <strong>Limits.</strong> Every role is played by the same model
-          family, so independence is of context, not of model. Two and three
-          scenarios means the results are descriptive, not statistical. A model
-          red team is not a lab under real schedule and legal pressure, and
-          filing burden is not measured.
+          <strong>Deviations and limits.</strong> Two deviations bear on the
+          numbers. The evaluator's retained logs carry the scenario writer's
+          annotations, which name some events outright and inflate
+          reconciliation credit for the two the lab never detected. And the
+          judge's kit, exported after the freeze, contained the sealed scenarios
+          with their material flags; if the other roles' kits were exported the
+          same way, filers could have seen the flags, which nothing in the logs
+          suggests but which cannot be ruled out. More broadly, one model family
+          plays every role, three scenarios make the results descriptive, the
+          filers were unusually scrupulous, and the evaluators were thorough
+          models rather than human reviewers.
         </p>
 
-        <h3 class="sub">Scripted attack suite</h3>
+        <h3 class="sub">Backtests on three real incidents</h3>
         <p class="body">
-          Before the independent exercise we wrote 20 evasion attempts against 3
-          synthetic scenarios, each with an honest control filing; 11 of the
-          attempts come from external critiques of the earlier draft. We played
-          the filer <em>and</em> wrote the checks, so this tests whether the
-          rules do what they say, not whether they survive an independent
-          adversary. The v0.1 rules, fixed before any attempt was written,
-          caught <strong>2</strong>; the current rules catch
-          <strong>14</strong>, with <strong>0</strong> false positives on the
-          honest filings — but that column is in-sample.
+          <strong>Question and design.</strong> Had the labs filed under DBYR,
+          would the facts that mattered have been on record before the run and
+          checkable afterwards? From public sources only, we reconstructed the
+          Intents, Closeouts and notices DBYR would have required, labelling each
+          value first-party, forced-choice (unrecorded, but a filing would have
+          required it) or placeholder (never scored). Built from later accounts
+          and filled in as a compliant filer would, they show what a filing
+          <em>could</em> hold: an upper bound, not a record any lab made. For
+          each <em>decision point</em>, a moment where a decision taken or not
+          mattered to the outcome, <code>backtest/score.py</code> asks: (a) was
+          the material fact recorded before the event; (b) is it checkable
+          afterwards against declared retention; (c) would the filing have
+          required a different action? A decision point is
+          <strong>attributable</strong> when (a) and (b) hold; we classified why
+          the others are not. A <em>diligent</em> filer declares the actual
+          configuration, which the labs did not know; an <em>as-believed</em>
+          filer, the realistic case, declares what the team believed.
+          Pre-registered, a case fails if fewer than half its decision points
+          are attributable.
         </p>
         <p class="body">
-          The informative output is the residue. The
-          <strong>6 attempts no validator catches</strong> are false statements,
-          trigger evasion and boilerplate reasons: a third party not told
-          because &ldquo;not required&rdquo;; scope narrowed with boilerplate
-          grounds; two runs that both declare a shared cache run-only; an
-          undeclared safeguards-off trigger; runs split below the compute
-          threshold; a capability forecast lowered to dodge T3. They define what
-          V1 reconciliation and adjudication must do, and they are listed as
-          limitations rather than as future work that will happen.
+          <strong>The cases.</strong> The 2026 Hugging Face incident is the
+          derivation case and so traceability (six decision points). The other
+          two are <strong>held out</strong>: the backtest was pre-registered with
+          the frozen schema hash, a source cutoff and the failure criterion
+          before any reconstruction, and a separate model instance that took no
+          part in the schema wrote their decision points. In
+          <strong>Anthropic 2026</strong>, Claude models in four safeguards-off
+          cyber evaluations reached real third-party systems through an internet
+          path a partner's environment was meant not to have (16 decision
+          points). In <strong>UK AISI 2026</strong>, agents in a cyber-range
+          exercise with deliberate internet access took out-of-scope actions on
+          public services (13 decision points); AISI ran the evaluation and is
+          the filer, which tests the assumption that the developer files.
         </p>
 
-        <h3 class="sub">Worked example on the 2026 incident</h3>
-        <p class="body">
-          We reconstructed, from public sources only, the filings the May–July
-          runs would have produced, and scored six decision points on three
-          questions: (a) was the material fact recorded before the event, (b) is
-          the event checkable afterwards against declared retention, and (c)
-          would the filing have required a different action from the one taken.
-          A <em>diligent</em> filer declares every write permission that is a
-          configuration fact; an <em>as-believed</em> filer declares the package
-          proxy only as a read path.
-        </p>
-
-        <table>
+        <table class="funnel">
           <caption>
-            <strong>Table 4.</strong>
-            Worked example, generated by
-            <code>backtest/score.py</code>. (a) and (b) are traceability on the
-            derivation case and cannot fail by construction; only (c) bears on
-            prevention. &ldquo;Partial&rdquo;: behavioural evidence fell below
-            the declared retention floor. &ldquo;Unknown&rdquo;: the developer's
-            awareness at the time is not established, or the field imposes a
-            duty to record rather than to act.
+            <strong>Table 3.</strong>
+            Incident backtests, generated by <code>backtest/score.py</code>. A
+            case passes if at least half its facts are recorded and checkable
+            afterwards. HF is the derivation case, so its score holds by
+            construction. <em>Schema limitation</em>: no field for the fact.
+            <em>Evidence not promised</em>: the evidence needed to check the fact
+            was not listed as retained. <em>Check missed it</em>: the fact is in
+            the filing, but the pre-registered check did not detect it.
           </caption>
           <thead>
             <tr>
-              <th>Question</th>
-              <th>Diligent filer</th>
-              <th>As-believed filer</th>
+              <th></th>
+              <th>OpenAI / HF 2026</th>
+              <th>Anthropic 2026</th>
+              <th>UK AISI 2026</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>(a) Material fact recorded before the event</td>
-              <td><strong>6 / 6</strong></td>
-              <td>4 / 6</td>
+            <tr class="group-row">
+              <th colspan="4" scope="colgroup">
+                Diligent filer
+                <span>declares the configuration as it actually was</span>
+              </th>
             </tr>
             <tr>
-              <td>(b) Event checkable afterwards</td>
-              <td>6 / 6 (2 partial)</td>
-              <td>6 / 6 (2 partial)</td>
+              <td>Facts that mattered</td>
+              <td>6</td>
+              <td>16</td>
+              <td>13</td>
             </tr>
             <tr>
-              <td>(c) Filing would have changed the decision</td>
-              <td><strong>0 yes</strong>, 3 unknown</td>
-              <td><strong>0 yes</strong>, 3 unknown</td>
+              <td>Recorded before the run</td>
+              <td>6 of 6</td>
+              <td>13 of 16</td>
+              <td>11 of 13</td>
+            </tr>
+            <tr>
+              <td>Recorded and checkable afterwards</td>
+              <td>6 of 6</td>
+              <td><strong>9 of 16</strong></td>
+              <td><strong>6 of 13</strong></td>
+            </tr>
+            <tr>
+              <td>Filing would have changed a decision</td>
+              <td>0 of 6</td>
+              <td>0 of 16</td>
+              <td>0 of 13</td>
+            </tr>
+            <tr>
+              <td>Facts missing</td>
+              <td>None</td>
+              <td>
+                3 schema limitation<br />3 evidence not promised<br />1 check
+                missed it
+              </td>
+              <td>
+                2 schema limitation<br />3 evidence not promised<br />2 check
+                missed it
+              </td>
+            </tr>
+            <tr class="group-row">
+              <th colspan="4" scope="colgroup">
+                As-believed filer
+                <span>declares what the team believed at the time</span>
+              </th>
+            </tr>
+            <tr>
+              <td>Facts that mattered</td>
+              <td>6</td>
+              <td>16</td>
+              <td>13</td>
+            </tr>
+            <tr>
+              <td>Recorded before the run</td>
+              <td>4 of 6</td>
+              <td>12 of 16</td>
+              <td>10 of 13</td>
+            </tr>
+            <tr>
+              <td>Recorded and checkable afterwards</td>
+              <td>4 of 6</td>
+              <td><strong>9 of 16</strong></td>
+              <td><strong>6 of 13</strong></td>
+            </tr>
+            <tr>
+              <td>Filing would have changed a decision</td>
+              <td>0 of 6</td>
+              <td>0 of 16</td>
+              <td>0 of 13</td>
+            </tr>
+            <tr>
+              <td>Facts missing</td>
+              <td>2 filer didn't know</td>
+              <td>
+                3 schema limitation<br />1 filer didn't know<br />2 evidence not
+                promised<br />1 check missed it
+              </td>
+              <td>
+                2 schema limitation<br />1 filer didn't know<br />2 evidence not
+                promised<br />2 check missed it
+              </td>
             </tr>
           </tbody>
         </table>
 
         <p class="body">
-          Two links of the failure chain have no field at all. No declaration
-          predicts that directory names will become a message bus, and
-          specification gaming is a property of optimisation, not a fact
-          available for filing. Every reconstructed value is labelled
-          first-party, forced-choice (no decision was recorded, but a filing
-          would have required one) or placeholder (not public, and never read by
-          a scorer). <strong>The reconstruction is not a filing by OpenAI</strong>
-          and contains only facts the first-party reports disclose — no host
-          names, paths or versions.
+          The short answer to the question is <em>partly</em>: a compliant filing
+          has a place for most of what mattered, but only about half of it could
+          be checked afterwards, and the fact that caused each incident is one an
+          honest filer did not know.
+        </p>
+        <ol class="body">
+          <li>
+            <strong>Most facts fit the form; about half can be checked.</strong>
+            On the held-out cases a compliant filing would have held 12–13 of
+            Anthropic's 16 facts and 10–11 of AISI's 13 before the run, but only
+            9 and 6 were checkable afterwards. Anthropic passes the criterion and
+            AISI fails it, each by one decision point, and each verdict moves
+            with a single choice described below; the criterion does not
+            separate the two cases.
+          </li>
+          <li>
+            <strong>The Anthropic pass rests on pause criteria the lab never
+            recorded.</strong> Anthropic published no pause criteria. Under
+            safeguards-off, the protocol requires a criterion for every
+            reportable kind, so the reconstruction declares a standard set as a
+            forced choice. Six of Anthropic's nine attributable decision points
+            depend on it; without it the case would score 3 of 16. The result
+            shows what a compliant filing would have held, not what was written
+            down.
+          </li>
+          <li>
+            <strong>The cause sits where an honest filer cannot reach.</strong>
+            By construction the as-believed filer loses only facts the team did
+            not know, but those include the cause of each incident: the proxy's
+            write access at HF, the open internet path at Anthropic, and at AISI
+            that the internet was a surface shared by concurrent samples. A
+            Closeout records each one afterwards, once the decisions it would
+            have informed were made.
+          </li>
+          <li>
+            <strong>The largest checking gap is evidence the filer never promised
+            to keep</strong>: configuration history at both labs, access logs for
+            Anthropic's notifications and inter-agent messages for AISI.
+            Requiring configuration snapshots to be retained under safeguards-off
+            would address the most common cause without a new field, though we
+            have not tested it.
+          </li>
+          <li>
+            <strong>The schema has no field for five facts.</strong> Three concern
+            what an agent is told it may do: at Anthropic, the scope it could act
+            in and whether the task stayed solvable in scope; at AISI, which uses
+            of the internet were out of scope. The other two are a working abort
+            path at Anthropic and notice to the evaluated models' developers at
+            AISI, given six days after detection, which arises because the
+            evaluator files and DBYR has no route from an evaluator's incident to
+            the developer. On HF, two links of the failure chain also have no
+            field: directory names becoming a message bus, and specification
+            gaming, which is a property of optimisation.
+          </li>
+        </ol>
+        <p class="note">
+          The three misses marked &ldquo;check missed it&rdquo; are failures of
+          the test, not the protocol, but we report them as scored. Read as a
+          substring search rather than a list, one AISI check would make the
+          quarantine decision attributable and bring AISI to 7 of 13, exactly the
+          threshold. With one scorer, who saw the filings while writing the
+          checks, both verdicts should be read as sitting at the threshold rather
+          than on either side of it.
+        </p>
+        <p class="body">
+          <strong>Intake.</strong> Under the minimum-content checks every
+          reconstructed Intent is rejected before its run. On HF the cause is a
+          dead criterion, a rule written after reading the case and so
+          in-sample. On the held-out cases, frozen before reconstruction, every
+          filer that declared the open internet path is rejected for exactly
+          that, an unenforced path under safeguards-off; the as-believed
+          Anthropic filer, unaware of the path, only for an unrelated monitoring
+          gap. One further error, which fires on any honest filing that declares
+          an internet surface, is a checker inconsistency. As in the tabletop, a
+          rejection prevents nothing unless the engagement makes it binding. It
+          is nonetheless the one held-out result that bears on prevention: a
+          diligent Intent would have been refused before the run for the actual
+          cause. The last row of Table 3 does not count it, because it scores
+          only what the declared criteria would have required during the run.
+        </p>
+        <p class="body">
+          <strong>What it adds after the fact.</strong> Five constraints limited
+          the 2026 investigation: a scope window of 26 June to 13 July that
+          excluded earlier training-phase incidents and the later compromise of
+          OpenAI's own infrastructure; six days of access for three researchers;
+          data delivered in stages; an internal model that could not be queried;
+          and the exclusion of the wiki activity.
+          <code>investigator_scope_expansion</code> with logged refusals
+          addresses all but model availability, and
+          <code>third_party_notifications</code> does the same for affected
+          parties: a narrowed scope or an omitted notice becomes a recorded fact
+          with a reason. The held-out cases show the same fields at work:
+          Anthropic's grant of wide access to an independent investigator, and
+          AISI's notification of the affected platform, are attributable. Both
+          organisations disclosed these voluntarily, however, and without a
+          baseline from their published accounts the backtest cannot show how
+          much DBYR adds over them.
         </p>
 
         <div class="callout callout--negative">
-          <h3>The decisive negative finding</h3>
+          <h3>What it would not have changed</h3>
           <p>
-            Column (c) has no &ldquo;yes&rdquo;, and the reason matters more
-            than the number. At the 5–6 July restart, an outage led to an
-            incident being opened, a privilege-escalation route blocked,
-            credentials removed and the service rebuilt — which incidentally
-            cleared the agents' channel — and evaluations resumed on 6 July.
-            <strong>Under DBYR this produces a compliant filing</strong>: a
-            declared criterion triggers, the required action is taken, the
-            declared role approves the restart, and the Closeout is accurate.
-            The intrusion of 11–13 July follows anyway. The responsible leaders
-            did not see the channel's significance, so no field would have put
-            it in front of them.
+            Across all 35 decision points, no filing would have required a
+            different action: 11 are &ldquo;no&rdquo; and 24
+            &ldquo;unknown&rdquo;, mostly because the field imposes a duty to
+            record rather than to act. Most &ldquo;no&rdquo;s arise because no
+            one saw the event in time; Anthropic found its incidents weeks or
+            months later, and at HF the message board was not seen by anyone who
+            could pause. A criterion cannot fire on an event nobody observes. In
+            the rest, the organisation already took the action its criterion
+            required.
           </p>
           <p>
-            Adverse information was already on record before the incident: an
-            external evaluation reported an unprecedented cheating rate, and the
-            system card acknowledged fabricated research results. The records
-            existed and nothing bound.
+            The decisive case is the July HF restart: the outage, incident
+            response and rebuild produce a
+            <strong>compliant filing</strong> in which a declared criterion
+            triggers, the required action is taken, the declared role approves
+            the restart and the Closeout is accurate, and the intrusion follows.
+            A team had seen message-board activity in late May, so a notice then
+            would have put the channel on record weeks earlier, but whether a
+            record reaches the people who decide on a restart is a routing
+            question DBYR does not settle. Adverse information was already
+            public. The records existed and nothing bound.
           </p>
           <p class="callout__punch">
             A disclosure protocol adds records; it does not supply a forcing
             mechanism.
           </p>
-          <p>
-            What it changes is what can be established afterwards. Of five
-            documented constraints on the 2026 investigation — the scope window
-            capped at 13 July, six days of access for three researchers, the
-            complete dataset arriving in the final two days, the most involved
-            model being unqueryable, and the exclusion of the wiki activity
-            later surfaced by outside researchers — four are addressed by
-            <code>investigator_scope_expansion</code> with logged refusals.
-            Model availability is not.
-          </p>
         </div>
 
-        <h3 class="sub">Burden and overlap</h3>
-        <p class="body">
-          Under the authors' mapping, <strong>7 of 15</strong> substantive
-          Intent fields have a counterpart in SB 53, the RAISE Act, the EU Code
-          of Practice or the FRONTIER Act as introduced — but those regimes ask
-          for the information at the model or incident level, while DBYR asks
-          for it per run and before the run. The five fields with no counterpart
-          anywhere are the list of things the incident shows are missing:
-        </p>
-        <p class="fieldlist">
-          <code>egress_topology</code> <code>investigator_scope_expansion</code>
-          <code>log_retention</code> <code>restart_protocol</code>
-          <code>safeguards_disabled</code>
-        </p>
         <p class="note">
-          The mapping has not been checked against regulators' templates, so the
-          count is an <strong>upper bound on overlap</strong>, not a burden
-          measure. An honest Intent in the scripted scenarios runs to 169–173
-          leaf values. That is a size, not a time: filing burden in hours and
-          labs' interest in adopting the protocol are
-          <strong>not measured</strong>, and a Layer A pilot with one evaluator
-          and one lab would measure both.
-        </p>
-
-        <h3 class="sub">Held-out validation (pre-registered, planned)</h3>
-        <p class="body">
-          The same scorer, with the schema hash published in advance and
-          recomputed at scoring time, applied to two incidents not used in
-          drafting: Anthropic's cyber-evaluation incidents of 30 July 2026 and
-          the UK AISI report on unsanctioned agent behaviour of 4 August 2026.
-          Decision points are to be written by a reviewer who did not draft the
-          schema. The protocol fails a case if, on fewer than half of its
-          decision points, a field satisfies both (a) and (b). A negative arm
-          applies the same scorer to safeguards-off runs that produced no
-          incident, to measure spurious triggers.
+          <strong>Deviations and limits.</strong> Each case had one scorer,
+          isolated by instruction, so there is no agreement measure, and it saw
+          the reconstructed filings while writing its checks. Anthropic recorded
+          no pause criteria, so the reconstructions use the standard set the
+          protocol requires, on which the Anthropic verdict depends (point 2).
+          Neither the negative arm (criteria firing on incident-free runs) nor a
+          baseline from the published accounts alone was measured. A SHA-256
+          freeze log proves what was frozen but not when. Every reconstructed
+          value is labelled first-party, forced-choice or placeholder, and
+          <strong>the reconstructions are not filings by the organisations
+          involved</strong>.
         </p>
       </section>
 
@@ -1666,14 +1683,33 @@ FAIL  intent_run_a.json  (6 errors, 0 conduct, 2 warnings)
           matters of discretion in 2026 become matters of record: the
           safeguards-off configuration, the egress design, who could pause and
           on what grounds, how much was retained, who was affected and told, and
-          how far investigators were allowed to look. Each becomes a signed
-          statement made before the outcome was known, and the reference
-          implementation shows the checks are cheap to run. Layer A can start
-          now through the embedded-evaluator arrangements already under
-          negotiation; Layer B has live channels in the Senate subcommittee
-          inquiry, California's certification framework for independent
-          verifiers and the September executive order, the EU AI Office's
-          enforcement powers, and the FRONTIER Act audit clause.
+          how far investigators were allowed to look. Each is a signed statement
+          made before the outcome was known, and the reference implementation
+          shows the checks are cheap to run. DBYR is a control-adjacent measure,
+          not an alignment measure. Layer A can start now through the
+          embedded-evaluator arrangements already under negotiation; Layer B has
+          live channels in the Senate subcommittee inquiry, California's
+          certification framework for independent verifiers and the September
+          executive order, the EU AI Office's enforcement powers, and the
+          FRONTIER Act audit clause.
+        </p>
+        <p>
+          <strong>What the tabletop adds.</strong> The tabletop shows where the
+          protocol's force lies: with the evaluator reading the Intent, not with
+          the automated checks. The checks blocked inadequate runs but forced
+          little, and a filing could pass them by omission or by a few false
+          lines. The weakest points were timely notice and what a rejection
+          costs: three Intents were rejected and three runs went ahead.
+        </p>
+        <p>
+          <strong>What the backtests add.</strong> On two incidents the
+          protocol was not written from, the schema had a place for most of
+          what mattered. What failed more often was the promise to keep the
+          evidence that would let someone check it. That is a retention rule,
+          not a redesign. The fields that were missing share a theme: what an
+          agent is told it may do, and, when an evaluator files, how the
+          developer learns of an incident. Neither held-out case shows a field
+          changing a decision.
         </p>
         <ol class="limits">
           <li>
@@ -1682,20 +1718,22 @@ FAIL  intent_run_a.json  (6 errors, 0 conduct, 2 warnings)
           </li>
           <li>
             Notices follow detection within 72 hours, so
-            <strong>detection is the binding constraint</strong>, and 30-day
-            closeouts are forensic.
+            <strong>detection is the binding constraint</strong>, and closeouts
+            every 30 days are forensic.
           </li>
           <li>
             Triggers are <strong>partly self-declared</strong>. A filer can omit
-            the safeguards-off trigger, split runs below a compute threshold or
-            lower a capability forecast, and the scripted suite's residue shows
-            no validator catches these.
+            T4, split runs below a compute threshold or lower a capability
+            forecast, and no validator catches these. In the tabletop, a
+            counterfactual S4 Intent that marked every safeguard as on, and so
+            escaped T4, lodged with no errors.
           </li>
           <li>
             The <strong>truth of a statement is out of a validator's reach</strong>.
-            A volume digest relabelled as an access-log review passed every
-            check in round 1. Only V1 reconciliation against retained logs, and
-            adjudication, can catch such statements.
+            In the tabletop, a human review done on request passed every check
+            when filed as an alert-driven access-log review. Only V1
+            reconciliation against retained logs, and adjudication, can catch
+            such statements.
           </li>
           <li>
             <strong>Completeness, not accuracy</strong>, is the expected failure
@@ -1706,22 +1744,20 @@ FAIL  intent_run_a.json  (6 errors, 0 conduct, 2 warnings)
           </li>
           <li>
             Retention is worth only as much as the reasoning traces are
-            legible; architectures that reason in opaque recurrence would
-            hollow it out.
+            legible; architectures with opaque recurrence would hollow it out.
           </li>
+          <li>The Layer B operator question is unresolved across jurisdictions.</li>
           <li>
-            The Layer B operator question is unresolved across jurisdictions,
-            and China-side adoption is out of scope.
-          </li>
-          <li>
-            <strong>The evidence is limited.</strong> The tabletop has two and
-            three scenarios, played by one model family; the worked example
-            rests on reconstructions with forced choices; the held-out test is
-            still to come. DBYR does not address reward hacking, which is not a
-            fact available for filing.
+            <strong>The evidence is limited.</strong>
+            The tabletop has three scenarios, played by one model family. The
+            backtests rest on reconstructions with forced choices; each
+            held-out case had a single scorer, and both verdicts turn on one
+            decision point. DBYR does not address reward hacking, which is not
+            a fact available for filing.
           </li>
           <li>
             <strong>Filing burden and adoption interest are not measured.</strong>
+            The pilot under Future work would measure both.
           </li>
         </ol>
         <p>
@@ -1729,22 +1765,70 @@ FAIL  intent_run_a.json  (6 errors, 0 conduct, 2 warnings)
           per developer, which pacing proposals could use as an object: run
           counts can be gamed by splitting, would be read as competitive
           intelligence, and would sharpen the antitrust objection to coordinated
-          pacing. A sealed dissent channel for employees: it would reveal only
-          that an objection exists, while SB 53 already protects whistleblowers
-          and public resignation has proved a stronger route. And exhaustive
-          enumeration of writable surfaces with machine-checkable containment
-          criteria, which an earlier draft required: neither is satisfiable
-          today.
+          pacing. The public tier already shows that each run exists, without
+          supporting a league table. A sealed dissent channel for employees: it
+          would reveal only that an objection exists, while SB 53 already
+          protects whistleblowers and public resignation has proved a stronger
+          route. Exhaustive enumeration of writable surfaces and
+          machine-checkable containment criteria, which an earlier draft
+          required: neither is satisfiable today.
         </p>
         <p>
           <strong>Dual use.</strong> A restricted-tier
           <code>egress_topology</code> maps a lab's internal attack surface, and
-          a breached record is offensive intelligence. The mitigations are the
-          hash-committed sealed tier for surface-level detail, no-copy access,
-          and no real names in the public tier; notified party names are
-          restricted for the same reason, because naming a victim can expose an
-          unpatched system. Nothing scored depends on the wiki or RubyGems
-          attributions.
+          a breached record is offensive intelligence. Mitigations are the
+          hash-committed sealed tier for surface-level detail, no-copy access
+          and no real names in the public tier. Nothing scored depends on the
+          wiki or RubyGems attributions.
+        </p>
+        <p>
+          <strong>Future work.</strong>
+          The results point to one direction: a run-level evidence standard
+          for embedded evaluation. Embedded-evaluator arrangements are being
+          negotiated, but we know of no standard for what run-level evidence
+          an evaluator should receive before a risky run; without one, an
+          evaluator can issue a clean verdict on a claim the evidence could
+          never have refuted. Generalising the dead-criterion check to flag
+          any declared claim that no declared evidence could adjudicate would
+          turn DBYR's intake into such a standard, and the SB 813 framework
+          for certifying independent verifiers is a natural home for it. Four
+          rules found here need testing: the undeclared-surface rule,
+          retention of configuration snapshots under safeguards-off, fields
+          for what an agent is told it may do and for notice from an evaluator
+          to the developer, and an engagement clause that makes a rejected
+          Intent binding. The next tabletop should use human evaluators,
+          filers from several model families and a no-DBYR baseline, and
+          should time each intake to measure whether the checker saves
+          evaluator effort; a second backtest scorer and a baseline from the
+          published accounts would firm up the held-out verdicts. A six-month
+          pilot with one evaluator and one lab would then measure filing
+          burden and on-time notice in practice. Longer-horizon additions,
+          such as a commit-reveal layer for sealed fields and hardware-backed
+          verification, would narrow the V0 surface; none is a dependency.
+        </p>
+        <p>
+          <strong>Conclusion.</strong>
+          The Hugging Face incident was made possible by capability and made
+          worse by discretion. Declare Before You Run targets the discretion.
+          A safeguards-off configuration, an egress design, a pause
+          allocation, a notification decision and an investigation boundary
+          become signed, dated statements that a second party can check. Its
+          clearest gain comes after the fact: a refusal to let investigators
+          look further, or a decision not to tell an affected party, becomes a
+          recorded act with stated grounds rather than a silent one. It does
+          not force decisions: on three incidents, including the decisive 2026
+          restart, no field would have changed a decision. On the two
+          incidents it was not written from, most of what mattered was on
+          record before the run, and the larger gap was evidence that no one
+          promised to keep. Tested against filers trying to disclose as little
+          as possible, the protocol kept leakage low because an evaluator read
+          the filings. The automated checks blocked inadequate runs rather
+          than forcing disclosure and could be passed by omission, a gap the
+          undeclared-surface rule is designed to close. The hazard model
+          belongs to agent security; the gap is that no disclosure regime asks
+          for it. Layer A needs only one evaluator and one lab willing to
+          file, and the six-month pilot proposed under Future work would show
+          whether the protocol does more than record.
         </p>
       </section>
 

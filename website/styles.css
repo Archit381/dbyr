@@ -59,6 +59,43 @@ h1 {
   margin: 0 0 0.75rem;
 }
 
+.award {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 100%;
+  margin: 0 0 1.25rem;
+  padding: 0.45rem 1rem;
+  background: #fff6db;
+  border: 1px solid #e8c766;
+  border-radius: var(--radius-pill);
+  color: #6b4e00;
+  font-size: 0.875rem;
+  line-height: 1.35;
+  text-decoration: none;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+
+.award:hover {
+  border-color: #c99a1c;
+  box-shadow: 0 6px 16px rgba(201, 154, 28, 0.18);
+  transform: translateY(-1px);
+}
+
+.award svg {
+  flex: none;
+  width: 1.125rem;
+  height: 1.125rem;
+  color: #b8860b;
+}
+
+.award strong {
+  font-weight: 700;
+}
+
 .subtitle {
   font-family: var(--serif);
   font-size: clamp(1.05rem, 4.5vw, 1.3rem);
@@ -314,7 +351,7 @@ figure svg {
 }
 
 .fig-label.on-dark {
-  fill: var(--fg);
+  fill: var(--dark-fg);
 }
 
 .fig-sublabel {
@@ -324,7 +361,7 @@ figure svg {
 }
 
 .fig-sublabel.on-dark {
-  fill: var(--muted);
+  fill: #a7acb5;
 }
 
 .fig-box {
@@ -334,20 +371,19 @@ figure svg {
 }
 
 .fig-box.tint {
-  fill: #ffffff;
+  fill: var(--tint);
   stroke: var(--accent);
 }
 
 .fig-box.mid {
-  fill: #ffffff;
+  fill: var(--tint);
   stroke: var(--accent);
   stroke-width: 2;
 }
 
 .fig-box.dark {
-  fill: #ffffff;
-  stroke: var(--fg);
-  stroke-width: 1.5;
+  fill: var(--dark-bg);
+  stroke: var(--dark-bg);
 }
 
 .fig-arrow {
@@ -366,14 +402,25 @@ figure svg {
   fill: var(--fg);
 }
 
+.fig-head {
+  fill: var(--tint);
+}
+
+.fig-note {
+  font-family: var(--sans);
+  font-size: 10.5px;
+  font-style: italic;
+  fill: var(--muted);
+}
+
 .fig-dot-public {
-  fill: var(--accent);
+  fill: #ffffff;
+  stroke: var(--accent);
+  stroke-width: 1.5;
 }
 
 .fig-dot-restricted {
-  fill: none;
-  stroke: var(--accent);
-  stroke-width: 1.5;
+  fill: var(--fg);
 }
 
 /* ---------- incident timeline (Figure 3) ---------- */
@@ -382,9 +429,36 @@ figure svg {
   stroke-width: 1;
 }
 
+.tl-grid.dashed {
+  stroke-dasharray: 3 2;
+}
+
 .tl-lane {
   stroke: var(--border);
-  stroke-width: 1;
+  stroke-width: 1.5;
+}
+
+.tl-span {
+  stroke: var(--accent);
+  stroke-width: 5;
+  stroke-linecap: round;
+  opacity: 0.45;
+}
+
+.tl-span.muted {
+  stroke: var(--muted);
+}
+
+.tl-dot-decision {
+  fill: var(--fg);
+  stroke: #ffffff;
+  stroke-width: 1.5;
+}
+
+.tl-dot-context {
+  fill: #ffffff;
+  stroke: var(--fg);
+  stroke-width: 1.5;
 }
 
 .tl-month {
@@ -404,12 +478,6 @@ figure svg {
 .tl-dot-primary {
   fill: var(--accent);
   opacity: 0.4;
-}
-
-.tl-dot-primary-key {
-  fill: var(--accent);
-  stroke: var(--dark-bg);
-  stroke-width: 1;
 }
 
 .tl-dot-secondary {
@@ -664,6 +732,29 @@ th {
 
 tbody tr:last-child td {
   border-bottom: none;
+}
+
+/* group headers inside a table body (Table 3: diligent / as-believed) */
+tbody .group-row th {
+  color: var(--fg);
+  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+  padding-top: 1.25rem;
+}
+
+tbody .group-row:first-child th {
+  padding-top: 0.65rem;
+}
+
+tbody .group-row th span {
+  font-weight: 400;
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-left: 0.4rem;
+}
+
+table.funnel td {
+  vertical-align: top;
 }
 
 .note {
