@@ -7,6 +7,7 @@ Stages, in the order an evaluator meets them (paper Section 4):
   reconcile   each Closeout against the Intent version in force when it was filed
   notices     ExceptionNotice timeliness and coverage, per Closeout
   lineage     runs reaching the same persistent shared surface cite each other
+  deployment  each deployed system against what was on record about its base runs
   disclosure  public / restricted / sealed views of every lodged filing
   record      optional: sign and append lodged filings to a hash-chained ledger
 
@@ -26,10 +27,11 @@ from .filingset import FilingSet
 from .findings import Finding
 from .integrity import schema_hash
 from .ledger import Ledger
-from .rules import check_lineage, check_notices, in_force, reconcile, validate_record, version_rules
-from .rules.common import ts
+from .rules import (check_deployment, check_lineage, check_notices, in_force, reconcile, system_rules,
+                    validate_record, version_rules)
+from .rules.common import owner, ts
 
-STAGES = ("records", "versions", "reconcile", "notices", "lineage")
+STAGES = ("records", "versions", "reconcile", "notices", "lineage", "deployment")
 SEVERITIES = ("error", "conduct", "warning")
 
 
@@ -38,36 +40,58 @@ def check_set(filings: dict[str, dict]) -> list[tuple[str, Finding]]:
     for key, rec in filings.items():
         out += [(key, f) for f in validate_record(rec)]
     good = {k: r for k, r in filings.items() if isinstance(r, dict) and "record_type" in r}
+    # Every version of a run's Intent is kept, so amendments stay visible. [R1 judge item 9]
+    # A deployed system's SystemRuntimeRecords are kept the same way, by system_id.
     versions: dict[str, list[dict]] = {}
+    systems: dict[str, list[dict]] = {}
     for r in good.values():
         if r["record_type"] == "TrainingRunIntent":
             versions.setdefault(r["run_id"], []).append(r)
-    for v in versions.values():
+        elif r["record_type"] == "SystemRuntimeRecord":
+            systems.setdefault(r["system_id"], []).append(r)
+    for v in [*versions.values(), *systems.values()]:
         v.sort(key=lambda r: ts(r["filed_at"]))
-    # Every version of a run's Intent is kept, so amendments stay visible. [R1 judge item 9]
     intents = {run: v[-1] for run, v in versions.items()}
     closeouts = [r for r in good.values() if r["record_type"] == "TrainingRunCloseout"]
+    run_closeouts = [c for c in closeouts if "run_id" in c]
     notices = [r for r in good.values() if r["record_type"] == "ExceptionNotice"]
     for run, v in versions.items():
         try:
-            out += [("versions", f) for f in version_rules(run, v, [c for c in closeouts if c["run_id"] == run])]
+            out += [("versions", f) for f in version_rules(run, v, [c for c in run_closeouts if c["run_id"] == run])]
         except (KeyError, TypeError, ValueError) as exc:
             out.append(("versions", Finding("error", "unreconcilable", run, f"{type(exc).__name__}: {exc}")))
+    for system, v in systems.items():
+        try:
+            out += [("versions", f) for f in system_rules(system, v, [c for c in closeouts if c.get("system_id") == system])]
+        except (KeyError, TypeError, ValueError) as exc:
+            out.append(("versions", Finding("error", "unreconcilable", system, f"{type(exc).__name__}: {exc}")))
     for c in closeouts:
-        intent = in_force(versions[c["run_id"]], c["filed_at"]) if c["run_id"] in versions else None
-        if intent is None:
-            out.append(("reconcile", Finding("error", "intent_missing", f"{c['run_id']}",
-                                             "closeout has no matching Intent in this set")))
+        kind, oid = owner(c)
+        if oid is None:
+            continue  # neither run_id nor system_id: the schema error is reported above
+        filed = versions if kind == "run" else systems
+        declared = in_force(filed[oid], c["filed_at"]) if oid in filed else None
+        if declared is None and kind == "run":
+            out.append(("reconcile", Finding("error", "intent_missing", oid, "closeout has no matching Intent in this set")))
+            continue
+        if declared is None:
+            out.append(("reconcile", Finding("error", "runtime_record_missing", oid,
+                                             "closeout has no matching SystemRuntimeRecord in this set")))
             continue
         try:
-            out += [("reconcile", f) for f in reconcile(intent, c)]
-            out += [("notices", f) for f in check_notices(intent, c, notices)]
+            out += [("reconcile", f) for f in reconcile(declared, c)]
+            out += [("notices", f) for f in check_notices(declared, c, notices)]
         except (KeyError, TypeError, ValueError) as exc:  # malformed records already reported above
-            out.append(("reconcile", Finding("error", "unreconcilable", c["run_id"], f"{type(exc).__name__}: {exc}")))
+            out.append(("reconcile", Finding("error", "unreconcilable", oid, f"{type(exc).__name__}: {exc}")))
     try:
-        out += [("lineage", f) for f in check_lineage(list(intents.values()), closeouts)]
+        out += [("lineage", f) for f in check_lineage(list(intents.values()), run_closeouts)]
     except (KeyError, TypeError, ValueError) as exc:
         out.append(("lineage", Finding("error", "unreconcilable", "lineage", f"{type(exc).__name__}: {exc}")))
+    try:
+        out += [("deployment", f) for f in check_deployment([v[-1] for v in systems.values()], intents,
+                                                             run_closeouts, notices)]
+    except (KeyError, TypeError, ValueError) as exc:
+        out.append(("deployment", Finding("error", "unreconcilable", "deployment", f"{type(exc).__name__}: {exc}")))
     return out
 
 

@@ -14,6 +14,9 @@ The filings themselves can be found in one of two ways:
                          filing set's keys (from its manifest, else the file names).
   "records": {KEY: FILE} the filings listed one by one, relative to decision_points.json.
 
+decision_points.json may record "schema_hash": the hash from `dbyr freeze`, taken before any filing
+was written. A case scored against a different schema is void; `dbyr backtest init` records it.
+
 decision_points.json is pre-registered: never edited after scoring. Nothing in a case is
 incident-specific code: any case in this shape can be scored.
 """
@@ -22,10 +25,12 @@ from __future__ import annotations
 
 import copy
 import json
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
 from ..filingset import FilingSetError, load_filing_set
+from ..integrity import schema_hash
 from .fingerprint import Fingerprint
 
 TEMPLATE = Path(__file__).resolve().parent / "template"   # a complete synthetic case, shipped with the package
@@ -35,7 +40,7 @@ ANNOTATIONS = "annotations.json"
 
 AWARENESS = ("yes", "no", "unclear")
 RULES = ("pause_criterion", "record_obligation")
-DECISION_KINDS = ("setup", "respond", "tell", "investigate")
+DECISION_KINDS = ("setup", "deploy", "respond", "tell", "investigate")
 VARIANT_OPS = ("description", "remove_surfaces", "remove_paths", "path_writable")
 
 
@@ -61,6 +66,8 @@ def _check_spec(spec: dict, where: Path) -> None:
         problems.append("give exactly one of 'filings' (a filing set) or 'records' (key -> file)")
     if problems:
         raise CaseError(f"{where}: " + "; ".join(problems))
+    if "schema_hash" in spec and not re.fullmatch(r"sha256:[0-9a-f]{64}", str(spec["schema_hash"])):
+        problems.append("schema_hash must be the value `dbyr freeze` prints (sha256:<64 hex digits>)")
     if not spec["variants"]:
         problems.append("no filer variants")
     for name, v in spec["variants"].items():
@@ -139,7 +146,7 @@ def apply_variant(records: dict, variant: dict) -> dict:
     pre-registered scorer."""
     out = copy.deepcopy(records)
     for key, surfaces in variant.get("remove_surfaces", {}).items():
-        topo = out[key]["egress_topology"]
+        topo = out[key]["agent_surface"]
         topo["writable_surfaces"] = [s for s in topo["writable_surfaces"] if s["surface_id"] not in surfaces]
         topo["shared_surface_lineage"] = [l for l in topo["shared_surface_lineage"] if l["surface_id"] not in surfaces]
         # A filer who does not know a surface is shared also does not know agents can communicate
@@ -148,18 +155,18 @@ def apply_variant(records: dict, variant: dict) -> dict:
             topo["inter_agent_comms_permitted"] = False
     # A filer who believes a path does not exist does not declare it at all.
     for key, paths in variant.get("remove_paths", {}).items():
-        topo = out[key]["egress_topology"]
+        topo = out[key]["agent_surface"]
         topo["permitted_paths"] = [p for p in topo["permitted_paths"] if p["path_id"] not in paths]
     for key, paths in variant.get("path_writable", {}).items():
-        for p in out[key]["egress_topology"]["permitted_paths"]:
+        for p in out[key]["agent_surface"]["permitted_paths"]:
             if p["path_id"] in paths:
                 p["agent_writable"] = paths[p["path_id"]]
     for key, rec in out.items():
         if rec["record_type"] != "TrainingRunCloseout":
             continue
-        intent = next((r for k, r in out.items() if r["record_type"] == "TrainingRunIntent" and r["run_id"] == rec["run_id"]), None)
+        intent = next((r for k, r in out.items() if r["record_type"] == "TrainingRunIntent" and r["run_id"] == rec.get("run_id")), None)
         if intent:
-            declared = {s["surface_id"] for s in intent["egress_topology"]["writable_surfaces"]}
+            declared = {s["surface_id"] for s in intent["agent_surface"]["writable_surfaces"]}
             for x in rec["containment_exceptions"]:
                 x["declared_surface"] = x["surface_id"] in declared
     return out
@@ -232,6 +239,16 @@ class Case:
         return self.annotations.get("label", self.name)
 
     @property
+    def frozen_hash(self) -> str | None:
+        """The schema hash recorded before the filings were written, if the case records one."""
+        return self.spec.get("schema_hash")
+
+    @property
+    def schema_matches(self) -> bool | None:
+        """Whether the current schema is the frozen one. None when the case records no hash."""
+        return None if self.frozen_hash is None else self.frozen_hash == schema_hash()
+
+    @property
     def is_derivation_case(self) -> bool:
         return bool(self.spec.get("is_derivation_case", False))
 
@@ -281,5 +298,10 @@ def init_case(dest: str | Path, name: str | None = None) -> Path:
                     ignore=shutil.ignore_patterns("__pycache__", "results.*"))
     spec = json.loads((dest / SPEC).read_text(encoding="utf-8"))
     spec["case"] = name or dest.name
+    # Freeze the schema now, before any filing is written for the case.
+    spec = {k: v for k, v in spec.items() if k != "schema_hash"}
+    at = list(spec).index("is_derivation_case") + 1 if "is_derivation_case" in spec else 1
+    items = list(spec.items())
+    spec = dict(items[:at] + [("schema_hash", schema_hash())] + items[at:])
     (dest / SPEC).write_text(json.dumps(spec, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     return dest

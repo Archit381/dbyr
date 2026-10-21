@@ -1,4 +1,4 @@
-"""Every version of a run's Intent, and the Closeouts filed against them."""
+"""Every version of a run's Intent (or a system's SystemRuntimeRecord), and the Closeouts filed against them."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from .common import ts
 
 
 def in_force(versions: list[dict], when: str) -> dict:
-    """The Intent version in force at a time: the latest filed at or before it (else the first)."""
+    """The version in force at a time: the latest filed at or before it (else the first)."""
     filed = [v for v in versions if ts(v["filed_at"]) <= ts(when)]
     return (filed or versions)[-1]
 
@@ -28,20 +28,30 @@ def version_rules(run_id: str, versions: list[dict], closeouts: list[dict]) -> l
             out.append(Finding("error", "standing_intent", run_id,
                                f"versions of this Intent together cover {span.days} days; "
                                f"an evaluation may cover at most {MAX_EVAL_DAYS}"))
-    # Closeout cadence and coverage are conduct: a late or missing period is recorded, not refused.
+    return out + cadence(run_id, versions, closeouts, "start_window", "the run", "Intent")
+
+
+def system_rules(system_id: str, versions: list[dict], closeouts: list[dict]) -> list[Finding]:
+    """Closeout cadence for a deployed system, against its SystemRuntimeRecord."""
+    return cadence(system_id, versions, closeouts, "deployment_window", "the system", "SystemRuntimeRecord")
+
+
+def cadence(owner_id: str, versions: list[dict], closeouts: list[dict], window: str, subject: str,
+            record: str) -> list[Finding]:
+    """Closeout cadence and coverage are conduct: a late or missing period is recorded, not refused."""
+    out: list[Finding] = []
     periods = sorted(closeouts, key=lambda c: c["period_start"])
     for n, c in enumerate(periods):
         ps, pe = date.fromisoformat(c["period_start"]), date.fromisoformat(c["period_end"])
         if (pe - ps).days > CLOSEOUT_EVERY_DAYS:
-            out.append(Finding("conduct", "closeout_overdue", f"{run_id} {c['period_start']}",
+            out.append(Finding("conduct", "closeout_overdue", f"{owner_id} {c['period_start']}",
                                f"one closeout covers {(pe - ps).days} days; closeouts are due every "
                                f"{CLOSEOUT_EVERY_DAYS} days"))
         if n and ps > date.fromisoformat(periods[n - 1]["period_end"]) + timedelta(days=1):
-            out.append(Finding("conduct", "closeout_gap", f"{run_id} {c['period_start']}",
+            out.append(Finding("conduct", "closeout_gap", f"{owner_id} {c['period_start']}",
                                "no closeout covers the days before this period"))
-        intent = in_force(versions, c["filed_at"])
-        win = intent["start_window"]
+        win = in_force(versions, c["filed_at"])[window]
         if ps < date.fromisoformat(win["start"]) or (win.get("end") and pe > date.fromisoformat(win["end"])):
-            out.append(Finding("conduct", "period_outside_window", f"{run_id} {c['period_start']}",
-                               "the run operated outside the window declared in the Intent in force"))
+            out.append(Finding("conduct", "period_outside_window", f"{owner_id} {c['period_start']}",
+                               f"{subject} operated outside the window declared in the {record} in force"))
     return out

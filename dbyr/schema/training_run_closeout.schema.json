@@ -2,13 +2,12 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://dbyr.example/schema/0.1.0/training_run_closeout.schema.json",
   "title": "TrainingRunCloseout",
-  "description": "Filed on completion, abort, or every 30 days for a rolling run.",
+  "description": "Filed on completion, abort, or every 30 days for a rolling run or a deployed system.",
   "type": "object",
   "additionalProperties": false,
   "required": [
     "schema_version",
     "record_type",
-    "run_id",
     "filed_at",
     "period_start",
     "period_end",
@@ -23,26 +22,37 @@
   ],
   "properties": {
     "schema_version": {
-      "$ref": "common.schema.json#/$defs/schema_version"
+      "$ref": "common.schema.json#/$defs/schema_version",
+      "description": "The schema version the filing is written against."
     },
     "record_type": {
-      "const": "TrainingRunCloseout"
+      "const": "TrainingRunCloseout",
+      "description": "The record type. It fixes which schema and which checks apply."
     },
     "run_id": {
       "$ref": "common.schema.json#/$defs/id",
-      "x-tier": "public"
+      "x-tier": "public",
+      "description": "The run this Closeout closes. It must match the Intent's run_id. Give run_id or system_id, not both."
+    },
+    "system_id": {
+      "$ref": "common.schema.json#/$defs/id",
+      "x-tier": "public",
+      "description": "The deployed system this Closeout reports on. It is checked against the system's SystemRuntimeRecord. Give run_id or system_id, not both."
     },
     "filed_at": {
       "$ref": "common.schema.json#/$defs/timestamp",
-      "x-tier": "public"
+      "x-tier": "public",
+      "description": "When the Closeout was filed. It is checked against the Intent version in force at this time."
     },
     "period_start": {
       "$ref": "common.schema.json#/$defs/date",
-      "x-tier": "public"
+      "x-tier": "public",
+      "description": "First day the Closeout covers."
     },
     "period_end": {
       "$ref": "common.schema.json#/$defs/date",
-      "x-tier": "public"
+      "x-tier": "public",
+      "description": "Last day the Closeout covers. One Closeout may cover at most 30 days (default)."
     },
     "status": {
       "enum": [
@@ -51,7 +61,8 @@
         "paused",
         "rolling"
       ],
-      "x-tier": "public"
+      "x-tier": "public",
+      "description": "The run's or system's state at the end of the period. Only training runs and deployed systems may be rolling."
     },
     "attested_absence": {
       "description": "Required by the adequacy profile. True asserts that no reportable event was detected; then absence_basis is required.",
@@ -73,16 +84,20 @@
         ],
         "properties": {
           "event_id": {
-            "$ref": "common.schema.json#/$defs/id"
+            "$ref": "common.schema.json#/$defs/id",
+            "description": "Identifier of the event. Notices, pause events and notifications cite it."
           },
           "at": {
-            "$ref": "common.schema.json#/$defs/timestamp"
+            "$ref": "common.schema.json#/$defs/timestamp",
+            "description": "When the event happened."
           },
           "kind": {
-            "$ref": "common.schema.json#/$defs/event_kind"
+            "$ref": "common.schema.json#/$defs/event_kind",
+            "description": "What kind of event it was."
           },
           "description": {
-            "type": "string"
+            "type": "string",
+            "description": "What happened."
           },
           "evidence": {
             "description": "Evidence classes a V1 reconciliation would check this event against.",
@@ -126,16 +141,20 @@
         ],
         "properties": {
           "event_id": {
-            "$ref": "common.schema.json#/$defs/id"
+            "$ref": "common.schema.json#/$defs/id",
+            "description": "Identifier of the event. Notices, pause events and internal incidents cite it."
           },
           "at": {
-            "$ref": "common.schema.json#/$defs/timestamp"
+            "$ref": "common.schema.json#/$defs/timestamp",
+            "description": "When the event happened."
           },
           "kind": {
-            "$ref": "common.schema.json#/$defs/event_kind"
+            "$ref": "common.schema.json#/$defs/event_kind",
+            "description": "What kind of event it was."
           },
           "description": {
-            "type": "string"
+            "type": "string",
+            "description": "What happened."
           },
           "evidence": {
             "description": "Evidence classes a V1 reconciliation would check this event against.",
@@ -178,19 +197,23 @@
         ],
         "properties": {
           "criterion_id": {
-            "$ref": "common.schema.json#/$defs/id"
+            "$ref": "common.schema.json#/$defs/id",
+            "description": "The Intent criterion that fired."
           },
           "triggering_event_ids": {
             "type": "array",
             "items": {
               "$ref": "common.schema.json#/$defs/id"
-            }
+            },
+            "description": "The events that triggered it. An event that matches a criterion but is cited by no pause event is a conduct finding."
           },
           "triggered_at": {
-            "$ref": "common.schema.json#/$defs/timestamp"
+            "$ref": "common.schema.json#/$defs/timestamp",
+            "description": "When the criterion fired."
           },
           "triggered_by_role": {
-            "$ref": "common.schema.json#/$defs/role_ref"
+            "$ref": "common.schema.json#/$defs/role_ref",
+            "description": "The role that called it."
           },
           "action_taken": {
             "enum": [
@@ -199,7 +222,8 @@
               "halt_and_amend_intent",
               "notify_only",
               "none"
-            ]
+            ],
+            "description": "What was actually done. none records that the run did not pause."
           },
           "restart": {
             "oneOf": [
@@ -216,27 +240,33 @@
                 ],
                 "properties": {
                   "approved_by_role": {
-                    "$ref": "common.schema.json#/$defs/role_ref"
+                    "$ref": "common.schema.json#/$defs/role_ref",
+                    "description": "The role that approved the restart. A role other than the Intent's approver_role is a conduct finding."
                   },
                   "approved_at": {
-                    "$ref": "common.schema.json#/$defs/timestamp"
+                    "$ref": "common.schema.json#/$defs/timestamp",
+                    "description": "When the restart was approved."
                   },
                   "evidence": {
                     "type": "array",
                     "minItems": 1,
                     "items": {
                       "type": "string"
-                    }
+                    },
+                    "description": "What was shown to approve the restart."
                   },
                   "intent_amended": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "description": "Whether the Intent was amended before the restart."
                   }
                 }
               }
-            ]
+            ],
+            "description": "The restart, or null if the run did not restart."
           }
         }
-      }
+      },
+      "description": "Every time a pause criterion fired in the period, and what was done."
     },
     "containment_exceptions": {
       "type": "array",
@@ -254,50 +284,59 @@
         ],
         "properties": {
           "exception_id": {
-            "$ref": "common.schema.json#/$defs/id"
+            "$ref": "common.schema.json#/$defs/id",
+            "description": "Identifier of the exception. A later run reaching the same surface cites it in inherited_exceptions while it is open."
           },
           "surface_id": {
-            "$ref": "common.schema.json#/$defs/id"
+            "$ref": "common.schema.json#/$defs/id",
+            "description": "The surface where it happened."
           },
           "declared_surface": {
-            "description": "False when the surface was not in the Intent's egress_topology: the expected completeness failure.",
+            "description": "False when the surface was not in the Intent's agent_surface: the expected completeness failure.",
             "type": "boolean"
           },
           "kind": {
             "enum": [
-              "egress",
+              "network",
               "comms",
               "credential",
               "write"
-            ]
+            ],
+            "description": "What escaped containment."
           },
           "opened_at": {
-            "$ref": "common.schema.json#/$defs/timestamp"
+            "$ref": "common.schema.json#/$defs/timestamp",
+            "description": "When the exception opened."
           },
           "closed_at": {
-            "$ref": "common.schema.json#/$defs/timestamp"
+            "$ref": "common.schema.json#/$defs/timestamp",
+            "description": "When it closed, required when status is closed."
           },
           "status": {
             "enum": [
               "open",
               "closed"
-            ]
+            ],
+            "description": "Whether the exception is still open."
           },
           "linked_runs": {
             "type": "array",
             "items": {
               "$ref": "common.schema.json#/$defs/id"
-            }
+            },
+            "description": "Other runs that reach the same surface."
           }
         }
-      }
+      },
+      "description": "Every breach of declared containment in the period: network, communication, credential or write."
     },
     "evals_planned_vs_run": {
       "type": "array",
       "x-tier": "restricted",
       "items": {
         "type": "object"
-      }
+      },
+      "description": "The Intent's eval_plan set against the evaluations actually run."
     },
     "logs_preserved_pct": {
       "type": "number",
@@ -308,7 +347,8 @@
     },
     "logs_retention_confirmed": {
       "type": "boolean",
-      "x-tier": "public"
+      "x-tier": "public",
+      "description": "Whether the filer confirms that the retention declared in the Intent is in place."
     },
     "scope_requested_vs_granted": {
       "type": "array",
@@ -324,16 +364,20 @@
         ],
         "properties": {
           "investigator": {
-            "type": "string"
+            "type": "string",
+            "description": "Who investigated."
           },
           "requested": {
-            "$ref": "common.schema.json#/$defs/window"
+            "$ref": "common.schema.json#/$defs/window",
+            "description": "The period the investigator asked to examine."
           },
           "granted": {
-            "$ref": "common.schema.json#/$defs/window"
+            "$ref": "common.schema.json#/$defs/window",
+            "description": "The period the investigator was allowed to examine. A grant narrower than the request needs a logged refusal."
           },
           "model_access_granted": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Whether the investigator was given access to the model."
           },
           "refusals": {
             "type": "array",
@@ -348,23 +392,29 @@
               ],
               "properties": {
                 "at": {
-                  "$ref": "common.schema.json#/$defs/timestamp"
+                  "$ref": "common.schema.json#/$defs/timestamp",
+                  "description": "When it was refused."
                 },
                 "what": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "What was refused."
                 },
                 "grounds": {
                   "type": "string",
-                  "minLength": 1
+                  "minLength": 1,
+                  "description": "Why it was refused."
                 },
                 "refused_by_role": {
-                  "$ref": "common.schema.json#/$defs/role_ref"
+                  "$ref": "common.schema.json#/$defs/role_ref",
+                  "description": "The role that refused it."
                 }
               }
-            }
+            },
+            "description": "Each request that was refused."
           }
         }
-      }
+      },
+      "description": "Each post-incident investigator: the scope asked for, the scope given, and any refusals."
     },
     "third_party_notifications": {
       "description": "One entry per affected external party: whether and when it was told, or why not. Party names are restricted (naming a victim can expose an unpatched system); the counts and timing are public.",
@@ -381,7 +431,8 @@
         "properties": {
           "party": {
             "type": "string",
-            "x-tier": "restricted"
+            "x-tier": "restricted",
+            "description": "The affected organisation."
           },
           "affected_by": {
             "type": "array",
@@ -389,24 +440,29 @@
             "items": {
               "$ref": "common.schema.json#/$defs/id"
             },
-            "x-tier": "restricted"
+            "x-tier": "restricted",
+            "description": "The events that affected it."
           },
           "notified": {
             "type": "boolean",
-            "x-tier": "public"
+            "x-tier": "public",
+            "description": "Whether it was told."
           },
           "notified_at": {
             "$ref": "common.schema.json#/$defs/timestamp",
-            "x-tier": "public"
+            "x-tier": "public",
+            "description": "When it was told. Later than the deadline (default 72 hours) after detection needs a delay_reason."
           },
           "channel": {
             "type": "string",
-            "x-tier": "restricted"
+            "x-tier": "restricted",
+            "description": "How it was told."
           },
           "not_notified_reason": {
             "type": "string",
             "minLength": 1,
-            "x-tier": "restricted"
+            "x-tier": "restricted",
+            "description": "Why it was not told."
           },
           "delay_reason": {
             "description": "Required by the adequacy profile when notification came later than the deadline after detection.",
@@ -436,15 +492,18 @@
     },
     "residual_risk": {
       "type": "string",
-      "x-tier": "restricted"
+      "x-tier": "restricted",
+      "description": "Risk that remains after the run."
     },
     "cleared_for_system_integration": {
       "type": "boolean",
-      "x-tier": "public"
+      "x-tier": "public",
+      "description": "Whether the model is cleared to be built into a deployed system. Deploying a system on a run whose latest Closeout does not say true is a conduct finding."
     },
     "signer": {
       "$ref": "common.schema.json#/$defs/signer",
-      "x-tier": "public"
+      "x-tier": "public",
+      "description": "Who signs the filing."
     },
     "notice_ids": {
       "description": "ExceptionNotices filed for this run during the period.",
@@ -472,26 +531,32 @@
         ],
         "properties": {
           "incident_id": {
-            "type": "string"
+            "type": "string",
+            "description": "The internal ticket's identifier."
           },
           "opened_at": {
-            "$ref": "common.schema.json#/$defs/timestamp"
+            "$ref": "common.schema.json#/$defs/timestamp",
+            "description": "When the ticket was opened."
           },
           "closed_at": {
-            "$ref": "common.schema.json#/$defs/timestamp"
+            "$ref": "common.schema.json#/$defs/timestamp",
+            "description": "When the ticket was closed."
           },
           "summary": {
-            "type": "string"
+            "type": "string",
+            "description": "What the ticket was about."
           },
           "event_ids": {
             "type": "array",
             "items": {
               "$ref": "common.schema.json#/$defs/id"
-            }
+            },
+            "description": "The events the ticket maps to."
           },
           "not_an_event_reason": {
             "type": "string",
-            "minLength": 1
+            "minLength": 1,
+            "description": "Why the ticket is not an event, required when it maps to none."
           }
         }
       }
@@ -511,24 +576,29 @@
         ],
         "properties": {
           "evidence_class": {
-            "$ref": "common.schema.json#/$defs/evidence_class"
+            "$ref": "common.schema.json#/$defs/evidence_class",
+            "description": "The class this entry describes."
           },
           "denominator": {
             "type": "string",
-            "minLength": 1
+            "minLength": 1,
+            "description": "What 100% means: the records of this class the run generated."
           },
           "sample_rate": {
             "type": "number",
             "minimum": 0,
-            "maximum": 1
+            "maximum": 1,
+            "description": "Share of generated records that were captured."
           },
           "preserved_pct": {
             "type": "number",
             "minimum": 0,
-            "maximum": 100
+            "maximum": 100,
+            "description": "Percentage of captured records still held."
           },
           "earliest_record": {
-            "$ref": "common.schema.json#/$defs/timestamp"
+            "$ref": "common.schema.json#/$defs/timestamp",
+            "description": "When the earliest record held was written."
           }
         }
       }
@@ -546,17 +616,21 @@
         ],
         "properties": {
           "at": {
-            "$ref": "common.schema.json#/$defs/timestamp"
+            "$ref": "common.schema.json#/$defs/timestamp",
+            "description": "When it changed."
           },
           "what": {
             "type": "string",
-            "minLength": 1
+            "minLength": 1,
+            "description": "What changed."
           },
           "intent_amended": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Whether the Intent was amended for it."
           }
         }
-      }
+      },
+      "description": "Every change to the environment, permissions or surfaces during the period."
     },
     "surface_resets": {
       "type": "array",
@@ -571,16 +645,32 @@
         ],
         "properties": {
           "at": {
-            "$ref": "common.schema.json#/$defs/timestamp"
+            "$ref": "common.schema.json#/$defs/timestamp",
+            "description": "When the surface was reset."
           },
           "surface_id": {
-            "$ref": "common.schema.json#/$defs/id"
+            "$ref": "common.schema.json#/$defs/id",
+            "description": "The surface that was reset."
           },
           "snapshot_retained": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Whether a snapshot was kept. A reset without one while an internal incident is open is a conduct finding."
           }
         }
-      }
+      },
+      "description": "Every reset of a writable surface during the period."
     }
-  }
+  },
+  "oneOf": [
+    {
+      "required": [
+        "run_id"
+      ]
+    },
+    {
+      "required": [
+        "system_id"
+      ]
+    }
+  ]
 }

@@ -1,121 +1,128 @@
 # Backtest case
 
-A case scores the DBYR protocol against one incident or set of runs: for each decision that shaped
-the outcome, was its fact written down before the run, and could it be checked afterwards? This
-folder is a complete, working case: a synthetic safeguards-off cyber evaluation at a fictional
-"Lab X" that passes every check. Run it once unchanged, then replace its contents step by step.
+A backtest asks, for each decision that shaped an incident: **was the fact written down before the
+run, and could it be checked afterwards?** A case holds the filings for one incident and the
+decision points they are scored on.
 
-```
-<case>/
-  decision_points.json   what the case is scored on, and where its filings are
-  intent_A.json          TrainingRunIntent, filed before the run
-  notice_N1.json         ExceptionNotice, filed within 72 hours of an event
-  closeout_A.json        TrainingRunCloseout, filed at the end (and at least every 30 days)
-  sources.json           optional: where every value came from
-  annotations.json       optional: information added after scoring, for the results tables
-```
+This folder is a complete, working example: a synthetic safeguards-off cyber evaluation at a
+fictional "Lab X", and a system later deployed on it. It passes every check. Start from it and
+replace its contents with your own.
+
+## What is in a case
+
+| File | Written by | What it is |
+|---|---|---|
+| `intent_A.json` | you | TrainingRunIntent: the run's commitments, filed before it starts |
+| `notice_N1.json` | you | ExceptionNotice: filed within 72 hours of detecting an event |
+| `closeout_A.json` | you | TrainingRunCloseout: what happened, filed at the end (and every 30 days) |
+| `runtime_S1.json` | you, optional | SystemRuntimeRecord: filed before a system built on the run is deployed. If no system was deployed, delete it and its `runtime:S1` entry in `decision_points.json` |
+| `decision_points.json` | you; `init` fills in `case` and `schema_hash` | the scoring plan: which decisions to score, and what each is tested against |
+| `sources.json` | you, optional | where each value in the filings came from |
+| `annotations.json` | you, optional | context for the results tables, added after scoring; never read by the scoring |
+
+Every field and every check of the four filings is documented in `docs/records/` in the DBYR
+repository.
 
 ## Steps
 
-1. **Create the case and run it as is.**
+### 1. Create the case and try it unchanged
 
-   ```bash
-   dbyr backtest init cases/<case-name>      # writes this example
-   dbyr backtest check cases/<case-name>     # checks the case; scores nothing
-   dbyr backtest score cases/<case-name>     # scores it and prints the tables
-   ```
+```bash
+dbyr backtest init cases/my-case      # copies this example and freezes the schema
+dbyr backtest check cases/my-case     # should print: ok (0 errors, 0 warnings)
+dbyr backtest score cases/my-case     # should print the verdicts and tables
+```
 
-   All three should succeed. You now know the tooling works before you change anything.
+`init` records the current schema hash as `schema_hash` in `decision_points.json`. Do not change
+it. If the schema changes later, the case is void: `check` reports an error and `score` refuses.
 
-2. **Freeze the schema.** Run `dbyr freeze` and record the hash before anyone writes filings for the
-   case. Every result carries the hash it was scored with; if the two differ, the result is void.
+### 2. Replace the filings with your own
 
-3. **Write the filings.** One `intent_*.json` per run (an amendment is another Intent with the same
-   `run_id` and an `amends` field), one `notice_*.json` per ExceptionNotice, and one
-   `closeout_*.json` per run that ended or re-attested. A record is any JSON object with a
-   `record_type`; records are paired by `run_id`. Every field, its disclosure tier and when it is
-   required is in `dbyr/schema/`. When reconstructing a real incident, use public sources only, keep
-   snapshots of them in `sources/`, and record the provenance of every value in `sources.json` as
-   first-party, forced-choice or placeholder.
+Write one Intent per run, one Notice per reportable event, one Closeout per run (and per 30-day
+period), and a runtime record if a system was deployed. Records are linked by `run_id` (or
+`system_id` for a deployed system). An amendment is another Intent with the same `run_id`, plus
+`amends` and `changes`.
 
-   The filings can live in this folder or anywhere else (see step 5).
+The filings may live in this folder or anywhere else (see `records` and `filings` below).
 
-4. **Check the filings** with the protocol itself:
+### 3. Run the protocol over the filings
 
-   ```bash
-   dbyr run cases/<case-name>
-   ```
+```bash
+dbyr run cases/my-case
+```
 
-   Errors with the code `schema` mean a filing is not well formed: fix them. Any other error is the
-   protocol rejecting the filing at intake. A reconstruction of a real incident can be rejected, and
-   if it is, that rejection is a result to report, not something to fix. `dbyr run` lists
-   `decision_points.json`, `sources.json` and `annotations.json` as skipped.
+- An error with the code `schema` means a filing is malformed: fix it.
+- Any other error is the protocol rejecting the filing. For a real incident, that rejection is a
+  result to report, not something to fix.
 
-5. **Write `decision_points.json`.**
-   - Say where the filings are, in one of two ways:
-     - `"records": {"intent:A": "intent_A.json", ...}` lists each filing, relative to this file.
-     - `"filings": "../../filings/lab-x/"` points at any filing set: a folder or its
-       `manifest.json`, exactly what `dbyr run` takes. Record keys are then the filing set's keys:
-       its manifest's keys, or the file names if it has no manifest.
-   - `closes` maps each Closeout key to its Intent key.
-   - `variants` lists the filer variants to score: `diligent` (declares what was actually true) and
-     `as_believed` (declares what the filer plausibly believed). Their operations, which edit a copy
-     of the Intent, are `remove_surfaces`, `remove_paths` and `path_writable`.
-   - Each decision point names the decision taken, the field that should have captured it, whether
-     the developer was aware at the time (`yes`, `no` or `unclear`, with a source), and three tests:
-     - `recorded_before`: a predicate on a filing made before the event. Use `pointer` with `equals`
-       or `exists`, `any` with `where`, or `all`.
-     - `checkable_after`: a predicate on the Closeout, plus the `evidence` classes a later check
-       would need retained.
-     - `decision_rule`: `pause_criterion` with an `event_kind` (and, with several runs, the
-       `closeout` it is scored against), or `record_obligation`.
+### 4. Replace the decision points with your own
 
-     Never use a placeholder value in a predicate; `dbyr backtest check` warns if one does. To keep
-     the scoring independent, the person who writes the decision points should not be the person
-     who wrote the filings.
+Edit `decision_points.json`. Keep `case` and `schema_hash`; replace everything else.
 
-6. **Score and read the verdict.**
+| Key | What to write |
+|---|---|
+| `records` or `filings` | where the filings are: `records` lists each file (`{"intent:A": "intent_A.json"}`); `filings` points at a folder or `manifest.json` anywhere, the same thing `dbyr run` takes |
+| `closes` | each Closeout's key, mapped to its Intent's key |
+| `variants` | the filer variants to score, usually `diligent` (states what was true) and `as_believed` (states what the filer believed). Each edits a copy of the Intent with `remove_surfaces`, `remove_paths` or `path_writable` |
+| `decision_points` | one entry per decision, described below |
 
-   ```bash
-   dbyr backtest score cases/<case-name> --out report/ --write-results
-   ```
+Each decision point has:
 
-   For each variant and decision point, the scorer reports (a) recorded before, (b) checkable after
-   and (c) changes the decision. A case fails the protocol if, on fewer than half of its decision
-   points, a field satisfies both (a) and (b). Report both variants. Every input file, including the
-   filings wherever they are, is hashed before and after scoring; if anything changed, the run stops.
+| Key | What it is |
+|---|---|
+| `id`, `decision`, `field` | a name, what was decided, and the filing field that should have captured it |
+| `developer_aware` | `yes`, `no` or `unclear`, with `aware_source` |
+| `recorded_before` | a test on a filing made before the event: `pointer` with `equals` or `exists`, `any` with `where`, or `all` |
+| `checkable_after` | a test on the Closeout, plus the `evidence` classes a later check needs kept |
+| `decision_rule` | `pause_criterion` with an `event_kind`, or `record_obligation` |
 
-   `--out` writes `report.md`, `report.html` and `metrics.json`; `--write-results` writes
-   `results.json` and `results.md` next to `decision_points.json`.
+### 5. Check and score
 
-7. **Optional: annotate for the results tables.** After scoring, `annotations.json` can add what
-   the tables need but the scoring never reads. Write it only after the decision points are
-   frozen, and record when it was added.
+```bash
+dbyr backtest check cases/my-case
+dbyr backtest score cases/my-case --out report/ --write-results
+```
 
-   | Key | What it holds |
-   |---|---|
-   | `label` | the case's column heading in the tables |
-   | `primary_variant` | the filer variant the tables report (default `as_believed`) |
-   | `decision_kinds` | per decision point: `setup`, `respond`, `tell` or `investigate` |
-   | `first_outside_account` | dated accounts outside the organisation, each with `date`, `what` and `source` |
-   | `investigation` | `incident_window` and `review_window`, each `[start, end]` |
-   | `today` | per question (`commitments`, `who_knew`, `outside`, `affected`, `investigation`, `checkable`), what the organisation's own accounts show |
-   | `escape_reasons`, `provenance` | per-decision overrides of the automatic classification; give the reason in `_notes` |
+Each decision point is scored on (a) recorded before, (b) checkable after, and (c) whether the
+filing would have changed the decision. A case **passes if at least half its decision points
+satisfy (a) and (b)**. Report both variants. Every input is hashed before and after scoring; if
+anything changed, the run stops.
 
-## Reading `dbyr run`
+### 6. Optional: add context for the tables
 
-- **error**: the filing is defective. A filing with an error in its own checks is not lodged, and any
-  error fails the set (exit code 1).
-- **conduct**: the filing lodges, but it records a breach of the filer's own commitments, such as a
-  late notice or a matched pause criterion with no pause. It goes to adjudication.
+`annotations.json` adds what the tables need but the scoring never reads. Write it after scoring.
+
+| Key | What it holds |
+|---|---|
+| `label` | the case's column heading |
+| `primary_variant` | the variant the tables report (default `as_believed`) |
+| `decision_kinds` | per decision point: `setup`, `deploy`, `respond`, `tell` or `investigate` |
+| `first_outside_account` | dated accounts from outside the organisation: `date`, `what`, `source` |
+| `investigation` | `incident_window` and `review_window`, each `[start, end]` |
+| `today` | per question, what the organisation's own accounts show |
+| `escape_reasons`, `provenance` | corrections to the automatic classification, with the reason in `_notes` |
+
+## What dbyr writes
+
+| Command | Writes | Used for |
+|---|---|---|
+| `dbyr backtest init` | this example, with `case` and `schema_hash` filled in | your starting point |
+| `dbyr run --out DIR` | `report.json`, `report.md`, `views/` | the protocol's findings on the filings, and their public, restricted and sealed views |
+| `dbyr backtest score --out DIR` | `report.md`, `report.html`, `metrics.json` | the full report with all four tables, and the same as data |
+| `dbyr backtest score --write-results` | `results.json`, `results.md` in the case folder | the case's pre-registered result, to commit |
+
+## Rules for an honest case
+
+- Freeze the schema before writing filings, and publish the hash.
+- For a real incident, use public sources only. Keep snapshots in `sources/`, and mark every value
+  in `sources.json` as `first-party`, `forced-choice` or `placeholder`.
+- Never test a placeholder value in a decision point; `check` warns if one does.
+- The person who writes the decision points should not be the person who wrote the filings.
+- Do not edit `decision_points.json` after scoring.
+
+## Reading findings
+
+- **error**: the filing is defective and is not lodged; any error fails the set.
+- **conduct**: the filing lodges, but records a breach of the filer's own commitments (a late
+  notice, a matched criterion with no pause). It goes to adjudication.
 - **warning**: for the reviewer's attention.
-
-`--out DIR` also writes `report.json`, `report.md`, and `views/<filing>/` with the public, restricted
-and sealed views plus `openings.json`, the salts that open each commitment. To sign the lodged
-filings into a hash-chained record, run `dbyr keygen lab.key`, then
-`dbyr run <folder> --ledger record.jsonl --key lab.key`, then `dbyr verify record.jsonl`.
-
-## Negative arm
-
-Safeguards-off runs with no incident use the same tooling: write the Intent, then count how many pause
-criteria would have fired on benign events, to measure burden and false triggers.

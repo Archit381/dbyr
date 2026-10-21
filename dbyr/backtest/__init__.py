@@ -13,13 +13,13 @@
 """
 
 from .case import TEMPLATE, Case, CaseError, apply_variant, init_case
-from .fingerprint import Fingerprint, InputsChanged
+from .fingerprint import Fingerprint, InputsChanged, SchemaChanged
 from .lint import check_case
 from .metrics import compute as compute_metrics
 from .report import Backtest, BacktestReport
 from .scoring import score
 from .tables import DESIGNS, Table, build as build_table
 
-__all__ = ["Backtest", "BacktestReport", "Case", "CaseError", "DESIGNS", "Fingerprint", "InputsChanged",
+__all__ = ["Backtest", "BacktestReport", "Case", "CaseError", "DESIGNS", "Fingerprint", "InputsChanged", "SchemaChanged",
            "TEMPLATE", "Table", "apply_variant", "build_table", "check_case", "compute_metrics", "init_case",
            "score"]

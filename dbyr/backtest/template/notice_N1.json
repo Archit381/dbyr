@@ -9,7 +9,7 @@
     "E1"
   ],
   "kinds": [
-    "sandbox_egress"
+    "sandbox_escape"
   ],
   "criterion_ids": [
     "C-egress"

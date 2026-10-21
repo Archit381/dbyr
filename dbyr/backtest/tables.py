@@ -53,6 +53,8 @@ def span(s: dict | None) -> str:
 
 def verdict(m: dict) -> str:
     r = m["registered"][m["primary_variant"]]
+    if m["void"]:
+        return "void: scored against a schema other than the frozen one"
     if m["is_derivation_case"]:
         return "reference (design case)"
     margin = r["attributable"] - r["needed"]
@@ -127,6 +129,17 @@ def provenance_cell(m: dict) -> str:
     return "; ".join(f"{k} {n}" for k, n in sorted(m["provenance"].items(), key=lambda kv: order.index(kv[0])))
 
 
+def deployment_cell(m: dict) -> str:
+    d = m["deployment"]
+    if not d:
+        return "no deployment in this case"
+    parts = [f"{d['systems']} system{'s' * (d['systems'] != 1)} on {d['base_runs']} run{'s' * (d['base_runs'] != 1)}",
+             f"uncleared: {d['uncleared']}", f"over open incidents: {d['open_incidents']}"]
+    if d["unknown_runs"]:
+        parts.append(f"runs not on record: {d['unknown_runs']}")
+    return "; ".join(parts)
+
+
 def kind_cell(m: dict, kind: str) -> str:
     if not m["by_kind"]:
         return NOT_ANNOTATED
@@ -163,6 +176,7 @@ QUESTIONS = [
     ("Can each decision be traced to a prior record and checked?", False, attributable_cell),
     ("Why could the rest not be?", True, escapes_cell),
     ("Could a rule have stopped it?", True, stop_cell),
+    ("Was it deployed on a cleared run, with known problems resolved?", True, deployment_cell),
     ("When did someone outside learn? (today → DBYR)", True, outside_cell),
     ("Was everyone affected told, or a reason recorded?", True, parties_cell),
     ("How far could investigators look?", True, investigation_cell),
@@ -211,6 +225,7 @@ def lifecycle(ms: list[dict]) -> Table:
     cols = ["Stage"] + [m["label"] for m in ms]
     rows = [
         [KIND_LABELS["setup"]] + [kind_cell(m, "setup") for m in ms],
+        [KIND_LABELS["deploy"]] + [f"{kind_cell(m, 'deploy')}; {deployment_cell(m)}" for m in ms],
         ["Noticing the problem (event to detection)"] + [span(m["timeliness"]["detect_hours"]) for m in ms],
         [KIND_LABELS["respond"]] + [f"{kind_cell(m, 'respond')}; unseen: {m['unseen']}" for m in ms],
         [KIND_LABELS["tell"]] + [f"{kind_cell(m, 'tell')}; {parties_cell(m)}; outsider learned {outside_cell(m)}"
@@ -219,7 +234,7 @@ def lifecycle(ms: list[dict]) -> Table:
         ["Overall"] + [f"{attributable_cell(m)}; decisions changed: {m['changed']}" for m in ms],
     ]
     notes = common_notes(ms) + ["Stages come from annotations.json (decision_kinds); the grouping was made after scoring."]
-    return Table("lifecycle", "Incident lifecycle", cols, rows, new_rows={0, 1, 2, 3, 4}, notes=notes)
+    return Table("lifecycle", "Incident lifecycle", cols, rows, new_rows={0, 1, 2, 3, 4, 5}, notes=notes)
 
 
 DESIGNS = {"scorecard": scorecard, "question_matrix": question_matrix,

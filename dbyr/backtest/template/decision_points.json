@@ -5,7 +5,8 @@
   "records": {
     "intent:A": "intent_A.json",
     "closeout:A": "closeout_A.json",
-    "notice:N1": "notice_N1.json"
+    "notice:N1": "notice_N1.json",
+    "runtime:S1": "runtime_S1.json"
   },
   "closes": {
     "closeout:A": "intent:A"
@@ -18,7 +19,9 @@
     "as_believed": {
       "description": "Filer leaves out the scratch surface, as an operator who believed it was not writable might.",
       "remove_surfaces": {
-        "intent:A": ["eval-scratch"]
+        "intent:A": [
+          "eval-scratch"
+        ]
       }
     }
   },
@@ -27,23 +30,31 @@
       "id": "DP1",
       "date": "5 Sep",
       "decision": "An agent reaches an allowlisted host by request smuggling; the run is paused for review.",
-      "field": "egress_topology.permitted_paths, pause_criteria",
+      "field": "agent_surface.permitted_paths, pause_criteria",
       "developer_aware": "yes",
       "aware_source": "closeout_A.json: the egress was detected an hour after it happened",
       "recorded_before": {
         "record": "intent:A",
-        "any": "/egress_topology/permitted_paths",
-        "where": {"path_id": "web-ro", "agent_writable": false}
+        "any": "/agent_surface/permitted_paths",
+        "where": {
+          "path_id": "web-ro",
+          "agent_writable": false
+        }
       },
       "checkable_after": {
         "record": "closeout:A",
         "any": "/security_events",
-        "where": {"kind": "sandbox_egress"},
-        "evidence": ["egress_logs", "trajectories"]
+        "where": {
+          "kind": "sandbox_escape"
+        },
+        "evidence": [
+          "network_logs",
+          "trajectories"
+        ]
       },
       "decision_rule": {
         "rule": "pause_criterion",
-        "event_kind": "sandbox_egress"
+        "event_kind": "sandbox_escape"
       }
     },
     {
@@ -56,12 +67,19 @@
       "recorded_before": {
         "record": "intent:A",
         "any": "/pause_criteria",
-        "where": {"matches": {"contains": "third_party_compromise"}}
+        "where": {
+          "matches": {
+            "contains": "third_party_compromise"
+          }
+        }
       },
       "checkable_after": {
         "record": "closeout:A",
         "any": "/third_party_notifications",
-        "where": {"party": "Example Hosting Ltd", "notified": true},
+        "where": {
+          "party": "Example Hosting Ltd",
+          "notified": true
+        },
         "evidence": []
       },
       "decision_rule": {

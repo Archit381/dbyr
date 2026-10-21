@@ -24,6 +24,10 @@ class InputsChanged(RuntimeError):
     """A case's inputs differ between the start and the end of scoring."""
 
 
+class SchemaChanged(RuntimeError):
+    """A case records a frozen schema hash that is not the current schema's."""
+
+
 def _sha256(path: Path) -> str:
     return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
 

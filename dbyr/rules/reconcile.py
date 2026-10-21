@@ -1,4 +1,5 @@
-"""A Closeout checked against the Intent it closes.
+"""A Closeout checked against the Intent it closes, or a deployed system's Closeout against its
+SystemRuntimeRecord: both declare the same criteria, roles, restart protocol and retention.
 
 This is the V0 half of a V1 reconciliation: it checks the filings agree with each
 other; a V1 auditor then checks them against retained logs.
@@ -8,20 +9,21 @@ from __future__ import annotations
 
 from ..findings import Finding
 from ..params import CORE_KINDS_T4
-from .common import effective_monitors, observable
+from .common import effective_monitors, observable, owner
 
 
 def reconcile(intent: dict, closeout: dict) -> list[Finding]:
     """Check a Closeout against the Intent it closes. This is the V0 half of a V1 reconciliation:
     it checks the filings agree with each other; a V1 auditor then checks them against retained logs."""
     out: list[Finding] = []
-    if intent["run_id"] != closeout["run_id"]:
-        return [Finding("error", "run_mismatch", "/run_id", "closeout does not close this intent")]
+    kind, oid = owner(closeout)
+    if intent.get(f"{kind}_id") != oid:
+        return [Finding("error", "run_mismatch", f"/{kind}_id", "closeout does not close this intent")]
 
     role_ids = {r["role_id"] for r in intent["roles"]}
     criteria = {c["criterion_id"]: c for c in intent["pause_criteria"]}
     events = {e["event_id"]: e for e in closeout["security_events"]}
-    surfaces = {s["surface_id"] for s in intent["egress_topology"]["writable_surfaces"]}
+    surfaces = {s["surface_id"] for s in intent.get("agent_surface", {}).get("writable_surfaces", [])}
 
     # Did any event match a declared criterion without a pause event being recorded?
     triggered = {eid for p in closeout["pause_events"] for eid in p.get("triggering_event_ids", [])}
@@ -89,7 +91,8 @@ def preservation(intent: dict, closeout: dict) -> list[Finding]:
         missing = [c for c in intent["log_retention"]["retained"] if c not in covered]
         if missing:
             out.append(Finding("error", "preservation_incomplete", "/preservation", f"no preservation entry for {missing}"))
-    if closeout["status"] == "rolling" and intent.get("run_kind") not in ("training", "training_with_evaluation"):
+    if (closeout["status"] == "rolling" and intent["record_type"] == "TrainingRunIntent"
+            and intent.get("run_kind") not in ("training", "training_with_evaluation")):
         out.append(Finding("error", "rolling_not_training", "/status", "only training runs may be rolling [R1 S3-E2]"))
     # (retention below the declared floor is a conduct finding in validate.reconcile, not a lodging error)
     return out

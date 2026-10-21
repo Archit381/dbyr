@@ -19,12 +19,12 @@ Operator-set; the defaults below are the paper's. Changing one changes what lodg
 NOTICE_HOURS = 72
 NOTIFY_HOURS = 72
 MAX_EVAL_DAYS = 31
-CORE_KINDS_T4 = ("sandbox_egress", "privilege_escalation", "inter_agent_comms", "third_party_compromise")
+CORE_KINDS_T4 = ("sandbox_escape", "privilege_escalation", "inter_agent_comms", "third_party_compromise")
 PAUSING = ("pause", "pause_and_review", "halt_and_amend_intent")
 
 SAFEGUARDS = ("model_output_filters", "refusal_behaviour", "per_episode_reset", "network_isolation",
               "identity_separation", "least_privilege_access")
-REPORTABLE = ("sandbox_egress", "undeclared_surface_use", "inter_agent_comms", "credential_misuse",
+REPORTABLE = ("sandbox_escape", "undeclared_surface_use", "inter_agent_comms", "credential_misuse",
               "privilege_escalation", "remote_code_execution", "agent_induced_outage", "third_party_compromise",
               "environment_tampering", "access_boundary_breach", "data_exposure", "integrity_incident")
 MIN_SAMPLE = 0.01          # a sampled monitor below this rate observes nothing for these checks
@@ -40,7 +40,7 @@ OBSERVERS = {
     "access_boundary_breach": {"access_log_review", "trajectory_review"},
     "data_exposure": {"access_log_review", "write_audit", "trajectory_review"},
     "integrity_incident": {"write_audit", "trajectory_review"},
-    "sandbox_egress": {"egress_alerting", "trajectory_review"},
+    "sandbox_escape": {"network_alerting", "trajectory_review"},
     "undeclared_surface_use": {"write_audit", "environment_integrity_check", "trajectory_review"},
     "inter_agent_comms": {"inter_agent_message_monitor", "trajectory_review"},
     "credential_misuse": {"access_log_review", "environment_integrity_check"},

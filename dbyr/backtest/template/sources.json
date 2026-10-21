@@ -8,7 +8,7 @@
     "/run_kind": "first-party: <source file, date>: '<quoted sentence that states it>'",
     "/filed_at": "forced-choice: 5 days before the start (the minimum for intake review is 3)",
     "/compute_band": "placeholder: not public",
-    "/egress_topology/permitted_paths/0": "first-party: <source>: the allowlist proxy and its GET-only rule"
+    "/agent_surface/permitted_paths/0": "first-party: <source>: the allowlist proxy and its GET-only rule"
   },
   "closeout_A.json": {
     "/security_events/0": "first-party: <source>: the egress, when it happened and when it was detected",

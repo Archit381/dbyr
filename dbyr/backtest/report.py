@@ -18,7 +18,7 @@ from pathlib import Path
 
 from ..integrity import schema_hash
 from .case import Case
-from .fingerprint import InputsChanged
+from .fingerprint import InputsChanged, SchemaChanged
 from .metrics import compute
 from .render import report_html, report_markdown, results_markdown
 from .scoring import score
@@ -89,6 +89,12 @@ class Backtest:
         names = [c.name for c in loaded]
         if len(set(names)) != len(names):
             raise ValueError(f"two cases share a name: {names}")
+        # A case scored against a schema other than the one frozen before its filings were written is
+        # void. Strict runs refuse it; otherwise the result is scored and marked void.
+        stale = {c.name: c.frozen_hash for c in loaded if c.schema_matches is False}
+        if stale and self.strict:
+            raise SchemaChanged(f"the current schema is {schema_hash()}, but these cases froze another: "
+                                + json.dumps(stale))
         results, metrics = {}, []
         for case in loaded:
             scored = score(case)
@@ -98,7 +104,8 @@ class Backtest:
         integrity = {}
         for case in loaded:
             diff = case.verify_unchanged()
-            integrity[case.name] = {"unchanged": not diff, "diff": diff, **case.fingerprint.to_json()}
+            integrity[case.name] = {"unchanged": not diff, "diff": diff, **case.fingerprint.to_json(),
+                                    "frozen_schema_hash": case.frozen_hash, "schema_matches": case.schema_matches}
         changed = {n: c["diff"] for n, c in integrity.items() if not c["unchanged"]}
         if changed and self.strict:
             raise InputsChanged("inputs changed during scoring: " + json.dumps(changed))

@@ -22,7 +22,7 @@
 
 The [live site](https://mach-12.github.io/dbyr/) walks through the standard end to end: the DBYR lifecycle and record-schema diagrams, the [incident timeline](https://mach-12.github.io/dbyr/#timeline) as both a visual chart and a full event table, and the backtest results.
 
-## Collaborators
+## Authors
 
 - **Mann Acharya** — The Millennium Project. Originated the idea; led the project and policy analysis.
 - **Archit Ojha** — Independent. Designed the record schema and verification stack.
@@ -35,35 +35,101 @@ Research conducted at the [AI Incident Response Sprint](https://apartresearch.co
 
 ## The `dbyr` package
 
-This repository is the executable form of the paper: the JSON Schemas for the four DBYR records, the checks an evaluator runs at intake and at closeout, the public / restricted / sealed disclosure views, a signed hash-chained ledger, and a backtest engine that scores the protocol against real or synthetic incidents.
+This repository is the executable form of the paper: the JSON Schemas for the four DBYR records, the checks an evaluator runs on them, the public / restricted / sealed disclosure views, a signed hash-chained ledger, and a backtest engine that scores the protocol against an incident.
 
 ### Install
 
 ```bash
 pip install git+https://github.com/mach-12/dbyr      # the package and the dbyr command
-# or, from a clone:
-pip install -e .
+pip install -e .                                     # or, from a clone
 ```
 
-Python 3.11+. Dependencies: `jsonschema` and `cryptography` (installed automatically).
+Python 3.11+. Dependencies: `jsonschema` and `cryptography`, installed automatically.
 
-### Quick start
+### Backtest your own case, step by step
+
+You have an incident, real or synthetic, and want to know whether DBYR would have made its key decisions traceable and checkable. A **case** is one folder holding the incident's filings and the decision points they are scored on.
+
+**Step 1. Create the case from the example, and run it unchanged.**
 
 ```bash
-dbyr run tests/fixtures/safeguards-off-cyber-eval    # run the protocol over a filing set
-
-dbyr backtest init cases/lab-x                       # start a backtest case from the example
-dbyr backtest check cases/lab-x                      # check it; scores nothing
-dbyr backtest score cases/lab-x --out report/        # score it and write the report
+dbyr backtest init cases/my-case      # copies a complete example case and freezes the schema
+dbyr backtest check cases/my-case     # ok (0 errors, 0 warnings)
+dbyr backtest score cases/my-case     # prints the verdicts and the results tables
 ```
+
+All three should succeed before you change anything. The folder now holds a working example (a synthetic safeguards-off evaluation at "Lab X", and a system deployed on it) and a [README](dbyr/backtest/template/README.md) describing every file. `init` records the current schema hash in `decision_points.json` as `schema_hash`: do not change it.
+
+**Step 2. Replace the example filings with your incident's.**
+
+Edit or replace `intent_A.json`, `notice_N1.json`, `closeout_A.json` and (only if a system was deployed) `runtime_S1.json`. The [record docs](docs/records/README.md) list every field and every check. Check each filing as you write it:
+
+```bash
+dbyr validate cases/my-case/intent_A.json
+```
+
+**Step 3. Run the protocol over the filings.**
+
+```bash
+dbyr run cases/my-case
+```
+
+An error with the code `schema` means a filing is malformed: fix it. Any other error is the protocol rejecting the filing. For a real incident, that rejection is a result to report, not something to fix.
+
+**Step 4. Replace the example decision points with yours.**
+
+Edit `decision_points.json`. Keep `case` and `schema_hash`; write everything else: where the filings are, and one entry per decision that shaped the incident, each with a test on a filing made before it and a test on the Closeout after it. The [case README](dbyr/backtest/template/README.md#4-replace-the-decision-points-with-your-own) lists the keys. Then check the case:
+
+```bash
+dbyr backtest check cases/my-case     # shape, schema hash, record keys, fields, placeholders
+```
+
+**Step 5. Score it.**
+
+```bash
+dbyr backtest score cases/my-case --out report/ --write-results
+```
+
+The case **passes if at least half its decision points were recorded before and checkable after**. Every input is hashed before and after scoring; if anything changed, or the schema is no longer the one frozen in step 1, scoring stops.
+
+**Step 6 (optional). Add context for the tables.**
+
+Edit `annotations.json` (decision kinds, when outsiders learned, the investigation window) and score again. The scoring never reads it; it only fills table cells that would otherwise say "not annotated".
+
+**What you end up with**
+
+| File | Written by | What it is |
+|---|---|---|
+| `cases/my-case/results.json`, `results.md` | step 5, `--write-results` | the case's pre-registered result, to commit |
+| `report/report.md`, `report.html` | step 5, `--out` | the full report: verdicts, the four results tables, every decision point |
+| `report/metrics.json` | step 5, `--out` | the same results as data |
+
+The same steps in Python:
 
 ```python
 from dbyr import DBYR
 
 dbyr = DBYR()
-report = dbyr.check("tests/fixtures/safeguards-off-cyber-eval")
-print(report.ok, report.counts())     # True {'error': 0, 'conduct': 0, 'warning': 1}
+dbyr.init_case("cases/my-case")                     # step 1
+report = dbyr.check("cases/my-case")                # step 3: the protocol's findings
+print(report.ok, report.counts())                   # True {'error': 0, 'conduct': 0, 'warning': 1}
+print(dbyr.check_case("cases/my-case"))             # step 4: [] when the case is ready
+bt = dbyr.backtest("cases/my-case")                 # step 5
+print(bt.verdicts())
+bt.write("report/")
+bt.write_results()
 ```
+
+### The records
+
+[`docs/records/`](docs/records/README.md) documents the four records a developer files: when each is due, every field with its disclosure tier and meaning, and every check with its severity and the reason for it.
+
+| Record | Filed | Doc |
+|---|---|---|
+| TrainingRunIntent | before the run | [intent.md](docs/records/intent.md) |
+| ExceptionNotice | within 72 hours of detecting a reportable event | [notice.md](docs/records/notice.md) |
+| TrainingRunCloseout | at the end, and at least every 30 days | [closeout.md](docs/records/closeout.md) |
+| SystemRuntimeRecord | before deployment at scale or external exposure | [runtime.md](docs/records/runtime.md) |
 
 ---
 
@@ -90,13 +156,13 @@ Start here. Each method wraps one of the functions further down.
 from dbyr import DBYR
 
 dbyr = DBYR()
-report = dbyr.check("tests/fixtures/safeguards-off-cyber-eval")
+dbyr.init_case("cases/my-case")
+report = dbyr.check("cases/my-case")
 for stage, at, finding in report.findings:
     print(stage, finding)
 
-dbyr.init_case("cases/lab-x")
-dbyr.check_case("cases/lab-x")        # [] when the case is ready to score
-bt = dbyr.backtest("cases/lab-x")
+dbyr.check_case("cases/my-case")      # [] when the case is ready to score
+bt = dbyr.backtest("cases/my-case")
 print(bt.verdicts())
 ```
 
@@ -109,8 +175,8 @@ Load from a `manifest.json` (`{"records": {"intent:A": "intent_A.json", ...}}`),
 
 ```python
 from dbyr import load_filing_set
-fs = load_filing_set("tests/fixtures/rl-shared-cache")
-fs.records        # {"intent:A": {...}, "intent:B": {...}, "closeout:A": {...}}
+fs = load_filing_set("cases/my-case")
+fs.records        # {"closeout_A.json": {...}, "intent_A.json": {...}, ...}  (no manifest: keyed by file name)
 fs.files          # filing key -> path on disk
 fs.description    # from the manifest, if any
 fs.skipped        # JSON files that are not DBYR records
@@ -126,7 +192,7 @@ Runs every stage in the order an evaluator meets them: each record on its own, I
 
 ```python
 from dbyr import load_filing_set, run_protocol
-report = run_protocol(load_filing_set("tests/fixtures/safeguards-off-cyber-eval"))
+report = run_protocol(load_filing_set("cases/my-case"))
 report.ok              # False if any finding is an error
 report.counts()        # {"error": 0, "conduct": 0, "warning": 1}
 report.lodged          # filing keys that passed their own checks
@@ -153,8 +219,8 @@ The checks alone, without views or a ledger: every finding labelled with the fil
 import json
 from dbyr import validate_record, reconcile
 
-intent = json.load(open("tests/fixtures/safeguards-off-cyber-eval/intent_A.json"))
-closeout = json.load(open("tests/fixtures/safeguards-off-cyber-eval/closeout_A.json"))
+intent = json.load(open("cases/my-case/intent_A.json"))
+closeout = json.load(open("cases/my-case/closeout_A.json"))
 validate_record(intent)              # [] when the Intent lodges
 for f in reconcile(intent, closeout):
     print(f)                          # [warning] code at /pointer: message
@@ -187,7 +253,7 @@ Each field has a disclosure tier. A field above the viewer's tier is replaced by
 import json
 from dbyr import project, check_opening
 
-intent = json.load(open("tests/fixtures/safeguards-off-cyber-eval/intent_A.json"))
+intent = json.load(open("cases/my-case/intent_A.json"))
 public, openings = project(intent, "public")
 public["monitoring_instruments"]      # {"$commitment": "sha256:...", "$tier": "restricted"}
 
@@ -239,15 +305,17 @@ A case is a `decision_points.json` file, given directly or as the folder that ho
 
 `"filings"` points at a filing set kept anywhere on disk: a folder or its `manifest.json`, exactly what `dbyr run` takes, relative to `decision_points.json`. The same filings can then be checked with `dbyr run` and scored with `dbyr backtest score`, without copying them. Next to `decision_points.json`, a case may hold `sources.json` (the provenance of every value) and `annotations.json` (information added after scoring, for the tables; the scoring never reads it). `dbyr backtest init DIR` writes a complete example whose README explains every field.
 
+**Freezing the schema.** A case records `"schema_hash"`: the hash `dbyr freeze` prints, taken before any filing for the case is written. `dbyr backtest init` fills it in. A case scored against a different schema is void: `dbyr backtest check` reports a stale hash as an error, and a case with no hash as a warning.
+
 ### Running a backtest
 
 **`Backtest(*cases, designs=None, strict=True).run() -> BacktestReport`**
-Loads each case, hashes every input file (including filings kept outside the case folder), scores every decision point under every filer variant, computes the metrics, builds the results tables, and re-hashes the inputs. If any input changed during scoring, it raises `InputsChanged` (unless `strict=False`, which records the change in the report instead).
+Loads each case, hashes every input file (including filings kept outside the case folder), scores every decision point under every filer variant, computes the metrics, builds the results tables, and re-hashes the inputs. If any input changed during scoring, it raises `InputsChanged`; if a case's `schema_hash` is not the current schema's, it raises `SchemaChanged` before scoring. With `strict=False`, both are recorded in the report instead, and a stale case's verdict reads "void".
 
 ```python
 from dbyr.backtest import Backtest
 
-report = Backtest("cases/lab-x").run()
+report = Backtest("cases/my-case").run()
 report.verdicts()                     # pre-registered pass/fail per case and filer variant
 report.table("question_matrix")       # a Table: columns, rows, notes
 report.integrity                      # per case: input hashes, and whether they changed
@@ -305,8 +373,9 @@ A case may add an optional `annotations.json` (decision kinds, outside-account d
 | `dbyr keygen KEYFILE` | Write a new Ed25519 signing key, for `run --ledger`. |
 | `dbyr verify LEDGER` | Recheck every hash link and signature in a ledger. |
 | `dbyr freeze` | Print the schema hash. |
+| `dbyr docs [DIR] [--check]` | Rewrite the field tables in the record docs (default `docs/records`) from the schemas. `--check` only reports stale docs, with exit code 1. |
 | `dbyr backtest init DIR [--name NAME]` | Write the example backtest case to a new folder. |
-| `dbyr backtest check CASE...` | Check cases before scoring: shape, record keys, schema fields, placeholders. Scores nothing; exit code 1 on any error. |
+| `dbyr backtest check CASE...` | Check cases before scoring: shape, the frozen schema hash, record keys, schema fields, placeholders. Scores nothing; exit code 1 on any error. |
 | `dbyr backtest score CASE... [--out DIR] [--write-results] [--design NAME] [--json]` | Score cases and print the verdicts and tables. `--out` writes `report.md`, `report.html` and `metrics.json`; `--write-results` writes `results.json` and `results.md` next to each case. A CASE is a folder or a `decision_points.json`. |
 
 ---
@@ -318,17 +387,19 @@ dbyr/                  the installable package
   api.py               DBYR, the facade
   filingset.py         loading filing sets
   protocol.py          run_protocol, check_set, Report
-  rules/               the checks: intent, closeout, notice, reconcile, versions, lineage
+  rules/               the checks: intent, closeout, notice, runtime, reconcile, versions, lineage
   params.py            deadlines, floors and fixed lists the checks apply
   schema/              the JSON Schemas and their validators
   disclosure.py        public / restricted / sealed views with salted commitments
   ledger.py            the signed, hash-chained record
   integrity.py         canonical JSON, digests and the schema hash
   findings.py          Finding and its three severities
+  docgen.py            the field tables in docs/records/, generated from the schemas
   backtest/            the backtest engine: case, lint, scoring, metrics, tables, render, report
     template/          the example case that `dbyr backtest init` writes
-benchmarks/            data only: the paper's backtest cases (benchmarks/cases/<case>)
-tests/                 unit tests and example filing sets (tests/fixtures/)
+docs/records/          the four records: fields, deadlines and every check
+benchmarks/            data only: the paper's backtest cases (benchmarks/<case>/)
+tests/                 unit tests
 website/               the project site
 ```
 

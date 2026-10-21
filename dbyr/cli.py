@@ -8,8 +8,10 @@
   keygen KEYFILE                   write a new Ed25519 signing key (PEM), for run --ledger
   verify LEDGER                    recheck every hash link and signature in a ledger
   freeze                           print the schema hash
+  docs [DIR] [--check]             rewrite the field tables in the record docs (default docs/records)
+                                   from the schemas; --check only reports stale docs (exit code 1)
   backtest init DIR [--name NAME]  write the example case to a new folder, to start from
-  backtest check CASE...           check cases before scoring: shape, record keys, schema fields,
+  backtest check CASE...           check cases before scoring: shape, frozen schema hash, record keys, schema fields,
                                    placeholders. Scores nothing.
   backtest score CASE... [--out DIR] [--write-results] [--design NAME]... [--json]
                                    score cases; every input is hashed before and after scoring.
@@ -33,8 +35,9 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from cryptography.hazmat.primitives.serialization import (
     Encoding, NoEncryption, PrivateFormat, load_pem_private_key)
 
-from .backtest import Backtest, CaseError, DESIGNS, InputsChanged, check_case, init_case
+from .backtest import Backtest, CaseError, DESIGNS, InputsChanged, SchemaChanged, check_case, init_case
 from .disclosure import project
+from .docgen import sync
 from .filingset import FilingSetError, load_filing_set
 from .integrity import schema_hash
 from .ledger import Ledger
@@ -107,7 +110,7 @@ def backtest(args) -> int:
     except (CaseError, ValueError, KeyError) as exc:
         print(f"dbyr backtest score: {exc}", file=sys.stderr)
         return 2
-    except InputsChanged as exc:
+    except (InputsChanged, SchemaChanged) as exc:
         print(f"dbyr backtest score: {exc}", file=sys.stderr)
         return 1
     print(json.dumps(report.to_json(), indent=2, ensure_ascii=False) if args.json else report.markdown(), end="")
@@ -136,6 +139,9 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("keygen", help="write a new Ed25519 signing key").add_argument("keyfile")
     sub.add_parser("verify", help="recheck a ledger").add_argument("ledger")
     sub.add_parser("freeze", help="print the schema hash")
+    d = sub.add_parser("docs", help="rewrite the field tables in the record docs from the schemas")
+    d.add_argument("dir", nargs="?", type=Path, default=Path("docs/records"))
+    d.add_argument("--check", action="store_true", help="only report stale docs; exit code 1 if any")
     b = sub.add_parser("backtest", help="score DBYR against incident cases: init, check, score")
     bsub = b.add_subparsers(dest="bt_cmd", required=True)
     bi = bsub.add_parser("init", help="write the example case to a new folder")
@@ -172,6 +178,15 @@ def main(argv: list[str] | None = None) -> int:
     if args.cmd == "freeze":
         print(schema_hash())
         return 0
+    if args.cmd == "docs":
+        try:
+            stale = sync(args.dir, check=args.check)
+        except (OSError, ValueError) as exc:
+            print(f"dbyr docs: {exc}", file=sys.stderr)
+            return 2
+        for path in stale:
+            print(f"{'out of date' if args.check else 'wrote'} {path}")
+        return 1 if args.check and stale else 0
     return 2
 
 

@@ -23,7 +23,7 @@
   },
   "monitoring_instruments": [
     {
-      "kind": "egress_alerting",
+      "kind": "network_alerting",
       "coverage": "all",
       "data_source": "proxy and firewall logs"
     },
@@ -51,7 +51,7 @@
       "data_source": "agent transcripts"
     }
   ],
-  "egress_topology": {
+  "agent_surface": {
     "environment": "live",
     "permitted_paths": [
       {
@@ -127,7 +127,7 @@
     {
       "criterion_id": "C-egress",
       "matches": [
-        "sandbox_egress",
+        "sandbox_escape",
         "undeclared_surface_use"
       ],
       "adjudication": "human",
@@ -241,7 +241,7 @@
       "trajectories",
       "chain_of_thought",
       "tool_calls",
-      "egress_logs",
+      "network_logs",
       "access_logs",
       "inter_agent_messages"
     ],
@@ -265,7 +265,7 @@
         "retention": "P24M"
       },
       {
-        "evidence_class": "egress_logs",
+        "evidence_class": "network_logs",
         "coverage": "complete",
         "retention": "P24M"
       },

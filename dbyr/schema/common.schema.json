@@ -29,11 +29,13 @@
       "additionalProperties": false,
       "properties": {
         "role_id": {
-          "$ref": "#/$defs/role_ref"
+          "$ref": "#/$defs/role_ref",
+          "description": "The signing role, declared in the roles of the Intent, or of the SystemRuntimeRecord for a deployed system."
         },
         "organisation": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "description": "The organisation the signer acts for."
         }
       }
     },
@@ -45,10 +47,11 @@
       "additionalProperties": false,
       "properties": {
         "start": {
-          "$ref": "#/$defs/date"
+          "$ref": "#/$defs/date",
+          "description": "First day of the window."
         },
         "end": {
-          "description": "null means open-ended (rolling RL); re-attest every 30 days.",
+          "description": "null means open-ended: a rolling training run, or a system that stays deployed. Closeouts are then due every 30 days.",
           "oneOf": [
             {
               "$ref": "#/$defs/date"
@@ -61,12 +64,12 @@
       }
     },
     "evidence_class": {
-      "description": "trajectories: full agent transcripts; chain_of_thought: reasoning traces; tool_calls: every tool invocation with arguments; egress_logs: network flows leaving the sandbox; access_logs: authentication and authorisation records on reachable systems; inter_agent_messages: every write to a surface another agent can read, with author; config_snapshots: environment, permission and surface state at each change.",
+      "description": "trajectories: full agent transcripts; chain_of_thought: reasoning traces; tool_calls: every tool invocation with arguments; network_logs: network flows leaving the sandbox; access_logs: authentication and authorisation records on reachable systems; inter_agent_messages: every write to a surface another agent can read, with author; config_snapshots: environment, permission and surface state at each change.",
       "enum": [
         "trajectories",
         "chain_of_thought",
         "tool_calls",
-        "egress_logs",
+        "network_logs",
         "access_logs",
         "inter_agent_messages",
         "config_snapshots"
@@ -74,7 +77,7 @@
     },
     "event_kind": {
       "enum": [
-        "sandbox_egress",
+        "sandbox_escape",
         "undeclared_surface_use",
         "inter_agent_comms",
         "credential_misuse",

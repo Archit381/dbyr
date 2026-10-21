@@ -19,15 +19,15 @@ def check_lineage(intents: list[dict], closeouts: list[dict]) -> list[Finding]:
 
     for idx, later in enumerate(ordered):
         later_surfaces = surfaces(later)
-        cited = {(l["surface_id"], l["run_id"]) for l in later["egress_topology"]["shared_surface_lineage"]}
-        inherited = {(x["run_id"], x["exception_id"]) for x in later["egress_topology"].get("inherited_exceptions", [])}
+        cited = {(l["surface_id"], l["run_id"]) for l in later["agent_surface"]["shared_surface_lineage"]}
+        inherited = {(x["run_id"], x["exception_id"]) for x in later["agent_surface"].get("inherited_exceptions", [])}
 
         for earlier in ordered[:idx]:
             for sid, s in surfaces(earlier).items():
                 if sid in later_surfaces and shared_persistent(s) and shared_persistent(later_surfaces[sid]):
                     if (sid, earlier["run_id"]) not in cited:
                         out.append(Finding(
-                            "error", "lineage_not_cited", f"{later['run_id']}/egress_topology/shared_surface_lineage",
+                            "error", "lineage_not_cited", f"{later['run_id']}/agent_surface/shared_surface_lineage",
                             f"run {earlier['run_id']!r} reaches persistent shared surface {sid!r} but is not cited"))
 
         # Exceptions on a surface this run reaches that were on record, and still open, when it filed.
@@ -42,7 +42,7 @@ def check_lineage(intents: list[dict], closeouts: list[dict]) -> list[Finding]:
                         and still_open
                         and (c["run_id"], x["exception_id"]) not in inherited):
                     out.append(Finding(
-                        "error", "inherited_exception_not_cited", f"{later['run_id']}/egress_topology/inherited_exceptions",
+                        "error", "inherited_exception_not_cited", f"{later['run_id']}/agent_surface/inherited_exceptions",
                         f"exception {x['exception_id']!r} on {x['surface_id']!r} (run {c['run_id']!r}) "
                         "was open when this run filed and is not cited"))
     return out + tenancy_conflicts(intents)
@@ -53,11 +53,11 @@ def tenancy_conflicts(intents: list[dict]) -> list[Finding]:
     out: list[Finding] = []
     seen: dict[str, tuple[str, str]] = {}
     for i in intents:
-        for s in i["egress_topology"]["writable_surfaces"]:
+        for s in i["agent_surface"]["writable_surfaces"]:
             sid = s["surface_id"]
             shared = s["tenancy"] != "run_only"
             if sid in seen and seen[sid][1] != str(shared):
-                out.append(Finding("error", "tenancy_conflict", f"{i['run_id']}/egress_topology/writable_surfaces",
+                out.append(Finding("error", "tenancy_conflict", f"{i['run_id']}/agent_surface/writable_surfaces",
                                    f"surface {sid!r} is declared {s['tenancy']!r} here but shared differently by run "
                                    f"{seen[sid][0]!r}"))
             seen.setdefault(sid, (i["run_id"], str(shared)))
