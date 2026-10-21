@@ -1,0 +1,179 @@
+"""Command line: dbyr <command> ...   (also python -m dbyr <command> ...)
+
+  run PATH... [--out DIR] [--ledger FILE --key KEYFILE] [--json]
+                                   the whole protocol over one filing set: a folder,
+                                   its manifest.json, or a list of record files
+  validate FILE...                 each filing on its own: schema and every check for its type
+  project --view TIER FILE         print the public | restricted | sealed view of a filing
+  keygen KEYFILE                   write a new Ed25519 signing key (PEM), for run --ledger
+  verify LEDGER                    recheck every hash link and signature in a ledger
+  freeze                           print the schema hash
+  backtest init DIR [--name NAME]  write the example case to a new folder, to start from
+  backtest check CASE...           check cases before scoring: shape, record keys, schema fields,
+                                   placeholders. Scores nothing.
+  backtest score CASE... [--out DIR] [--write-results] [--design NAME]... [--json]
+                                   score cases; every input is hashed before and after scoring.
+                                   Prints the verdicts and tables; --out writes report.md,
+                                   report.html and metrics.json; --write-results writes
+                                   results.json and results.md next to each case
+
+  A CASE is a folder holding decision_points.json, or the decision_points.json file itself. Its
+  filings are either listed in "records" or found through "filings": the path to any filing set
+  (a folder or manifest.json), the same thing `dbyr run` takes.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from pathlib import Path
+
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+from cryptography.hazmat.primitives.serialization import (
+    Encoding, NoEncryption, PrivateFormat, load_pem_private_key)
+
+from .backtest import Backtest, CaseError, DESIGNS, InputsChanged, check_case, init_case
+from .disclosure import project
+from .filingset import FilingSetError, load_filing_set
+from .integrity import schema_hash
+from .ledger import Ledger
+from .protocol import run_protocol, safe_name
+from .rules import validate_record
+
+
+def _load(path: str) -> dict:
+    return json.loads(Path(path).read_text(encoding="utf-8"))
+
+
+def _write(path: Path, doc) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(doc, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+
+def _report(label: str, findings) -> int:
+    n = lambda s: sum(f.severity == s for f in findings)
+    errs = n("error")
+    print(f"{'FAIL' if errs else 'ok':4}  {label}  ({errs} errors, {n('conduct')} conduct, {n('warning')} warnings)")
+    for f in findings:
+        print(f"      {f}")
+    return 1 if errs else 0
+
+
+def run(args) -> int:
+    if args.ledger and not args.key:
+        print("dbyr run: --ledger needs --key", file=sys.stderr)
+        return 2
+    try:
+        filings = load_filing_set(*args.paths)
+    except FilingSetError as exc:
+        print(f"dbyr run: {exc}", file=sys.stderr)
+        return 2
+    key = load_pem_private_key(args.key.read_bytes(), password=None) if args.key else None
+    report = run_protocol(filings, ledger=args.ledger, signing_key=key)
+    print(json.dumps(report.to_json(), indent=2) if args.json else report.to_markdown(), end="")
+    if args.out:
+        _write(args.out / "report.json", report.to_json())
+        (args.out / "report.md").write_text(report.to_markdown(), encoding="utf-8")
+        for k, views in report.views.items():
+            for tier in ("public", "restricted", "sealed", "openings"):
+                _write(args.out / "views" / safe_name(k) / f"{tier}.json", views[tier])
+    return 0 if report.ok else 1
+
+
+def backtest(args) -> int:
+    if args.bt_cmd == "init":
+        try:
+            path = init_case(args.dir, args.name)
+        except CaseError as exc:
+            print(f"dbyr backtest init: {exc}", file=sys.stderr)
+            return 2
+        print(f"wrote the example case to {path}; check it with: dbyr backtest check {path}")
+        return 0
+
+    if args.bt_cmd == "check":
+        worst = 0
+        for case in args.cases:
+            problems = check_case(case)
+            errs = sum(s == "error" for s, _ in problems)
+            print(f"{'FAIL' if errs else 'ok':4}  {case}  ({errs} errors, {len(problems) - errs} warnings)")
+            for severity, message in problems:
+                print(f"      [{severity}] {message}")
+            worst = max(worst, 1 if errs else 0)
+        return worst
+
+    try:
+        report = Backtest(*args.cases, designs=args.design or None).run()
+    except (CaseError, ValueError, KeyError) as exc:
+        print(f"dbyr backtest score: {exc}", file=sys.stderr)
+        return 2
+    except InputsChanged as exc:
+        print(f"dbyr backtest score: {exc}", file=sys.stderr)
+        return 1
+    print(json.dumps(report.to_json(), indent=2, ensure_ascii=False) if args.json else report.markdown(), end="")
+    if args.out:
+        for path in report.write(args.out).values():
+            print(f"wrote {path}", file=sys.stderr)
+    if args.write_results:
+        for path in report.write_results():
+            print(f"wrote {path}", file=sys.stderr)
+    return 0
+
+
+def main(argv: list[str] | None = None) -> int:
+    p = argparse.ArgumentParser(prog="dbyr", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    sub = p.add_subparsers(dest="cmd", required=True)
+    r = sub.add_parser("run", help="the whole protocol over one filing set")
+    r.add_argument("paths", nargs="+", help="a filing-set folder, its manifest.json, or record files")
+    r.add_argument("--out", type=Path, help="write report.json, report.md and views/ here")
+    r.add_argument("--ledger", type=Path, help="sign and append lodged filings to this ledger")
+    r.add_argument("--key", type=Path, help="Ed25519 signing key for --ledger (see dbyr keygen)")
+    r.add_argument("--json", action="store_true", help="print the report as JSON instead of Markdown")
+    sub.add_parser("validate", help="check each filing on its own").add_argument("files", nargs="+")
+    pr = sub.add_parser("project", help="print one disclosure view of a filing")
+    pr.add_argument("--view", required=True, choices=["public", "restricted", "sealed"])
+    pr.add_argument("file")
+    sub.add_parser("keygen", help="write a new Ed25519 signing key").add_argument("keyfile")
+    sub.add_parser("verify", help="recheck a ledger").add_argument("ledger")
+    sub.add_parser("freeze", help="print the schema hash")
+    b = sub.add_parser("backtest", help="score DBYR against incident cases: init, check, score")
+    bsub = b.add_subparsers(dest="bt_cmd", required=True)
+    bi = bsub.add_parser("init", help="write the example case to a new folder")
+    bi.add_argument("dir", type=Path)
+    bi.add_argument("--name", help="case name (default: the folder name)")
+    bc = bsub.add_parser("check", help="check cases before scoring; scores nothing")
+    bc.add_argument("cases", nargs="+", type=Path, help="case folders or decision_points.json files")
+    bs = bsub.add_parser("score", help="score cases and build the results tables")
+    bs.add_argument("cases", nargs="+", type=Path, help="case folders or decision_points.json files")
+    bs.add_argument("--out", type=Path, help="write report.md, report.html and metrics.json here")
+    bs.add_argument("--write-results", action="store_true", help="write results.json and results.md next to each case")
+    bs.add_argument("--design", action="append", choices=sorted(DESIGNS), help="table design(s) to build (default: all)")
+    bs.add_argument("--json", action="store_true", help="print the report as JSON instead of Markdown")
+    args = p.parse_args(argv)
+
+    if args.cmd == "run":
+        return run(args)
+    if args.cmd == "backtest":
+        return backtest(args)
+    if args.cmd == "validate":
+        return max(_report(f, validate_record(_load(f))) for f in args.files)
+    if args.cmd == "project":
+        view, _ = project(_load(args.file), args.view)
+        print(json.dumps(view, indent=2, ensure_ascii=False))
+        return 0
+    if args.cmd == "keygen":
+        key = Ed25519PrivateKey.generate()
+        Path(args.keyfile).write_bytes(key.private_bytes(Encoding.PEM, PrivateFormat.PKCS8, NoEncryption()))
+        Path(args.keyfile).chmod(0o600)
+        print(f"wrote {args.keyfile}")
+        return 0
+    if args.cmd == "verify":
+        return _report(args.ledger, Ledger(Path(args.ledger)).verify())
+    if args.cmd == "freeze":
+        print(schema_hash())
+        return 0
+    return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())

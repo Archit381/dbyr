@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dbyr.example/schema/0.1.0/exception_notice.schema.json",
+  "title": "ExceptionNotice",
+  "description": "Interim filing, due within the notice deadline (default 72 hours) of detecting an event that matches a declared pause criterion or any third-party compromise. Closes the gap between a fast incident and a 30-day closeout cadence. It records detection; it does not detect.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "record_type", "notice_id", "run_id", "filed_at", "detected_at", "event_ids", "kinds", "action_taken", "signer"],
+  "properties": {
+    "schema_version": { "$ref": "common.schema.json#/$defs/schema_version" },
+    "record_type": { "const": "ExceptionNotice" },
+    "notice_id": { "$ref": "common.schema.json#/$defs/id", "x-tier": "public" },
+    "run_id": { "$ref": "common.schema.json#/$defs/id", "x-tier": "public" },
+    "filed_at": { "$ref": "common.schema.json#/$defs/timestamp", "x-tier": "public" },
+    "detected_at": { "$ref": "common.schema.json#/$defs/timestamp", "x-tier": "public" },
+    "event_ids": {
+      "description": "Identifiers that the run's Closeout will use for the same events.",
+      "type": "array", "minItems": 1,
+      "items": { "$ref": "common.schema.json#/$defs/id" },
+      "x-tier": "public"
+    },
+    "kinds": {
+      "type": "array", "minItems": 1,
+      "items": { "$ref": "common.schema.json#/$defs/event_kind" },
+      "x-tier": "public"
+    },
+    "criterion_ids": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/id" }, "x-tier": "restricted" },
+    "summary": { "type": "string", "x-tier": "restricted" },
+    "affected_parties": { "type": "array", "items": { "type": "string" }, "x-tier": "restricted" },
+    "action_taken": { "enum": ["pause", "pause_and_review", "halt_and_amend_intent", "notify_only", "none"], "x-tier": "public" },
+    "signer": { "$ref": "common.schema.json#/$defs/signer", "x-tier": "public" }
+  }
+}
