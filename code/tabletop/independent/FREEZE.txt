@@ -1,8 +1,0 @@
-schema hash (v0.2): sha256:1b9d14e61beb1d918c98512efa5db8f4d305464d747ba6edd6c13496bb1858af
-git tag: v0.2
-frozen: 2026-10-08T17:24:50Z
-
-schema hash (v0.3): sha256:dcd157d4878c905c5d4690ddcc36cf884950b8a98b823223e9b8d7e38e9cd997
-git tag: v0.3
-frozen: 2026-10-08T20:53:01Z
-round 2 runs against this version; sealed scenarios S4-S6 unopened at freeze (hashes in SEALED.sha256)

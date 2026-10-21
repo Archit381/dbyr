@@ -1,6 +1,0 @@
-FAIL  2 errors, 0 conduct, 3 warnings (profile adequacy)
-      ../intake/intent.json: [warning] trajectories_not_retained at /log_retention/retained: trajectories are not retained, so behavioural events cannot be reconciled at V1
-      ../intake/intent.json: [warning] partly_blind_criterion at /pause_criteria/0: criterion 'PC1' cannot observe ['privilege_escalation']
-      ../intake/intent.json: [warning] partly_blind_criterion at /pause_criteria/1: criterion 'PC2' cannot observe ['credential_misuse']
-      ../intake/intent.json: [error] core_kind_uncovered at /pause_criteria: safeguards-off run has no observable, pausing criterion for 'privilege_escalation'
-      ../intake/intent.json: [error] retention_too_short at /log_retention/retain_until: retain_until must be at least P12M after closeout
