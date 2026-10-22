@@ -62,9 +62,9 @@ What kind of run it is, why DBYR covers it, when and at what scale.
 | `start_window` | yes | public | When the run may operate. A Closeout period outside the window is a conduct finding. | `dict` |
 | `start_window.start` | yes | public | First day of the window. | `date` |
 | `start_window.end` | no | public | null means open-ended: a rolling training run, or a system that stays deployed. Closeouts are then due every 30 days. | `date \| None` |
-| `compute_band` | yes | public | A band, never a value. Band edges are a schema parameter set by the operator. | `Literal["<1e24", "1e24-1e25", "1e25-1e26", "1e26-1e27", ">=1e27"]` |
+| `compute_band` | yes | public | A band, never a value. Band edges are a schema parameter set by the operator. null means the filer withheld or did not know the band. | `Literal["<1e24", "1e24-1e25", "1e25-1e26", "1e26-1e27", ">=1e27", None]` |
 | `run_scale` | no | restricted | How large the run is. | `dict` |
-| `run_scale.concurrent_agents` | yes | restricted | The most agents running at once. At least 1. | `int` |
+| `run_scale.concurrent_agents` | yes | restricted | The most agents running at once, at least 1. null means the filer withheld or did not know the count. | `int \| None` |
 | `run_scale.human_users` | no | restricted | How many people interact with the agents. At least 0. | `int` |
 | `data_classes` | no | restricted | Classes of training or evaluation data the run uses. | `list[str]` |
 | `reward_design` | no | restricted | How rewards or grades are computed and where graders run (training runs). | `str` |
@@ -97,7 +97,7 @@ Which production safeguards are relaxed or off.
 | `safeguards_disabled.relaxed` | if `disabled` is `true` | restricted | The safeguards relaxed or off, required when disabled is true. | `list[str]` |
 | `safeguards_disabled.signer_role` | if `disabled` is `true` | public | The role that authorised disabling them, required when disabled is true. | `str` |
 | `safeguards_disabled.checklist` | no | public | State of every production safeguard (adequacy profile: all six, each once). | `list[dict]` |
-| `safeguards_disabled.checklist[].safeguard` | yes | public | model_output_filters: production classifiers on outputs; refusal_behaviour: trained refusals; per_episode_reset: sandbox state wiped between episodes; network_isolation: no route to systems outside the declared paths; identity_separation: agents act under their own identity, never a human's; least_privilege_access: agents can read only what the task needs. | `Literal["model_output_filters", "refusal_behaviour", "per_episode_reset", "network_isolation", "identity_separation", "least_privilege_access"]` |
+| `safeguards_disabled.checklist[].safeguard` | yes | public | model_output_filters: production classifiers on outputs; refusal_behaviour: trained refusals; per_episode_reset: sandbox state wiped between episodes; network_isolation: no route to systems outside the declared paths; identity_separation: agents act under their own identity, never a human's; least_privilege_access: agents can read only what the task needs; cot_monitoring: the production chain-of-thought monitor runs on agent reasoning (optional item). | `Literal["model_output_filters", "refusal_behaviour", "per_episode_reset", "network_isolation", "identity_separation", "least_privilege_access", "cot_monitoring"]` |
 | `safeguards_disabled.checklist[].state` | yes | public | relaxed: weakened in any way from the production configuration. | `Literal["on", "relaxed", "off"]` |
 | `safeguards_disabled.checklist[].change` | no | restricted | What was changed, required unless state is on. | `str` |
 

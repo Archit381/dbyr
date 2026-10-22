@@ -131,8 +131,9 @@ sandbox; `access_logs` authentication and authorisation records on reachable sys
 `model_output_filters` production classifiers on outputs; `refusal_behaviour` trained refusals;
 `per_episode_reset` sandbox state wiped between episodes; `network_isolation` no route outside the
 declared paths; `identity_separation` agents act under their own identity, never a person's;
-`least_privilege_access` agents read only what the task needs. Each is `on`, `relaxed` (weakened in
-any way) or `off`.
+`least_privilege_access` agents read only what the task needs. Optionally, `cot_monitoring` the
+production chain-of-thought monitor runs on agent reasoning; at most once, not required. Each is `on`,
+`relaxed` (weakened in any way) or `off`.
 
 **Roles:** every role a filing names (pause authorities, the restart approver, signers) must be
 declared in the Intent's `roles`.

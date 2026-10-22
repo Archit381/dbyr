@@ -90,13 +90,14 @@
       "description": "When the run may operate. A Closeout period outside the window is a conduct finding."
     },
     "compute_band": {
-      "description": "A band, never a value. Band edges are a schema parameter set by the operator.",
+      "description": "A band, never a value. Band edges are a schema parameter set by the operator. null means the filer withheld or did not know the band.",
       "enum": [
         "<1e24",
         "1e24-1e25",
         "1e25-1e26",
         "1e26-1e27",
-        ">=1e27"
+        ">=1e27",
+        null
       ],
       "x-tier": "public",
       "x-route": [
@@ -742,9 +743,16 @@
       ],
       "properties": {
         "concurrent_agents": {
-          "type": "integer",
-          "minimum": 1,
-          "description": "The most agents running at once."
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "The most agents running at once, at least 1. null means the filer withheld or did not know the count."
         },
         "human_users": {
           "type": "integer",

@@ -35,7 +35,7 @@ Research conducted at the [AI Incident Response Sprint](https://apartresearch.co
 
 ## The `dbyr` package
 
-This repository is the executable form of the paper: the JSON Schemas for the four DBYR records, the checks an evaluator runs on them, the public / restricted / sealed disclosure views, a signed hash-chained ledger, and a backtest engine that scores the protocol against an incident.
+This repository is the executable form of the paper: the JSON Schemas for the four DBYR records, the checks an evaluator runs on them, the public / restricted / sealed disclosure views, a signed hash-chained ledger, and a backtest engine for testing the protocol against past incidents.
 
 ### Install
 
@@ -46,9 +46,71 @@ pip install -e .                                     # or, from a clone
 
 Python 3.11+. Dependencies: `jsonschema` and `cryptography`, installed automatically.
 
-### Backtest your own case, step by step
+### Two ways to use it
 
-You have an incident, real or synthetic, and want to know whether DBYR would have made its key decisions traceable and checkable. A **case** is one folder holding the incident's filings and the decision points they are scored on.
+| | [Using DBYR](#using-dbyr-file-and-check-the-records) | [Evaluating DBYR](#evaluating-dbyr-backtest-an-incident) |
+|---|---|---|
+| Who | a lab that files the records; a regulator or evaluator that checks them | researchers testing whether DBYR would have helped in a past incident |
+| What you write | the records: Intent, Notice, Closeout, runtime record | the records the lab would have filed, **plus** a list of questions about the incident (decision points) |
+| When | before, during and after every covered run | after an incident |
+| Main command | `dbyr run` | `dbyr backtest score` |
+| Decision points? | **no**: they are not part of the protocol and are never filed | yes |
+
+Most users only need the first. The second is how the paper measured DBYR.
+
+### Using DBYR: file and check the records
+
+The lab files four kinds of record over a run's life; the evaluator checks them as a set. Examples of all four, each passing every check, are in [`dbyr/backtest/template/`](dbyr/backtest/template/) (`dbyr backtest init some-folder` also copies them out). The [record docs](docs/records/README.md) list every field and every check.
+
+| When | The lab files | Doc |
+|---|---|---|
+| at least 3 days before the run starts | a TrainingRunIntent: what the run will do, what agents can reach, how it is watched, what pauses it, what evidence is kept | [intent.md](docs/records/intent.md) |
+| within 72 hours of detecting a reportable event | an ExceptionNotice | [notice.md](docs/records/notice.md) |
+| when the run ends, and at least every 30 days | a TrainingRunCloseout: what actually happened | [closeout.md](docs/records/closeout.md) |
+| before a system built on the run is deployed | a SystemRuntimeRecord | [runtime.md](docs/records/runtime.md) |
+
+**Step 1. Check each record as you write it.**
+
+```bash
+dbyr validate filings/lab-x/intent_A.json
+```
+
+**Step 2. Check the whole set.** The lab can run this before submitting; the evaluator runs it on receipt.
+
+```bash
+dbyr run filings/lab-x --out report/
+```
+
+Each finding is an **error** (the filing is defective and is not lodged), a **conduct** finding (the filing lodges, but records a breach of the lab's own commitments, such as a late notice or a criterion that fired with no pause; it goes to adjudication), or a **warning**. `--out` writes `report.json`, `report.md`, and for each lodged filing its public, restricted and sealed views in `views/`, with `openings.json`, the salts that let the lab later prove a hidden value.
+
+**Step 3 (optional). Sign the lodged filings into a tamper-evident record.**
+
+```bash
+dbyr keygen lab.key
+dbyr run filings/lab-x --ledger record.jsonl --key lab.key
+dbyr verify record.jsonl                # any edit, deletion or reordering is detected
+```
+
+In Python:
+
+```python
+from dbyr import DBYR
+
+dbyr = DBYR()
+dbyr.init_case("filings/lab-x")         # example filings to start from
+report = dbyr.check("filings/lab-x")    # step 2
+print(report.ok, report.counts())       # True {'error': 0, 'conduct': 0, 'warning': 1}
+```
+
+### Evaluating DBYR: backtest an incident
+
+The backtest asks: **had DBYR existed during this incident, would the questions that mattered afterwards have been answerable from the records?** The records are the answers, written in advance by the lab; the decision points are the questions, written afterwards with hindsight. The score is how many questions the records answer.
+
+- **Decision points are never filed.** They are the list of questions an investigator asks after an incident: which decisions shaped it, and what record should have captured each. They exist only to measure the protocol.
+- **The lab never writes them.** For a past incident, researchers write them from the public account of the incident, and someone other than the person who reconstructed the filings. They are frozen before scoring.
+- dbyr then answers each question from the records, the same way every time: was the fact recorded before (a), checkable after (b), and would a declared rule have changed the decision (c)?
+
+A **case** is one folder holding the incident's filings and its decision points.
 
 **Step 1. Create the case from the example, and run it unchanged.**
 
@@ -60,13 +122,9 @@ dbyr backtest score cases/my-case     # prints the verdicts and the results tabl
 
 All three should succeed before you change anything. The folder now holds a working example (a synthetic safeguards-off evaluation at "Lab X", and a system deployed on it) and a [README](dbyr/backtest/template/README.md) describing every file. `init` records the current schema hash in `decision_points.json` as `schema_hash`: do not change it.
 
-**Step 2. Replace the example filings with your incident's.**
+**Step 2. Replace the example filings with the ones the lab would have filed.**
 
-Edit or replace `intent_A.json`, `notice_N1.json`, `closeout_A.json` and (only if a system was deployed) `runtime_S1.json`. The [record docs](docs/records/README.md) list every field and every check. Check each filing as you write it:
-
-```bash
-dbyr validate cases/my-case/intent_A.json
-```
+Edit or replace `intent_A.json`, `notice_N1.json`, `closeout_A.json` and (only if a system was deployed) `runtime_S1.json`. For a real incident, use public sources only and record where every value came from in `sources.json`. Check each filing as you write it with `dbyr validate`.
 
 **Step 3. Run the protocol over the filings.**
 
@@ -74,11 +132,11 @@ dbyr validate cases/my-case/intent_A.json
 dbyr run cases/my-case
 ```
 
-An error with the code `schema` means a filing is malformed: fix it. Any other error is the protocol rejecting the filing. For a real incident, that rejection is a result to report, not something to fix.
+An error with the code `schema` means a filing is malformed: fix it. Any other error is the protocol rejecting the filing. For a real incident, that rejection is itself a result, not something to fix.
 
-**Step 4. Replace the example decision points with yours.**
+**Step 4. Write the decision points.**
 
-Edit `decision_points.json`. Keep `case` and `schema_hash`; write everything else: where the filings are, and one entry per decision that shaped the incident, each with a test on a filing made before it and a test on the Closeout after it. The [case README](dbyr/backtest/template/README.md#4-replace-the-decision-points-with-your-own) lists the keys. Then check the case:
+Replace the example decision points in `decision_points.json` with the questions about your incident; keep `case` and `schema_hash`. dbyr does not generate them. **[Writing `decision_points.json`](docs/cases/decision_points.md)** describes every key, the test syntax and a complete example. Then check the case:
 
 ```bash
 dbyr backtest check cases/my-case     # shape, schema hash, record keys, fields, placeholders
@@ -104,32 +162,19 @@ Edit `annotations.json` (decision kinds, when outsiders learned, the investigati
 | `report/report.md`, `report.html` | step 5, `--out` | the full report: verdicts, the four results tables, every decision point |
 | `report/metrics.json` | step 5, `--out` | the same results as data |
 
-The same steps in Python:
+In Python:
 
 ```python
 from dbyr import DBYR
 
 dbyr = DBYR()
 dbyr.init_case("cases/my-case")                     # step 1
-report = dbyr.check("cases/my-case")                # step 3: the protocol's findings
-print(report.ok, report.counts())                   # True {'error': 0, 'conduct': 0, 'warning': 1}
 print(dbyr.check_case("cases/my-case"))             # step 4: [] when the case is ready
 bt = dbyr.backtest("cases/my-case")                 # step 5
 print(bt.verdicts())
 bt.write("report/")
 bt.write_results()
 ```
-
-### The records
-
-[`docs/records/`](docs/records/README.md) documents the four records a developer files: when each is due, every field with its disclosure tier and meaning, and every check with its severity and the reason for it.
-
-| Record | Filed | Doc |
-|---|---|---|
-| TrainingRunIntent | before the run | [intent.md](docs/records/intent.md) |
-| ExceptionNotice | within 72 hours of detecting a reportable event | [notice.md](docs/records/notice.md) |
-| TrainingRunCloseout | at the end, and at least every 30 days | [closeout.md](docs/records/closeout.md) |
-| SystemRuntimeRecord | before deployment at scale or external exposure | [runtime.md](docs/records/runtime.md) |
 
 ---
 
@@ -398,6 +443,7 @@ dbyr/                  the installable package
   backtest/            the backtest engine: case, lint, scoring, metrics, tables, render, report
     template/          the example case that `dbyr backtest init` writes
 docs/records/          the four records: fields, deadlines and every check
+docs/cases/            how to write a backtest case's decision_points.json
 benchmarks/            data only: the paper's backtest cases (benchmarks/<case>/)
 tests/                 unit tests
 website/               the project site

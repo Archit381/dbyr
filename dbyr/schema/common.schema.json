@@ -113,9 +113,10 @@
             "per_episode_reset",
             "network_isolation",
             "identity_separation",
-            "least_privilege_access"
+            "least_privilege_access",
+            "cot_monitoring"
           ],
-          "description": "model_output_filters: production classifiers on outputs; refusal_behaviour: trained refusals; per_episode_reset: sandbox state wiped between episodes; network_isolation: no route to systems outside the declared paths; identity_separation: agents act under their own identity, never a human's; least_privilege_access: agents can read only what the task needs."
+          "description": "model_output_filters: production classifiers on outputs; refusal_behaviour: trained refusals; per_episode_reset: sandbox state wiped between episodes; network_isolation: no route to systems outside the declared paths; identity_separation: agents act under their own identity, never a human's; least_privilege_access: agents can read only what the task needs; cot_monitoring: the production chain-of-thought monitor runs on agent reasoning (optional item)."
         },
         "state": {
           "enum": [
