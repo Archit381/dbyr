@@ -22,8 +22,8 @@ from .runtime import check_deployment, check_runtime
 from .versions import in_force, system_rules, version_rules
 
 CHECKS = {
-    "TrainingRunIntent": check_intent,
-    "TrainingRunCloseout": check_closeout,
+    "RunIntent": check_intent,
+    "RunCloseout": check_closeout,
     "ExceptionNotice": check_notice,
     "SystemRuntimeRecord": check_runtime,
 }

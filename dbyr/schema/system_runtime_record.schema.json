@@ -97,26 +97,26 @@
       "description": "When the system is deployed. A null end means it stays deployed; Closeouts for the system are then due every 30 days."
     },
     "roles": {
-      "$ref": "training_run_intent.schema.json#/properties/roles",
+      "$ref": "run_intent.schema.json#/properties/roles",
       "description": "Every role this record and the system's later filings name. Titles are public; contacts restricted; identities sealed."
     },
     "monitoring_instruments": {
-      "$ref": "training_run_intent.schema.json#/properties/monitoring_instruments",
+      "$ref": "run_intent.schema.json#/properties/monitoring_instruments",
       "x-tier": "restricted",
       "description": "How the deployed system is watched. An empty array is a declared absence of monitoring."
     },
     "pause_criteria": {
-      "$ref": "training_run_intent.schema.json#/properties/pause_criteria",
+      "$ref": "run_intent.schema.json#/properties/pause_criteria",
       "x-tier": "restricted",
       "description": "Events that pause or withdraw the deployed system, who decides, and what must be done."
     },
     "restart_protocol": {
-      "$ref": "training_run_intent.schema.json#/properties/restart_protocol",
+      "$ref": "run_intent.schema.json#/properties/restart_protocol",
       "x-tier": "restricted",
       "description": "How a paused system is restored to service."
     },
     "log_retention": {
-      "$ref": "training_run_intent.schema.json#/properties/log_retention",
+      "$ref": "run_intent.schema.json#/properties/log_retention",
       "x-tier": "public",
       "description": "What evidence from the deployment is kept, for how long, and how it is reviewed."
     },

@@ -1,4 +1,4 @@
-# TrainingRunIntent
+# RunIntent
 
 The Intent is filed before the first optimisation step, or before the first safeguards-off
 evaluation, of a covered model. It turns "we were careful" into specific promises that can be
@@ -27,7 +27,7 @@ a safeguards-off cyber evaluation that passes every check.
 
 ## Fields
 
-Generated from [`training_run_intent.schema.json`](../../dbyr/schema/training_run_intent.schema.json).
+Generated from [`run_intent.schema.json`](../../dbyr/schema/run_intent.schema.json).
 Required "yes" means the schema requires it; the checks below require more. Nested fields are
 written `parent.child`, and `parent[].child` for each item of a list. Types are Python type hints;
 see [Field types](README.md#field-types).
@@ -40,7 +40,7 @@ Who is filing, and for which run.
 | Field | Required | Tier | Meaning | Type |
 |---|---|---|---|---|
 | `schema_version` | yes | public | The schema version the filing is written against. | `Literal["0.1.0"]` |
-| `record_type` | yes | public | The record type. It fixes which schema and which checks apply. | `Literal["TrainingRunIntent"]` |
+| `record_type` | yes | public | The record type. It fixes which schema and which checks apply. | `Literal["RunIntent"]` |
 | `run_id` | yes | public | Identifier of the run. Every later filing for the run (amendments, notices, closeouts) uses it. | `str` |
 | `developer` | yes | public | The organisation running the training or evaluation. | `str` |
 | `filed_at` | yes | public | When the Intent was filed. A first Intent must be filed at least the intake period (default 3 days) before the start. | `datetime` |
@@ -57,7 +57,7 @@ What kind of run it is, why DBYR covers it, when and at what scale.
 
 | Field | Required | Tier | Meaning | Type |
 |---|---|---|---|---|
-| `run_kind` | no | public | What the run is. Required by the adequacy profile. A rolling, open-ended window is allowed only for training. | `Literal["training", "evaluation", "training_with_evaluation", "internal_deployment"]` |
+| `run_kind` | no | public | What the run is. training: a run that trains a model; evaluation: a run that tests a model already trained, one Intent per evaluation of at most 31 days; training_with_evaluation: one run that trains and evaluates within the same job; internal_deployment: a model used inside the developer. Required by the adequacy profile. A rolling, open-ended window is allowed only for training. | `Literal["training", "evaluation", "training_with_evaluation", "internal_deployment"]` |
 | `trigger_basis` | yes | public | T1 compute threshold; T2 covered-developer status; T3 predicted high/critical capability crossing; T4 safeguards-off evaluation. | `list[Literal["T1", "T2", "T3", "T4"]]` |
 | `start_window` | yes | public | When the run may operate. A Closeout period outside the window is a conduct finding. | `dict` |
 | `start_window.start` | yes | public | First day of the window. | `date` |
@@ -67,7 +67,7 @@ What kind of run it is, why DBYR covers it, when and at what scale.
 | `run_scale.concurrent_agents` | yes | restricted | The most agents running at once, at least 1. null means the filer withheld or did not know the count. | `int \| None` |
 | `run_scale.human_users` | no | restricted | How many people interact with the agents. At least 0. | `int` |
 | `data_classes` | no | restricted | Classes of training or evaluation data the run uses. | `list[str]` |
-| `reward_design` | no | restricted | How rewards or grades are computed and where graders run (training runs). | `str` |
+| `reward_design` | no | restricted | How rewards or grades are computed and where graders run. Required by the adequacy profile when run_kind is training or training_with_evaluation. | `str` |
 
 ### 3. Capability forecast
 

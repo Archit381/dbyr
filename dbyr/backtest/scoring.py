@@ -114,7 +114,7 @@ def score(case: Case) -> dict:
             "n": n,
             "passes_heldout_criterion": both >= math.ceil(n / 2),
             "intake_errors": {k: sorted({f.code for f in errors(validate_record(r))})
-                              for k, r in recs.items() if r["record_type"] == "TrainingRunIntent"},
+                              for k, r in recs.items() if r["record_type"] == "RunIntent"},
         }
     return {
         "case": case.name,

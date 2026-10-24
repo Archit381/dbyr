@@ -162,9 +162,9 @@ def apply_variant(records: dict, variant: dict) -> dict:
             if p["path_id"] in paths:
                 p["agent_writable"] = paths[p["path_id"]]
     for key, rec in out.items():
-        if rec["record_type"] != "TrainingRunCloseout":
+        if rec["record_type"] != "RunCloseout":
             continue
-        intent = next((r for k, r in out.items() if r["record_type"] == "TrainingRunIntent" and r["run_id"] == rec.get("run_id")), None)
+        intent = next((r for k, r in out.items() if r["record_type"] == "RunIntent" and r["run_id"] == rec.get("run_id")), None)
         if intent:
             declared = {s["surface_id"] for s in intent["agent_surface"]["writable_surfaces"]}
             for x in rec["containment_exceptions"]:

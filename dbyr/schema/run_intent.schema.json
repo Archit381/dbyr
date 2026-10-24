@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://dbyr.example/schema/0.1.0/training_run_intent.schema.json",
-  "title": "TrainingRunIntent",
+  "$id": "https://dbyr.example/schema/0.1.0/run_intent.schema.json",
+  "title": "RunIntent",
   "description": "Filed before the first optimisation step or the first safeguards-off evaluation of a covered model. x-route gives each field's derivation route (R1 traced to a documented failure; R2 has a counterpart in an existing regime, per the authors' mapping; R3 from a published standard).",
   "type": "object",
   "additionalProperties": false,
@@ -31,7 +31,7 @@
       "description": "The schema version the filing is written against."
     },
     "record_type": {
-      "const": "TrainingRunIntent",
+      "const": "RunIntent",
       "description": "The record type. It fixes which schema and which checks apply."
     },
     "run_id": {
@@ -706,7 +706,7 @@
       "description": "Who signs the filing."
     },
     "run_kind": {
-      "description": "What the run is. Required by the adequacy profile. A rolling, open-ended window is allowed only for training.",
+      "description": "What the run is. training: a run that trains a model; evaluation: a run that tests a model already trained, one Intent per evaluation of at most 31 days; training_with_evaluation: one run that trains and evaluates within the same job; internal_deployment: a model used inside the developer. Required by the adequacy profile. A rolling, open-ended window is allowed only for training.",
       "enum": [
         "training",
         "evaluation",
@@ -765,7 +765,7 @@
     "reward_design": {
       "type": "string",
       "x-tier": "restricted",
-      "description": "How rewards or grades are computed and where graders run (training runs)."
+      "description": "How rewards or grades are computed and where graders run. Required by the adequacy profile when run_kind is training or training_with_evaluation."
     },
     "forecast_basis": {
       "type": "string",

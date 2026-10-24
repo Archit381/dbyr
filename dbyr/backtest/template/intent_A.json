@@ -1,6 +1,6 @@
 {
   "schema_version": "0.1.0",
-  "record_type": "TrainingRunIntent",
+  "record_type": "RunIntent",
   "run_id": "s2-cyber-eval",
   "developer": "Lab X (synthetic)",
   "run_kind": "evaluation",

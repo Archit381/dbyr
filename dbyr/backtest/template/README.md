@@ -1,8 +1,13 @@
 # Backtest case
 
-A backtest asks, for each decision that shaped an incident: **was the fact written down before the
-run, and could it be checked afterwards?** A case holds the filings for one incident and the
-decision points they are scored on.
+A backtest tests the DBYR protocol itself. It asks, for each decision that shaped an incident: **had
+DBYR existed, was the fact written down before the run, and could it be checked afterwards?** A case
+holds the filings the lab would have made, and the decision points they are scored on.
+
+**If you only want to file DBYR records and check them, you do not need a case:** write the filings
+and run `dbyr run`. Decision points are never filed. They are the questions an investigator asks
+after an incident, written by researchers (never by the lab whose incident it is), and they exist
+only to measure the protocol.
 
 This folder is a complete, working example: a synthetic safeguards-off cyber evaluation at a
 fictional "Lab X", and a system later deployed on it. It passes every check. Start from it and
@@ -12,11 +17,11 @@ replace its contents with your own.
 
 | File | Written by | What it is |
 |---|---|---|
-| `intent_A.json` | you | TrainingRunIntent: the run's commitments, filed before it starts |
+| `intent_A.json` | you | RunIntent: the run's commitments, filed before it starts |
 | `notice_N1.json` | you | ExceptionNotice: filed within 72 hours of detecting an event |
-| `closeout_A.json` | you | TrainingRunCloseout: what happened, filed at the end (and every 30 days) |
+| `closeout_A.json` | you | RunCloseout: what happened, filed at the end (and every 30 days) |
 | `runtime_S1.json` | you, optional | SystemRuntimeRecord: filed before a system built on the run is deployed. If no system was deployed, delete it and its `runtime:S1` entry in `decision_points.json` |
-| `decision_points.json` | you; `init` fills in `case` and `schema_hash` | the scoring plan: which decisions to score, and what each is tested against |
+| `decision_points.json` | you (`init` copies an example and fills in `case` and `schema_hash`) | the scoring plan: which decisions to score, and what each is tested against |
 | `sources.json` | you, optional | where each value in the filings came from |
 | `annotations.json` | you, optional | context for the results tables, added after scoring; never read by the scoring |
 
@@ -57,7 +62,9 @@ dbyr run cases/my-case
 
 ### 4. Replace the decision points with your own
 
-Edit `decision_points.json`. Keep `case` and `schema_hash`; replace everything else.
+Edit `decision_points.json`: dbyr does not generate it. Keep `case` and `schema_hash`; replace
+everything else. The full format, the test syntax and a worked example are in
+`docs/cases/decision_points.md` in the DBYR repository.
 
 | Key | What to write |
 |---|---|
@@ -106,7 +113,7 @@ anything changed, the run stops.
 
 | Command | Writes | Used for |
 |---|---|---|
-| `dbyr backtest init` | this example, with `case` and `schema_hash` filled in | your starting point |
+| `dbyr backtest init` | a copy of this example case, with `case` and `schema_hash` filled in | a starting point: you replace the filings and the decision points |
 | `dbyr run --out DIR` | `report.json`, `report.md`, `views/` | the protocol's findings on the filings, and their public, restricted and sealed views |
 | `dbyr backtest score --out DIR` | `report.md`, `report.html`, `metrics.json` | the full report with all four tables, and the same as data |
 | `dbyr backtest score --write-results` | `results.json`, `results.md` in the case folder | the case's pre-registered result, to commit |

@@ -1,4 +1,4 @@
-"""Checks on one TrainingRunCloseout.
+"""Checks on one RunCloseout.
 
 Three groups, run in this order:
   consistency   attested absence, the period, affected parties and notifications, exceptions, scope

@@ -15,9 +15,9 @@ from .schema import RECORD_SCHEMAS, SCHEMA_DIR
 
 START, END = "<!-- fields:start -->", "<!-- fields:end -->"
 DOCS = {
-    "TrainingRunIntent": "intent.md",
+    "RunIntent": "intent.md",
     "ExceptionNotice": "notice.md",
-    "TrainingRunCloseout": "closeout.md",
+    "RunCloseout": "closeout.md",
     "SystemRuntimeRecord": "runtime.md",
 }
 # Shared types from common.schema.json as Python types. EventKind and EvidenceClass are the
@@ -157,7 +157,7 @@ def fields(record_type: str) -> list[dict]:
 # Records whose fields are shown in groups: (heading, what the group answers, top-level fields).
 # Every top-level field must be in exactly one group.
 GROUPS = {
-    "TrainingRunIntent": [
+    "RunIntent": [
         ("Identity", "Who is filing, and for which run.",
          ["schema_version", "record_type", "run_id", "developer", "filed_at", "signer",
           "amends", "changes", "amendments_allowed"]),
@@ -188,7 +188,7 @@ GROUPS = {
         ("Response", "What the developer did about it.",
          ["action_taken"]),
     ],
-    "TrainingRunCloseout": [
+    "RunCloseout": [
         ("Identity and period", "Who is filing, for which run or deployed system, which days it covers, and its state.",
          ["schema_version", "record_type", "run_id", "system_id", "filed_at", "signer", "period_start", "period_end",
           "status"]),

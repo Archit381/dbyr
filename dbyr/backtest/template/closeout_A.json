@@ -1,6 +1,6 @@
 {
   "schema_version": "0.1.0",
-  "record_type": "TrainingRunCloseout",
+  "record_type": "RunCloseout",
   "run_id": "s2-cyber-eval",
   "filed_at": "2026-09-14T12:00:00Z",
   "period_start": "2026-09-01",

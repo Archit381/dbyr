@@ -5,9 +5,9 @@ checks them against each other as the set grows.
 
 | Record | Filed | What it says | Doc |
 |---|---|---|---|
-| TrainingRunIntent | before the run starts, at least 3 days ahead; again as an amendment when a declared fact changes | what the run will do, what it can reach, how it is watched, and what will pause it | [intent.md](intent.md) |
+| RunIntent | before the run starts, at least 3 days ahead; again as an amendment when a declared fact changes | what the run will do, what it can reach, how it is watched, and what will pause it | [intent.md](intent.md) |
 | ExceptionNotice | within 72 hours of detecting a reportable event | what was detected, when, and what was done | [notice.md](notice.md) |
-| TrainingRunCloseout | when the run ends or is aborted, and at least every 30 days while it runs | what actually happened in the period: events, pauses, containment failures, evidence kept | [closeout.md](closeout.md) |
+| RunCloseout | when the run ends or is aborted, and at least every 30 days while it runs | what actually happened in the period: events, pauses, containment failures, evidence kept | [closeout.md](closeout.md) |
 | SystemRuntimeRecord | before a system built on the run's model is deployed at scale or exposed externally | which runs the system is built on, and the deployment's own commitments: how it is watched, what pauses it, who decides, what evidence is kept | [runtime.md](runtime.md) |
 
 The deadlines are the defaults in [`dbyr/params.py`](../../dbyr/params.py) (see [Parameters](#parameters)).

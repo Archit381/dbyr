@@ -1,4 +1,4 @@
-# TrainingRunCloseout
+# RunCloseout
 
 The Closeout says what actually happened in a period of the run: every reportable event detected,
 every pause, every containment failure, who was told, what investigators asked for and were given,
@@ -37,7 +37,7 @@ Its fields fall into eight groups:
 
 ## Fields
 
-Generated from [`training_run_closeout.schema.json`](../../dbyr/schema/training_run_closeout.schema.json).
+Generated from [`run_closeout.schema.json`](../../dbyr/schema/run_closeout.schema.json).
 Required "yes" means the schema requires it; the checks below require more. Nested fields are
 written `parent.child`, and `parent[].child` for each item of a list. Types are Python type hints;
 see [Field types](README.md#field-types).
@@ -50,7 +50,7 @@ Who is filing, for which run or deployed system, which days it covers, and its s
 | Field | Required | Tier | Meaning | Type |
 |---|---|---|---|---|
 | `schema_version` | yes | public | The schema version the filing is written against. | `Literal["0.1.0"]` |
-| `record_type` | yes | public | The record type. It fixes which schema and which checks apply. | `Literal["TrainingRunCloseout"]` |
+| `record_type` | yes | public | The record type. It fixes which schema and which checks apply. | `Literal["RunCloseout"]` |
 | `run_id` | yes, unless `system_id` is given | public | The run this Closeout closes. It must match the Intent's run_id. Give run_id or system_id, not both. | `str` |
 | `system_id` | yes, unless `run_id` is given | public | The deployed system this Closeout reports on. It is checked against the system's SystemRuntimeRecord. Give run_id or system_id, not both. | `str` |
 | `filed_at` | yes | public | When the Closeout was filed. It is checked against the Intent version in force at this time. | `datetime` |

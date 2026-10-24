@@ -91,7 +91,7 @@ def preservation(intent: dict, closeout: dict) -> list[Finding]:
         missing = [c for c in intent["log_retention"]["retained"] if c not in covered]
         if missing:
             out.append(Finding("error", "preservation_incomplete", "/preservation", f"no preservation entry for {missing}"))
-    if (closeout["status"] == "rolling" and intent["record_type"] == "TrainingRunIntent"
+    if (closeout["status"] == "rolling" and intent["record_type"] == "RunIntent"
             and intent.get("run_kind") not in ("training", "training_with_evaluation")):
         out.append(Finding("error", "rolling_not_training", "/status", "only training runs may be rolling [R1 S3-E2]"))
     # (retention below the declared floor is a conduct finding in validate.reconcile, not a lodging error)

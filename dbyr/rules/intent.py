@@ -1,4 +1,4 @@
-"""Checks on one TrainingRunIntent.
+"""Checks on one RunIntent.
 
 Three groups, run in this order:
   consistency   roles, the T4 trigger, lineage references; warnings on monitoring and retention

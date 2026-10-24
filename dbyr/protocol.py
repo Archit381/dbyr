@@ -45,14 +45,14 @@ def check_set(filings: dict[str, dict]) -> list[tuple[str, Finding]]:
     versions: dict[str, list[dict]] = {}
     systems: dict[str, list[dict]] = {}
     for r in good.values():
-        if r["record_type"] == "TrainingRunIntent":
+        if r["record_type"] == "RunIntent":
             versions.setdefault(r["run_id"], []).append(r)
         elif r["record_type"] == "SystemRuntimeRecord":
             systems.setdefault(r["system_id"], []).append(r)
     for v in [*versions.values(), *systems.values()]:
         v.sort(key=lambda r: ts(r["filed_at"]))
     intents = {run: v[-1] for run, v in versions.items()}
-    closeouts = [r for r in good.values() if r["record_type"] == "TrainingRunCloseout"]
+    closeouts = [r for r in good.values() if r["record_type"] == "RunCloseout"]
     run_closeouts = [c for c in closeouts if "run_id" in c]
     notices = [r for r in good.values() if r["record_type"] == "ExceptionNotice"]
     for run, v in versions.items():

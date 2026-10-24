@@ -146,7 +146,7 @@ def _span(values: list[float]) -> dict | None:
 def timeliness(case: Case) -> dict:
     events, notices, notes = {}, [], []
     for rec in case.records.values():
-        if rec["record_type"] == "TrainingRunCloseout":
+        if rec["record_type"] == "RunCloseout":
             for e in rec.get("security_events", []) + rec.get("integrity_events", []):
                 events[e["event_id"]] = e
             notes += rec.get("third_party_notifications", [])
@@ -178,7 +178,7 @@ def timeliness(case: Case) -> dict:
 def affected_parties(case: Case) -> dict:
     affected, told, dated = set(), set(), set()
     for rec in case.records.values():
-        if rec["record_type"] != "TrainingRunCloseout":
+        if rec["record_type"] != "RunCloseout":
             continue
         for e in rec.get("security_events", []) + rec.get("integrity_events", []):
             affected |= set(e.get("affected_parties", []))
