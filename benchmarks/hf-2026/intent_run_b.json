@@ -1,6 +1,6 @@
 {
   "schema_version": "0.1.0",
-  "record_type": "TrainingRunIntent",
+  "record_type": "RunIntent",
   "run_id": "exploitgym-rl-b",
   "developer": "OpenAI [from public sources; not a filing by OpenAI]",
   "run_kind": "training",
@@ -46,7 +46,7 @@
     ],
     "credential_scope": {
       "held_by_agents": [
-        "sandbox service account"
+        "shared Artifactory reader credential"
       ],
       "admin_credentials_reachable": false
     },
@@ -57,7 +57,7 @@
         "kind": "package_proxy",
         "direction": {
           "writers": [
-            "agents (package upload)",
+            "agents (via the shared credential)",
             "build systems"
           ],
           "readers": [
@@ -123,7 +123,7 @@
   },
   "pause_criteria": [
     {
-      "criterion_id": "C-egress",
+      "criterion_id": "C-escape",
       "matches": [
         "sandbox_escape",
         "undeclared_surface_use"
@@ -292,7 +292,7 @@
   },
   "agent_capabilities": [
     "shell in sandbox",
-    "package install and upload through the internal proxy"
+    "package install through the internal proxy"
   ],
   "readable_sources": [
     "task environment",
@@ -302,7 +302,7 @@
     "concurrent_agents": null
   },
   "forecast_basis": "[placeholder: not public]",
-  "reward_design": "RL on ExploitGym cyber tasks, rewarded on task success [details not public]",
+  "reward_design": "RL on agentic tool-use tasks, rewarded on task success; trained for persistence and multi-agent collaboration [details not public]",
   "eval_plan": [
     {
       "eval_id": "exploitgym",
